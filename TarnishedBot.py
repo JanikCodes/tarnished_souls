@@ -1,7 +1,7 @@
 import discord
 import json
 
-class MyFirekeeperBot(discord.Client):
+class TarnishedBot(discord.Client):
     async def on_ready(self):
         print("I'm logged in. Beep bop.")
 
@@ -12,10 +12,12 @@ class MyFirekeeperBot(discord.Client):
         if message.content.startwith("!stats"):
             completeText = message.content.split(" ")
 
-intents = discord.Intents.all()
 
+#load bot token from json
 with open('bot.json') as file:
     botConfig = json.load(file)
 
-bot = MyFirekeeperBot(intents=intents)
+
+intents = discord.Intents.default()
+bot = TarnishedBot(intents=intents)
 bot.run(botConfig["token"])
