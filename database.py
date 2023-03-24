@@ -2,14 +2,15 @@ import discord
 from discord.ext import commands
 import json
 import mysql.connector
+import TarnishedBot
 
 # Connect to the database
 mydb = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='1111',
-    port='3306',
-    database='tarnished'
+    host= TarnishedBot.botConfig["host"],
+    user= TarnishedBot.botConfig["user"],
+    password= TarnishedBot.botConfig["password"],
+    port= TarnishedBot.botConfig["port"],
+    database= TarnishedBot.botConfig["database"],
 )
 
 cursor = mydb.cursor()
@@ -20,8 +21,7 @@ if mydb.is_connected():
 else:
   print("Database connection failed")
 
-# Define a function that accesses the cursor
-def Get_Users():
+def add_user():
     cursor.execute("SELECT * FROM user")
     result = cursor.fetchall()
     return result
