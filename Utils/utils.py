@@ -20,3 +20,9 @@ def create_bars(value, max):
 
     str += emp
     return str
+
+def create_invisible_spaces(amount):
+    white = ""
+    for x in range(amount):
+        white += "\u200E "
+    return white

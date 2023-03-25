@@ -64,7 +64,6 @@ def get_user_with_id(userId):
         user.set_e_head(res[15])
         user.set_e_chest(res[16])
         user.set_e_legs(res[17])
-        print(user)
         return user
     else:
         return None
@@ -84,5 +83,3 @@ def does_user_exist(idUser):
 def validate_user(userId, userName):
     if not does_user_exist(userId):
         add_user(userId, userName)
-    else:
-        print("It exists")
