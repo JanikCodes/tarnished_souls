@@ -2,13 +2,8 @@ import os
 import asyncio
 import discord
 from discord.ext import commands
-import json
-import mysql.connector
-import database
-
-#load bot token from json
-with open('bot.json') as file:
-    botConfig = json.load(file)
+import config
+import db
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -20,7 +15,8 @@ async def load():
 
 async def main():
     await load()
-    await bot.start(botConfig["token"])
+    await db.init_database()
+    await bot.start(config.botConfig["token"])
 
 asyncio.run(main())
 
