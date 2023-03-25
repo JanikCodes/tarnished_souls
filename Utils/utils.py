@@ -2,7 +2,6 @@
 
 def create_bars(value, max):
     perc = (float(value) / float(max)) * 100
-    print(perc)
     str = ""
     emp = ""
     first_digit = 0
