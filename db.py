@@ -7,6 +7,7 @@ from Classes.user import User
 cursor: MySQLCursor | CMySQLCursor = NotImplemented
 mydb = None
 
+
 async def init_database():
     global mydb
     # Connect to the database
@@ -27,6 +28,7 @@ async def init_database():
     else:
         print("Database connection failed")
 
+
 def add_user(userId, userName):
     sql = "INSERT INTO user VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, null, null, null, null, null)"
     val = (userId, userName, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
@@ -35,9 +37,11 @@ def add_user(userId, userName):
 
     print("Added new user with userName: " + userName)
 
+
 def get_user_with_id(userId):
-    sql = "SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs FROM user u WHERE u.idUser = %s"
-    val = (userId)
+    sql = "SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
+          "faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs FROM user u WHERE u.idUser = %s"
+    val = (userId, )
     cursor.execute(sql, val)
     res = cursor.fetchone()
     if res:
@@ -65,15 +69,17 @@ def get_user_with_id(userId):
     else:
         return None
 
+
 def does_user_exist(idUser):
     sql = "SELECT * FROM user u WHERE u.idUser = %s"
-    val = (idUser,)
+    val = (idUser, )
     cursor.execute(sql, val)
     res = cursor.fetchone()
     if res:
         return True
     else:
         return False
+
 
 def validate_user(userId, userName):
     if not does_user_exist(userId):

@@ -1,0 +1,28 @@
+Ignoring exception in command stats
+Traceback (most recent call last):
+  File "C:\Users\Janik\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\ext\commands\core.py", line 229, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Janik\Desktop\Tarnished\Commands\stats.py", line 18, in stats
+    user = db.get_user_with_id(ctx.author.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Janik\Desktop\Tarnished\db.py", line 45, in get_user_with_id
+    cursor.execute(sql, val)
+  File "C:\Users\Janik\AppData\Local\Programs\Python\Python311\Lib\site-packages\mysql\connector\cursor_cext.py", line 317, in execute
+    prepared = self._cnx.prepare_for_mysql(params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Janik\AppData\Local\Programs\Python\Python311\Lib\site-packages\mysql\connector\connection_cext.py", line 785, in prepare_for_mysql
+    raise ProgrammingError(
+mysql.connector.errors.ProgrammingError: Could not process parameters: int(321649314382348288), it must be of type list, tuple or dict
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Janik\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\ext\commands\bot.py", line 1350, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\Janik\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\ext\commands\core.py", line 1023, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Janik\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\ext\commands\core.py", line 238, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: ProgrammingError: Could not process parameters: int(321649314382348288), it must be of type list, tuple or dict
