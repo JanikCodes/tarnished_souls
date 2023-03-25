@@ -45,26 +45,7 @@ def get_user_with_id(userId):
     cursor.execute(sql, val)
     res = cursor.fetchone()
     if res:
-        user = User()
-        user.set_userId(res[0])
-        user.set_userName(res[1])
-        user.set_level(res[2])
-        user.set_xp(res[3])
-        user.set_souls(res[4])
-        user.set_vigor(res[5])
-        user.set_mind(res[6])
-        user.set_endurance(res[7])
-        user.set_strength(res[8])
-        user.set_dexterity(res[9])
-        user.set_intelligence(res[10])
-        user.set_faith(res[11])
-        user.set_arcane(res[12])
-        user.set_last_explore(res[13])
-        user.set_e_weapon(res[14])
-        user.set_e_head(res[15])
-        user.set_e_chest(res[16])
-        user.set_e_legs(res[17])
-        return user
+        return res
     else:
         return None
 

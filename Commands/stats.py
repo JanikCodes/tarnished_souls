@@ -3,6 +3,7 @@ from discord.ext import commands
 
 import Utils.utils
 import db
+from Classes.user import User
 from Utils import utils
 
 
@@ -17,7 +18,7 @@ class stats(commands.Cog):
     @commands.command()
     async def stats(self, ctx):
         db.validate_user(ctx.author.id, ctx.author.name)
-        user = db.get_user_with_id(ctx.author.id)
+        user = User(ctx.author.id)
         # Create a new embed
         embed = discord.Embed(title="Stats", description='Below are your statistics. These statistics are universal and apply on every server with this bot.')
         embed.set_author(name=user.get_userName())

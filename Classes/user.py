@@ -1,13 +1,26 @@
 import db
 
 class User:
-
-    userName = None
-    level = None
-
     def __init__(self, userId = None):
         if userId is not None:
-            self = db.get_user_with_id(userId)
+            result = db.get_user_with_id(userId)
+            self.userId = result[0]
+            self.userName = result[1]
+            self.level = result[2]
+            self.xp = result[3]
+            self.souls = result[4]
+            self.vigor = result[5]
+            self.mind = result[6]
+            self.endurance = result[7]
+            self.strength = result[8]
+            self.dexterity = result[9]
+            self.intelligence = result[10]
+            self.faith = result[11]
+            self.arcane = result[12]
+            self.last_explore = result[13]
+            self.e_head = result[14]
+            self.e_chest = result[15]
+            self.e_legs = result[16]
         else:
             # empty constructor
             pass
