@@ -12,7 +12,7 @@ class stats(commands.Cog):
     @commands.command()
     async def stats(self, ctx):
         print("User asked for stats")
-        db.validate_user(ctx.author.id)
+        db.validate_user(ctx.author.id, ctx.author.name)
 
 async def setup(bot):
     await bot.add_cog(stats(bot))

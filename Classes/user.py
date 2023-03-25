@@ -1,6 +1,5 @@
 import db
 
-
 class User:
 
     userName = None

@@ -64,7 +64,6 @@ def get_user_with_id(userId):
         return None
 
 def does_user_exist(idUser):
-    print("INIT")
     sql = "SELECT * FROM user u WHERE u.idUser = %s"
     val = (idUser,)
     cursor.execute(sql, val)
@@ -75,8 +74,7 @@ def does_user_exist(idUser):
         return False
 
 def validate_user(userId, userName):
-    print("Validate..")
     if not does_user_exist(userId):
         add_user(userId, userName)
     else:
-        print("It exist")
+        print("It exists")
