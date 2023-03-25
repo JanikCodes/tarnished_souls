@@ -7,6 +7,7 @@ cursor: MySQLCursor | CMySQLCursor = NotImplemented
 mydb = None
 
 async def init_database():
+    global mydb
     # Connect to the database
     mydb = mysql.connector.connect(
         host=config.botConfig["host"],
@@ -16,6 +17,7 @@ async def init_database():
         database=config.botConfig["database"],
     )
 
+    global cursor
     cursor = mydb.cursor()
 
     # Check if the connection is alive
