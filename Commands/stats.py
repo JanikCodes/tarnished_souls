@@ -30,7 +30,7 @@ class stats(commands.Cog):
         embed.add_field(name="**Intelligence: **" + str(user.get_intelligence()), value= utils.create_bars(user.get_intelligence(), 100) + utils.create_invisible_spaces(3) + str(user.get_intelligence()) + "/100", inline=False)
         embed.add_field(name="**Faith: **" + str(user.get_faith()), value= utils.create_bars(user.get_faith(), 100) + utils.create_invisible_spaces(3) + str(user.get_faith()) + "/100", inline=False)
         embed.add_field(name="**Arcane: **" + str(user.get_arcane()), value= utils.create_bars(user.get_arcane(), 100) + utils.create_invisible_spaces(3) + str(user.get_arcane()) + "/100", inline=False)
-        # Send the embed as a response to the user
+
         await ctx.send(embed= embed)
 
 
