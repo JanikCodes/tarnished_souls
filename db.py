@@ -31,6 +31,8 @@ def add_user(userId, userName):
     sql = "INSERT INTO user VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, null, null, null, null, null)"
     val = (userId, userName, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
     cursor.execute(sql, val)
+    mydb.commit()
+
     print("Added new user with userName: " + userName)
 
 def get_user_with_id(userId):
