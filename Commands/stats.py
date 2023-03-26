@@ -5,12 +5,12 @@ import db
 from Classes.user import User
 from Utils import utils
 
-class stats(commands.Cog):
+class Stats(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @app_commands.command(name="stats", description="Display your universal character stats")
-    async def stats(self,  interaction: discord.Interaction):
+    @app_commands.command(name="stats", description="Display your universal character stats V3.0")
+    async def Stats(self,  interaction: discord.Interaction):
         db.validate_user(interaction.user.id, interaction.user.name)
         user = User(interaction.user.id)
 
@@ -28,4 +28,4 @@ class stats(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 async def setup(client:commands.Bot) -> None:
-    await client.add_cog(stats(client))
+    await client.add_cog(Stats(client))

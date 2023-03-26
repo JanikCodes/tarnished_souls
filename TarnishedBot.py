@@ -9,7 +9,7 @@ from colorama import Back, Fore, Style
 
 class Client(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or('.'), intents=discord.Intents().all())
+        super().__init__(command_prefix=commands.when_mentioned_or('.'), intents=discord.Intents().all(), scope="763425801391308901")
 
         self.cogsList = ["Commands.stats", "Commands.upgrade_stats"]
 
@@ -23,8 +23,6 @@ class Client(commands.Bot):
         print(prfx + " Bot ID " + Fore.YELLOW + str(self.user.id))
         print(prfx + " Discord Version " + Fore.YELLOW + discord.__version__)
         print(prfx + " Python Version " + Fore.YELLOW + str(platform.python_version()))
-        synced = await self.tree.sync()
-        print(prfx + " Slash CMDs Synced " + Fore.YELLOW + str(len(synced)) + " Commands")
         await db.init_database()
 
         logging.warning("Now logging..")
