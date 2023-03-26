@@ -1,5 +1,3 @@
-
-
 def create_bars(value, max):
     perc = (float(value) / float(max)) * 100
     str = ""
