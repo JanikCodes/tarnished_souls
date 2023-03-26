@@ -7,9 +7,6 @@ import db
 import logging
 from colorama import Back, Fore, Style
 
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix='!', intents=intents)
-
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=commands.when_mentioned_or('.'), intents=discord.Intents().all())
@@ -29,6 +26,8 @@ class Client(commands.Bot):
         synced = await self.tree.sync()
         print(prfx + " Slash CMDs Synced " + Fore.YELLOW + str(len(synced)) + " Commands")
         await db.init_database()
+
+        logging.warning("Now logging..")
 
 
 

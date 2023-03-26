@@ -1,12 +1,9 @@
 import discord
-from discord import app_commands, client
+from discord import app_commands
 from discord.ext import commands
-
-import Utils.utils
 import db
 from Classes.user import User
 from Utils import utils
-
 
 class stats(commands.Cog):
     def __init__(self, client: commands.Bot):

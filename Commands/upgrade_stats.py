@@ -4,12 +4,12 @@ from discord.ext import commands
 import db
 from Classes.user import User
 
-class upgrade_stats(commands.Cog):
+class UpgradeStats(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @app_commands.command(name="upgrade_stats", description="Upgrade one of your available stats")
-    async def upgrade_stats(self,  interaction: discord.Interaction):
+    @app_commands.command(name="upgrade", description="Upgrade one of your available stats")
+    async def UpgradeStats(self,  interaction: discord.Interaction):
         db.validate_user(interaction.user.id, interaction.user.name)
         user = User(interaction.user.id)
 
@@ -19,4 +19,4 @@ class upgrade_stats(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
 async def setup(client:commands.Bot) -> None:
-    await client.add_cog(upgrade_stats(client))
+    await client.add_cog(UpgradeStats(client))
