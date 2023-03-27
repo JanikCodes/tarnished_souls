@@ -14,7 +14,7 @@ MY_GUILD = discord.Object(id=763425801391308901)
 
 class Client(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='.', intents=discord.Intents().all(), scope="763425801391308901")
+        super().__init__(command_prefix='.', intents=discord.Intents().all())
 
         self.cogsList = ["Commands.stats", "Commands.upgrade_stats"]
 
