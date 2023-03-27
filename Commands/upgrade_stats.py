@@ -4,7 +4,6 @@ from discord.ext import commands
 import db
 from Classes.user import User
 
-
 class UpgradeStatsView(discord.ui.View):
     @discord.ui.button(label="Upgrade", row=0, style=discord.ButtonStyle.primary)
     async def upgrade_button_callback(self, button, interaction):
@@ -25,7 +24,7 @@ class UpgradeStats(commands.Cog):
         app_commands.Choice(name="Faith", value="faith"),
         app_commands.Choice(name="Arcane", value="arcane"),
     ])
-    async def upgradeStats(self,  interaction: discord.Interaction, choices: app_commands.Choice[str]):
+    async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         db.validate_user(interaction.user.id, interaction.user.name)
         user = User(interaction.user.id)
         selectedChoice = choices.value

@@ -1,6 +1,5 @@
 import discord
 from discord import app_commands
-from discord.app_commands import tree
 from discord.ext import commands
 import db
 from Classes.user import User
@@ -11,7 +10,7 @@ class Stats(commands.Cog):
         self.client = client
 
     @app_commands.command(name="stats", description="Display your universal character stats")
-    async def Stats(self,  interaction: discord.Interaction):
+    async def stats(self, interaction: discord.Interaction):
         db.validate_user(interaction.user.id, interaction.user.name)
         user = User(interaction.user.id)
 
