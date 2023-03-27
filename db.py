@@ -64,3 +64,14 @@ def does_user_exist(idUser):
 def validate_user(userId, userName):
     if not does_user_exist(userId):
         add_user(userId, userName)
+
+
+def get_stat_from_user_with_id(userId, value):
+    sql = f"SELECT {value} FROM user u WHERE u.idUser = %s"
+    val = (userId, )
+    cursor.execute(sql, val)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        return res
+    else:
+        return 0
