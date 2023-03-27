@@ -29,7 +29,9 @@ class UpgradeStats(commands.Cog):
         user = User(interaction.user.id)
         selectedChoice = choices.value
 
-        embed = discord.Embed(title=f"Upgrade {selectedChoice}", description=f"Do you want to upgrade {selectedChoice}?")
+        currentLevel = db.get_stat_from_user_with_id(user.get_userId(), selectedChoice)
+
+        embed = discord.Embed(title=f"Upgrade {selectedChoice} {currentLevel}/100", description=f"Do you want to upgrade {selectedChoice}?")
         embed.set_author(name=user.get_userName())
 
         await interaction.response.send_message(embed=embed, view=UpgradeStatsView())
