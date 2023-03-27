@@ -1,5 +1,6 @@
 import discord
 from discord import app_commands
+from discord.abc import Snowflake
 from discord.ext import commands
 import db
 from Classes.user import User
@@ -19,4 +20,4 @@ class UpgradeStats(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
 async def setup(client:commands.Bot) -> None:
-    await client.add_cog(UpgradeStats(client))
+    await client.add_cog(UpgradeStats(client), guild=discord.Object(id=763425801391308901))

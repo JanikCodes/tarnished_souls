@@ -1,5 +1,6 @@
 import discord
 from discord import app_commands
+from discord.app_commands import tree
 from discord.ext import commands
 import db
 from Classes.user import User
@@ -9,7 +10,7 @@ class Stats(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @app_commands.command(name="stats", description="Display your universal character stats V3.0")
+    @app_commands.command(name="stats", description="Display your universal character stats")
     async def Stats(self,  interaction: discord.Interaction):
         db.validate_user(interaction.user.id, interaction.user.name)
         user = User(interaction.user.id)
@@ -27,5 +28,6 @@ class Stats(commands.Cog):
         embed.add_field(name="**Arcane: **" + str(user.get_arcane()), value=utils.create_bars(user.get_arcane(), 100) + utils.create_invisible_spaces(3) + str(user.get_arcane()) + "/100", inline=False)
 
         await interaction.response.send_message(embed=embed)
+
 async def setup(client:commands.Bot) -> None:
-    await client.add_cog(Stats(client))
+    await client.add_cog(Stats(client), guild=discord.Object(id=763425801391308901))
