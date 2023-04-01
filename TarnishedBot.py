@@ -13,7 +13,7 @@ class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='.', intents=discord.Intents().all())
 
-        self.cogsList = ["Commands.stats", "Commands.upgrade_stats"]
+        self.cogsList = ["Commands.stats", "Commands.upgrade_stats", "Commands.souls"]
 
     async def setup_hook(self):
         for ext in self.cogsList:
