@@ -5,8 +5,6 @@ import config
 from Classes.user import User
 
 cursor: MySQLCursor | CMySQLCursor = NotImplemented
-mydb = None
-
 
 async def init_database():
     global mydb
@@ -66,7 +64,7 @@ def validate_user(userId, userName):
         add_user(userId, userName)
 
 
-def get_stat_from_user_with_id(userId, value):
+def get_stat_level_from_user_with_id(userId, value):
     sql = f"SELECT {value} FROM user u WHERE u.idUser = %s"
     val = (userId, )
     cursor.execute(sql, val)
@@ -75,3 +73,8 @@ def get_stat_from_user_with_id(userId, value):
         return res
     else:
         return 0
+
+def increase_stat_from_user_with_id(userId, stat_name):
+    sql = f"UPDATE user u SET {stat_name} = {stat_name} + 1 WHERE u.idUser = {userId};"
+    cursor.execute(sql)
+    mydb.commit()

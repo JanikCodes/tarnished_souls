@@ -80,6 +80,9 @@ class User:
     def get_e_legs(self):
         return self.e_legs
 
+    # customs
+    def get_all_stat_levels(self):
+        return self.strength + self.endurance + self.faith + self.vigor + self.intelligence + self.arcane + self.dexterity + self.mind
     # setters
     def set_userId(self, userId):
         self.userId = userId
