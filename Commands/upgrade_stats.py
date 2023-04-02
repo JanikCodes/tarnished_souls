@@ -16,30 +16,32 @@ class UpgradeStatsButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer()
 
-        self.user.update_user()
-
         if self.func == "upgrade":
-            db.increase_stat_from_user_with_id(self.user.get_userId(), stat_name=self.selected_choice)
+            current_level = db.get_stat_level_from_user_with_id(userId=self.user.get_userId(), value=self.selected_choice)
+            soul_cost = utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)
 
-            current_level = db.get_stat_level_from_user_with_id(self.user.get_userId(), self.selected_choice)
+            if self.user.get_souls() >= soul_cost:
+                db.increase_stat_from_user_with_id(userId=self.user.get_userId(), stat_name=self.selected_choice)
+                db.decrease_souls_from_user_with_id(userId=self.user.get_userId(), amount=soul_cost)
+                current_level = db.get_stat_level_from_user_with_id(userId=self.user.get_userId(), value=self.selected_choice)
+                message = interaction.message
+                edited_embed = message.embeds[0]
+                edited_embed.set_field_at(0, name=f"**{self.selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
 
-            message = interaction.message
-            edited_embed = message.embeds[0]
-            edited_embed.set_field_at(0, name=f"**{self.selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
-
-            self.label = f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)} souls"
-
-            await interaction.message.edit(embed=edited_embed, view=self.view)
+                await interaction.message.edit(embed=edited_embed, view=UpgradeStatsView(current_level=current_level, user=self.user, selected_choice=self.selected_choice))
+            else:
+                print("Not enough souls!")
 
 
 class UpgradeStatsView(discord.ui.View):
 
-    def __init__(self, user, current_Level, selected_choice):
+    def __init__(self, user, current_level, selected_choice):
         super().__init__()
-        self.user = user
-        self.current_level = current_Level
-        self.add_item(UpgradeStatsButton(f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, level=current_Level, next_upgrade_cost=True)} souls", discord.ButtonStyle.success, "upgrade", selected_choice, user))
+        self.user = user.update_user()
+        self.current_level = current_level
+        self.add_item(UpgradeStatsButton(f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)} souls", discord.ButtonStyle.success, "upgrade", selected_choice, user))
         self.add_item(UpgradeStatsButton(f"{self.user.get_souls()} souls", discord.ButtonStyle.grey, "soul-display", selected_choice, user, True))
+
 
 class UpgradeStats(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -66,8 +68,7 @@ class UpgradeStats(commands.Cog):
         embed = discord.Embed(title=f"**Upgrade {selected_choice}**", description=f"Click the button below to upgrade your skill!")
         embed.set_author(name=user.get_userName())
         embed.add_field(name=f"**{selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
-
-        await interaction.response.send_message(embed=embed, view=UpgradeStatsView(user, current_level, selected_choice))
+        await interaction.response.send_message(embed=embed, view=UpgradeStatsView(user=user, current_level=current_level, selected_choice=selected_choice))
 
 async def setup(client:commands.Bot) -> None:
     await client.add_cog(UpgradeStats(client), guild=discord.Object(id=763425801391308901))
