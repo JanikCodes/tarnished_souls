@@ -4,6 +4,8 @@ from mysql.connector.cursor_cext import CMySQLCursor
 import config
 import json
 
+from Classes.encounter import Encounter
+
 cursor: MySQLCursor | CMySQLCursor = NotImplemented
 
 async def init_database():
@@ -86,8 +88,6 @@ def decrease_souls_from_user_with_id(userId, amount):
     mydb.commit()
 
 
-
-
 def fill_db_weapons():
     # read the JSON file
     with open('Data/weapons.json', 'r') as f:
@@ -134,3 +134,15 @@ def get_json_req_attribute(weapon, attribute_name):
     except StopIteration:
         req_value = 0
     return req_value
+
+
+def get_encounters_from_user_with_id(idUser):
+    encounters = []
+    sql = f"SELECT e.idEncounter, e.description, e.dropRate FROM encounter e, user_encounter r WHERE r.idEncounter = e.idEncounter AND r.idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            encounters.append(Encounter(id=row[0], description=row[1], drop_rate=row[2]))
+
+    return encounters

@@ -14,8 +14,6 @@ class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='.', intents=discord.Intents().all())
 
-        self.cogsList = ["Commands.stats", "Commands.upgrade_stats", "Commands.souls", "Commands.inventory"]
-
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
             if fileName.endswith('.py'):

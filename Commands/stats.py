@@ -14,8 +14,7 @@ class Stats(commands.Cog):
         db.validate_user(interaction.user.id, interaction.user.name)
         user = User(interaction.user.id)
 
-        embed = discord.Embed(title="Stats",
-                              description="Below are your statistics. These statistics are universal and apply on every server with this bot.")
+        embed = discord.Embed(title="Stats", description="Below are your statistics. These statistics are universal and apply on every server with this bot.")
         embed.set_author(name=user.get_userName())
         embed.add_field(name="**Vigor: **" + str(user.get_vigor()), value=utils.create_bars(user.get_vigor(), 100) + utils.create_invisible_spaces(3) + str(user.get_vigor()) + "/100", inline=False)
         embed.add_field(name="**Mind: **" + str(user.get_mind()), value=utils.create_bars(user.get_mind(), 100) + utils.create_invisible_spaces(3) + str(user.get_mind()) + "/100", inline=False)
