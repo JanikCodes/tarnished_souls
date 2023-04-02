@@ -32,6 +32,8 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
+        #db.fill_db_weapons()
+
 
 client = Client()
 client.run(config.botConfig["token"])
