@@ -2,11 +2,9 @@ import mysql.connector
 from mysql.connector.cursor import MySQLCursor
 from mysql.connector.cursor_cext import CMySQLCursor
 import config
-from Classes.user import User
+import json
 
 cursor: MySQLCursor | CMySQLCursor = NotImplemented
-mydb = None
-
 
 async def init_database():
     global mydb
@@ -64,3 +62,59 @@ def does_user_exist(idUser):
 def validate_user(userId, userName):
     if not does_user_exist(userId):
         add_user(userId, userName)
+
+
+def get_stat_level_from_user_with_id(userId, value):
+    sql = f"SELECT {value} FROM user u WHERE u.idUser = %s"
+    val = (userId, )
+    cursor.execute(sql, val)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        return res
+    else:
+        return 0
+
+def increase_stat_from_user_with_id(userId, stat_name):
+    sql = f"UPDATE user u SET {stat_name} = {stat_name} + 1 WHERE u.idUser = {userId};"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def decrease_souls_from_user_with_id(userId, amount):
+    sql = f"UPDATE user u SET souls = souls - {amount} WHERE u.idUser = {userId};"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+
+
+def fill_db_weapons():
+    # read the JSON file
+    with open('Data/weapons.json', 'r') as f:
+        data = json.load(f)
+
+    # iterate over the objects
+    for weapon in data:
+        weapon_name = weapon['name'].replace("'", "''")
+        req_vigor = get_json_req_attribute(weapon, "Vig")
+        req_mind = get_json_req_attribute(weapon, "Min")
+        req_endurance = get_json_req_attribute(weapon, "End")
+        req_strength = get_json_req_attribute(weapon, "Str")
+        req_dexterity = get_json_req_attribute(weapon, "Dex")
+        req_intelligence = get_json_req_attribute(weapon, "Int")
+        req_faith = get_json_req_attribute(weapon, "Fai")
+        req_arcane = get_json_req_attribute(weapon, "Arc")
+
+        total_dmg = sum(attack['amount'] for attack in weapon['attack'])
+
+        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg},{total_dmg*4}, 'TMP', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, 6);"
+
+        cursor.execute(sql)
+        mydb.commit()
+
+def get_json_req_attribute(weapon, attribute_name):
+    try:
+        req_value = next(attribute['amount'] for attribute in weapon['requiredAttributes'] if attribute['name'] == attribute_name)
+    except StopIteration:
+        req_value = 0
+    return req_value
