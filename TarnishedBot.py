@@ -1,3 +1,4 @@
+import os
 import platform
 import time
 import discord
@@ -16,8 +17,9 @@ class Client(commands.Bot):
         self.cogsList = ["Commands.stats", "Commands.upgrade_stats", "Commands.souls", "Commands.inventory"]
 
     async def setup_hook(self):
-        for ext in self.cogsList:
-            await self.load_extension(ext)
+        for fileName in os.listdir('./Commands'):
+            if fileName.endswith('.py'):
+                await client.load_extension(f'Commands.{fileName[:-3]}')
 
         await self.tree.sync(guild=MY_GUILD)
 
