@@ -7,24 +7,29 @@ from Classes.user import User
 from Utils import utils
 
 class UpgradeStatsButton(discord.ui.Button):
-    def __init__(self, text, button_style, func, selected_choice, current_level, user, disabled=False):
+    def __init__(self, text, button_style, func, selected_choice, user, disabled=False):
         super().__init__(label=text, style=button_style, disabled=disabled)
         self.func = func
         self.selected_choice = selected_choice
-        self.current_level = current_level
         self.user = user
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer()
 
+        self.user.update_user()
+
         if self.func == "upgrade":
             db.increase_stat_from_user_with_id(self.user.get_userId(), stat_name=self.selected_choice)
+
+            current_level = db.get_stat_level_from_user_with_id(self.user.get_userId(), self.selected_choice)
+
             message = interaction.message
             edited_embed = message.embeds[0]
-            edited_embed.clear_fields()
-            edited_embed.add_field(name=f"**{self.selected_choice}**", value=utils.create_bars(self.current_level, 100) + utils.create_invisible_spaces(3) + str(self.current_level) + "/100", inline=False)
+            edited_embed.set_field_at(0, name=f"**{self.selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
 
-            await interaction.message.edit(embed=edited_embed)
+            self.label = f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)} souls"
+
+            await interaction.message.edit(embed=edited_embed, view=self.view)
 
 
 class UpgradeStatsView(discord.ui.View):
@@ -33,13 +38,8 @@ class UpgradeStatsView(discord.ui.View):
         super().__init__()
         self.user = user
         self.current_level = current_Level
-        self.add_item(UpgradeStatsButton(f"Upgrade for {self.calculate_upgrade_cost(user=user, level=current_Level, next_upgrade_cost=True)} souls", discord.ButtonStyle.success, "upgrade", selected_choice, current_Level, user))
-        self.add_item(UpgradeStatsButton(f"{user.get_souls()} souls", discord.ButtonStyle.grey, "soul-display", selected_choice, current_Level, user, True))
-
-    def calculate_upgrade_cost(self, level, user, next_upgrade_cost):
-        cost = 150 + round((int(level) * 150) * 2, 0) + (
-                    (user.get_all_stat_levels() + (1 if next_upgrade_cost else 0)) * 150)
-        return cost
+        self.add_item(UpgradeStatsButton(f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, level=current_Level, next_upgrade_cost=True)} souls", discord.ButtonStyle.success, "upgrade", selected_choice, user))
+        self.add_item(UpgradeStatsButton(f"{self.user.get_souls()} souls", discord.ButtonStyle.grey, "soul-display", selected_choice, user, True))
 
 class UpgradeStats(commands.Cog):
     def __init__(self, client: commands.Bot):

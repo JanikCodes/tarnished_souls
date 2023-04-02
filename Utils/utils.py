@@ -25,3 +25,8 @@ def create_invisible_spaces(amount):
     for x in range(amount):
         white += "\u200E "
     return white
+
+def calculate_upgrade_cost(level, user, next_upgrade_cost):
+    cost = 150 + round((int(level) * 150) * 2, 0) + (
+                (user.get_all_stat_levels() + (1 if next_upgrade_cost else 0)) * 150)
+    return cost

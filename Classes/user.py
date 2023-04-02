@@ -25,6 +25,9 @@ class User:
             # empty constructor
             pass
 
+    def update_user(self):
+        return User(self.userId)
+
     # getters
     def get_userId(self):
         return self.userId
