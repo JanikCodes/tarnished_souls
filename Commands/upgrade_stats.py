@@ -14,6 +14,10 @@ class UpgradeStatsButton(discord.ui.Button):
         self.user = user
 
     async def callback(self, interaction: discord.Interaction):
+
+        if interaction.user.id != int(self.user.get_userId()):
+            return await interaction.response.send_message("You are not authorized to use this button.", ephemeral=True)
+
         await interaction.response.defer()
 
         if self.func == "upgrade":
@@ -29,8 +33,6 @@ class UpgradeStatsButton(discord.ui.Button):
                 edited_embed.set_field_at(0, name=f"**{self.selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
 
                 await interaction.message.edit(embed=edited_embed, view=UpgradeStatsView(current_level=current_level, user=self.user, selected_choice=self.selected_choice))
-            else:
-                print("Not enough souls!")
 
 
 class UpgradeStatsView(discord.ui.View):

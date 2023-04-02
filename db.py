@@ -107,7 +107,23 @@ def fill_db_weapons():
 
         total_dmg = sum(attack['amount'] for attack in weapon['attack'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1);"
+        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']});"
+
+        cursor.execute(sql)
+        mydb.commit()
+
+def fill_db_armor():
+    # read the JSON file
+    with open('Data/armor.json', 'r') as f:
+        data = json.load(f)
+
+    # iterate over the objects
+    for armor in data:
+        armor_name = armor['name'].replace("'", "''")
+
+        total_negation = sum(negation['amount'] for negation in armor['dmgNegation'])
+
+        sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']});"
 
         cursor.execute(sql)
         mydb.commit()

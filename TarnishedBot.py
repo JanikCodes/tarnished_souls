@@ -13,7 +13,7 @@ class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='.', intents=discord.Intents().all())
 
-        self.cogsList = ["Commands.stats", "Commands.upgrade_stats", "Commands.souls"]
+        self.cogsList = ["Commands.stats", "Commands.upgrade_stats", "Commands.souls", "Commands.inventory"]
 
     async def setup_hook(self):
         for ext in self.cogsList:
@@ -32,8 +32,8 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
-        db.fill_db_weapons()
-
+        #db.fill_db_weapons()
+        #db.fill_db_armor()
 
 client = Client()
 client.run(config.botConfig["token"])
