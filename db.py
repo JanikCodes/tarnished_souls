@@ -107,7 +107,7 @@ def fill_db_weapons():
 
         total_dmg = sum(attack['amount'] for attack in weapon['attack'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg},{total_dmg*4}, 'TMP', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, 6);"
+        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1);"
 
         cursor.execute(sql)
         mydb.commit()
