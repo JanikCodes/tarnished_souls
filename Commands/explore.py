@@ -29,12 +29,12 @@ class Explore(commands.Cog):
         if current_time - last_time > self.EXPLORE_TIME:
             print("Finished!")
             #display a recap off the old explore message because it's finished
-            self.explore_status(interaction, percentage=100, user=user, finished=True)
+            await self.explore_status(interaction, percentage=100, user=user, finished=True)
         else:
             print("Updating the explore!")
-            self.explore_status(interaction, percentage=(current_time - last_time) / EXPLORE_TIME * 100, user=user, finished=False)
+            await self.explore_status(interaction, percentage=(current_time - last_time) / self.EXPLORE_TIME * 100, user=user, finished=False)
 
-    def explore_status(self, interaction, percentage, user, finished):
+    async def explore_status(self, interaction, percentage, user, finished):
         embed = discord.Embed(title=f"**Exploring: {percentage}**")
         embed.description = "You can find items, encounter events and explore the world."
         embed.colour = discord.Color.green() if finished else discord.Color.orange()
@@ -47,9 +47,6 @@ class Explore(commands.Cog):
         encounters = db.get_encounters_from_user_with_id(user.get_userId())
 
         #TODO: Change the user_encounter table to not have a foreign key from his inventory, cuz if the player deletes the inventory item and checks /explore, the reference is missing.
-
-        for encounter in encounters:
-
 
 
         await interaction.response.send_message(embed=embed)
