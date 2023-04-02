@@ -1,3 +1,5 @@
+import random
+
 import mysql.connector
 from mysql.connector.cursor import MySQLCursor
 from mysql.connector.cursor_cext import CMySQLCursor
@@ -5,6 +7,7 @@ import config
 import json
 
 from Classes.encounter import Encounter
+from Classes.item import Item
 
 cursor: MySQLCursor | CMySQLCursor = NotImplemented
 
@@ -30,7 +33,7 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = "INSERT INTO user VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, null, null, null, null, null, null)"
+    sql = "INSERT INTO user VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, null, null, null, null, null)"
     val = (userId, userName, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
     cursor.execute(sql, val)
     mydb.commit()
@@ -146,3 +149,58 @@ def get_encounters_from_user_with_id(idUser):
             encounters.append(Encounter(id=row[0], description=row[1], drop_rate=row[2]))
 
     return encounters
+
+
+def get_item_from_user_encounter_with_rel_id(idRel):
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, r.level, i.value, i.price, r.value, i.obtainable, i.weight FROM item i, user_has_item r WHERE r.idItem = i.idItem AND r.idRel = {idRel};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5], reqEndurance=[6], reqStrength=res[7], reqDexterity=[8], reqIntelligence=res[9], reqFaith=res[10], reqArcane=res[11], level=[12], value=res[13], price=res[14], extra_value=res[15], obtainable=res[16], weight=res[17])
+    else:
+        return None
+
+
+def get_item_id_from_user_encounter(idUser, idRel):
+    sql = f"SELECT idItem FROM user_encounter r WHERE r.idUser = {idUser} AND r.idEncounter = {idRel};"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        return res
+    else:
+        return None
+
+
+def update_last_explore_timer_from_user_with_id(idUser, current_time):
+    sql = f"UPDATE user u SET last_explore = {current_time} WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def get_all_unique_encounters_for_user(idUser):
+    encounters = []
+    sql = f"SELECT e.idEncounter, e.description, e.dropRate FROM encounter e WHERE e.idEncounter NOT IN (SELECT idEncounter FROM user_encounter r WHERE r.idUser = {idUser});"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            encounters.append(Encounter(id=row[0], description=row[1], drop_rate=row[2]))
+
+    return encounters
+
+def create_new_encounter(idUser):
+    all_encounters = get_all_unique_encounters_for_user(idUser=idUser)
+    selected_encounter = random.choice(all_encounters)
+
+    sql = f"INSERT INTO user_encounter VALUE(NULL, {idUser}, {selected_encounter.get_id()}, 0);"
+    cursor.execute(sql)
+    mydb.commit()
+
+    return selected_encounter
+
+
+def remove_user_encounters(idUser):
+    sql = f"DELETE FROM user_encounter r WHERE r.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
