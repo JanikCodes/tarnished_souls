@@ -54,7 +54,6 @@ class Explore(commands.Cog):
 
             if item:
                 #received a drop
-                print("Found item")
                 loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
 
             embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i) } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
