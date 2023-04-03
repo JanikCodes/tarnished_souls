@@ -53,6 +53,7 @@ class Explore(commands.Cog):
 
             if item:
                 #received a drop
+                print("Found item")
                 loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
 
             embed.add_field(name=f"*After { self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
@@ -68,6 +69,10 @@ class Explore(commands.Cog):
                 random_item_id = random.choice(all_item_ids)
                 random_stats = self.calculate_random_stats()
                 db.add_item_to_user(idUser=user.get_userId(), idItem=random_item_id, random_stats=random_stats, level=0)
+
+                #TODO: make the drop an item object to better reference it in the loot_sentence below + easier add it to the player inventory db methode
+                #TODO: Update the user_encounter idItem and bonus_stats !!!
+
                 #loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
             else:
                 pass
