@@ -12,7 +12,7 @@ from Utils import utils
 
 class Explore(commands.Cog):
 
-    EXPLORE_TIME = 60 * 20
+    EXPLORE_TIME = 60 * 5 #20min
     ENCOUNTER_AMOUNT = 5
 
     def __init__(self, client: commands.Bot):
@@ -28,17 +28,15 @@ class Explore(commands.Cog):
         print(current_time - last_time)
 
         if float(current_time) - float(last_time) > self.EXPLORE_TIME:
-            print("Finished!")
             #display a recap off the old explore message because it's finished
             await self.explore_status(interaction, percentage=100, user=user, finished=True)
             db.remove_user_encounters(idUser=user.get_userId())
             db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(), current_time=current_time)
         else:
-            print("Updating the explore!")
             await self.explore_status(interaction, percentage=(current_time - last_time) / self.EXPLORE_TIME * 100, user=user, finished=False)
 
     async def explore_status(self, interaction, percentage, user, finished):
-        embed = discord.Embed(title=f"**Exploring: {percentage}%**")
+        embed = discord.Embed(title=f"**Exploring: {percentage:.1f}%**")
         embed.description = "You can find items, encounter events and explore the world."
         embed.colour = discord.Color.green() if finished else discord.Color.orange()
 
@@ -52,13 +50,14 @@ class Explore(commands.Cog):
         for i in range(0, len(encounters)):
             loot_sentence = str()
 
-            item = db.get_item_from_user_encounter_with_rel_id(db.get_item_id_from_user_encounter(idUser=user.get_userId(), idRel=encounters[i].get_id()))
+            item = db.get_item_from_user_encounter_with_rel_id(idUser=user.get_userId(), idRel=encounters[i].get_id())
 
             if item:
                 #received a drop
-                loot_sentence = f"\n **:grey_exclamation:Recieved:** `{item.get_name()}` {item.get_extra_value_text()}"
+                loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
 
-            embed.add_field(name=f"*After {(i + 1) * (int) (self.EXPLORE_TIME / self.ENCOUNTER_AMOUNT / 60)} minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
+            embed.add_field(name=f"*After {int((i + 1) * (self.EXPLORE_TIME / self.ENCOUNTER_AMOUNT / 60))} minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
+            #embed.add_field(name=f"*After {(i + 1) * (int) (self.EXPLORE_TIME / self.ENCOUNTER_AMOUNT / 60)} minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
 
         # generate new encounters
         for i in range(0, required_encounters - (len(encounters))):
