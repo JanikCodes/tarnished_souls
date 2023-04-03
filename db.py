@@ -191,3 +191,31 @@ def remove_user_encounters(idUser):
     sql = f"DELETE FROM user_encounter r WHERE r.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
+
+def get_all_item_ids():
+    item_ids = []
+    sql = f"SELECT i.idItem FROM item i;"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            item_ids.append(row[0])
+
+    return item_ids
+
+def add_item_to_user(idUser, idItem, random_stats, level):
+    sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {idItem} AND r.level = {level} AND r.value = {random_stats};"
+    cursor.execute(sql)
+
+    res = cursor.fetchone()
+    if res:
+        # update count
+        sql = f"UPDATE user_has_item r SET r.count = r.count + 1 WHERE r.idUser = {idUser} AND r.idItem = {idItem} AND r.level = {level} AND r.value = {random_stats};"
+        cursor.execute(sql)
+        mydb.commit()
+    else:
+        # add new item to table
+        sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {idItem}, {level}, 1, {random_stats});"
+        cursor.execute(sql)
+        mydb.commit()

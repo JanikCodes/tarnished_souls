@@ -12,7 +12,7 @@ from Utils import utils
 
 class Explore(commands.Cog):
 
-    EXPLORE_TIME = 60 * 5 #20min
+    EXPLORE_TIME = 60 * 1 #20min
     ENCOUNTER_AMOUNT = 5
 
     def __init__(self, client: commands.Bot):
@@ -25,7 +25,6 @@ class Explore(commands.Cog):
 
         current_time = (round(time.time() * 1000)) // 1000
         last_time = user.get_last_explore()
-        print(current_time - last_time)
 
         if float(current_time) - float(last_time) > self.EXPLORE_TIME:
             #display a recap off the old explore message because it's finished
@@ -56,24 +55,42 @@ class Explore(commands.Cog):
                 #received a drop
                 loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
 
-            embed.add_field(name=f"*After {int((i + 1) * (self.EXPLORE_TIME / self.ENCOUNTER_AMOUNT / 60))} minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
-            #embed.add_field(name=f"*After {(i + 1) * (int) (self.EXPLORE_TIME / self.ENCOUNTER_AMOUNT / 60)} minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
+            embed.add_field(name=f"*After { self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
 
         # generate new encounters
         for i in range(0, required_encounters - (len(encounters))):
             new_encounter = db.create_new_encounter(user.get_userId())
+            loot_sentence = str()
 
             if new_encounter.get_drop_rate() >= random.randint(0, 100):
-                # we recieved an item drop!
+                # we received an item drop!
+                all_item_ids = db.get_all_item_ids()
+                random_item_id = random.choice(all_item_ids)
+                random_stats = self.calculate_random_stats()
+                db.add_item_to_user(idUser=user.get_userId(), idItem=random_item_id, random_stats=random_stats, level=0)
+                #loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
+            else:
                 pass
 
-            embed.add_field(name=f"*After { ((len(encounters) + (i + 1)) * self.EXPLORE_TIME / self.ENCOUNTER_AMOUNT / 60) } minutes..*", value=new_encounter.get_description(), inline=False)
+            embed.add_field(name=f"*After { self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * ( len(encounters) + i ) } minutes..*", value=new_encounter.get_description() + loot_sentence, inline=False)
 
         if not finished:
             embed.add_field(name=". . .", value="", inline=False)
 
 
         await interaction.response.send_message(embed=embed)
+
+    def calculate_random_stats(self):
+        mean = 3  # The center of the range (0-10)
+        std_deviation = 2  # Controls how spread out the distribution is
+
+        # Generate a random number using a Gaussian distribution
+        number = random.gauss(mean, std_deviation)
+
+        # Keep the number within the range of 0-10
+        number = max(0, min(10, number))
+
+        return number
 
 async def setup(client:commands.Bot) -> None:
     await client.add_cog(Explore(client), guild=discord.Object(id=763425801391308901))
