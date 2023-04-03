@@ -1,3 +1,4 @@
+import math
 import random
 import time
 from datetime import datetime
@@ -12,7 +13,7 @@ from Utils import utils
 
 class Explore(commands.Cog):
 
-    EXPLORE_TIME = 60 * 1 #20min
+    EXPLORE_TIME = 60 * 5 #20min
     ENCOUNTER_AMOUNT = 5
 
     def __init__(self, client: commands.Bot):
@@ -49,14 +50,14 @@ class Explore(commands.Cog):
         for i in range(0, len(encounters)):
             loot_sentence = str()
 
-            item = db.get_item_from_user_encounter_with_rel_id(idUser=user.get_userId(), idRel=encounters[i].get_id())
+            item = db.get_item_from_user_encounter_with_enc_id(idUser=user.get_userId(), idEncounter=encounters[i].get_id())
 
             if item:
                 #received a drop
                 print("Found item")
                 loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
 
-            embed.add_field(name=f"*After { self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
+            embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i) } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
 
         # generate new encounters
         for i in range(0, required_encounters - (len(encounters))):
@@ -67,17 +68,18 @@ class Explore(commands.Cog):
                 # we received an item drop!
                 all_item_ids = db.get_all_item_ids()
                 random_item_id = random.choice(all_item_ids)
+                item = db.get_item_from_item_id(random_item_id)
                 random_stats = self.calculate_random_stats()
-                db.add_item_to_user(idUser=user.get_userId(), idItem=random_item_id, random_stats=random_stats, level=0)
+                item.set_extra_value(random_stats)
 
-                #TODO: make the drop an item object to better reference it in the loot_sentence below + easier add it to the player inventory db methode
-                #TODO: Update the user_encounter idItem and bonus_stats !!!
+                db.add_item_to_user(idUser=user.get_userId(), item=item)
+                db.update_user_encounter_item(idEncounter=new_encounter.get_id(), item=item, idUser=user.get_userId())
 
-                #loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
+                loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
             else:
                 pass
 
-            embed.add_field(name=f"*After { self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * ( len(encounters) + i ) } minutes..*", value=new_encounter.get_description() + loot_sentence, inline=False)
+            embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * ( len(encounters) + i )) } minutes..*", value=new_encounter.get_description() + loot_sentence, inline=False)
 
         if not finished:
             embed.add_field(name=". . .", value="", inline=False)
@@ -95,7 +97,7 @@ class Explore(commands.Cog):
         # Keep the number within the range of 0-10
         number = max(0, min(10, number))
 
-        return number
+        return math.ceil(number)
 
 async def setup(client:commands.Bot) -> None:
     await client.add_cog(Explore(client), guild=discord.Object(id=763425801391308901))
