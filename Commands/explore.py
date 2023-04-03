@@ -87,16 +87,20 @@ class Explore(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     def calculate_random_stats(self):
-        mean = 3  # The center of the range (0-10)
-        std_deviation = 2  # Controls how spread out the distribution is
+        # 25% chance of triggering random stats
+        if 25 >= random.randint(0, 100):
+            mean = 3  # The center of the range (0-10)
+            std_deviation = 2  # Controls how spread out the distribution is
 
-        # Generate a random number using a Gaussian distribution
-        number = random.gauss(mean, std_deviation)
+            # Generate a random number using a Gaussian distribution
+            number = random.gauss(mean, std_deviation)
 
-        # Keep the number within the range of 0-10
-        number = max(0, min(10, number))
+            # Keep the number within the range of 0-10
+            number = max(0, min(10, number))
 
-        return math.ceil(number)
+            return math.ceil(number)
+        else:
+            return 0
 
 async def setup(client:commands.Bot) -> None:
     await client.add_cog(Explore(client), guild=discord.Object(id=763425801391308901))
