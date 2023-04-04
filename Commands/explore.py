@@ -51,13 +51,13 @@ class Explore(commands.Cog):
             loot_sentence = str()
 
             item = db.get_item_from_user_encounter_with_enc_id(idUser=user.get_userId(), idEncounter=encounters[i].get_id())
-            emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
 
             if item:
                 #received a drop
+                emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
                 loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
 
-            embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i) } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
+            embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i + 1) } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
 
         # generate new encounters
         for i in range(0, required_encounters - (len(encounters))):
@@ -81,7 +81,7 @@ class Explore(commands.Cog):
             else:
                 pass
 
-            embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * ( len(encounters) + i )) } minutes..*", value=new_encounter.get_description() + loot_sentence, inline=False)
+            embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * ( len(encounters) + i + 1 )) } minutes..*", value=new_encounter.get_description() + loot_sentence, inline=False)
 
         if not finished:
             embed.add_field(name=". . .", value="", inline=False)
