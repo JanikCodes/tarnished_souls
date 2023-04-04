@@ -2,7 +2,6 @@ import math
 import random
 import time
 from datetime import datetime
-
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -10,10 +9,11 @@ import db
 from Classes.encounter import Encounter
 from Classes.user import User
 from Utils import utils
+from discord.utils import get
 
 class Explore(commands.Cog):
 
-    EXPLORE_TIME = 60 * 5 #20min
+    EXPLORE_TIME = 60 * 20 #20min
     ENCOUNTER_AMOUNT = 5
 
     def __init__(self, client: commands.Bot):
@@ -51,10 +51,11 @@ class Explore(commands.Cog):
             loot_sentence = str()
 
             item = db.get_item_from_user_encounter_with_enc_id(idUser=user.get_userId(), idEncounter=encounters[i].get_id())
+            emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
 
             if item:
                 #received a drop
-                loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
+                loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
 
             embed.add_field(name=f"*After { math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i) } minutes..*", value=encounters[i].get_description() + loot_sentence, inline=False)
 
@@ -71,10 +72,12 @@ class Explore(commands.Cog):
                 random_stats = self.calculate_random_stats()
                 item.set_extra_value(random_stats)
 
+                emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
+
                 db.add_item_to_user(idUser=user.get_userId(), item=item)
                 db.update_user_encounter_item(idEncounter=new_encounter.get_id(), item=item, idUser=user.get_userId())
 
-                loot_sentence = f"\n **:grey_exclamation:Received:** `{item.get_name()}` {item.get_extra_value_text()}"
+                loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
             else:
                 pass
 

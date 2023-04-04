@@ -76,7 +76,7 @@
             "amount":8
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":3.5
    },
    {
@@ -156,7 +156,7 @@
             "amount":8
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":5.5
    },
    {
@@ -236,7 +236,7 @@
             "amount":14
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":2.5
    },
    {
@@ -316,7 +316,7 @@
             "amount":7
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":6
    },
    {
@@ -396,7 +396,7 @@
             "amount":8
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":4.5
    },
    {
@@ -476,7 +476,7 @@
             "amount":20
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":4.5
    },
    {
@@ -556,7 +556,7 @@
             "amount":16
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":3
    },
    {
@@ -636,7 +636,7 @@
             "amount":10
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":5.5
    },
    {
@@ -716,7 +716,7 @@
             "amount":8
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":4.5
    },
    {
@@ -804,7 +804,7 @@
             "amount":18
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":5.5
    },
    {
@@ -884,7 +884,7 @@
             "amount":9
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":4.5
    },
    {
@@ -960,7 +960,7 @@
             "amount":8
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":7.5
    },
    {
@@ -1040,7 +1040,7 @@
             "amount":15
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":5.5
    },
    {
@@ -1128,7 +1128,7 @@
             "amount":22
          }
       ],
-      "category":"Axe",
+      "category":"axe",
       "weight":8.5
    },
    {
@@ -1207,7 +1207,7 @@
             "amount":14
          }
       ],
-      "category":"Ballista",
+      "category":"ballista",
       "weight":10
    },
    {
@@ -1286,7 +1286,7 @@
             "amount":12
          }
       ],
-      "category":"Ballista",
+      "category":"ballista",
       "weight":15
    },
    {
@@ -1370,7 +1370,7 @@
             "amount":14
          }
       ],
-      "category":"Bow",
+      "category":"bow",
       "weight":4
    },
    {
@@ -1454,7 +1454,7 @@
             "amount":18
          }
       ],
-      "category":"Bow",
+      "category":"bow",
       "weight":4.5
    },
    {
@@ -1546,7 +1546,7 @@
             "amount":14
          }
       ],
-      "category":"Bow",
+      "category":"bow",
       "weight":4
    },
    {
@@ -1634,7 +1634,7 @@
             "amount":12
          }
       ],
-      "category":"Bow",
+      "category":"bow",
       "weight":4.5
    },
    {
@@ -1726,7 +1726,7 @@
             "amount":11
          }
       ],
-      "category":"Bow",
+      "category":"bow",
       "weight":3.5
    },
    {
@@ -1810,7 +1810,7 @@
             "amount":11
          }
       ],
-      "category":"Bow",
+      "category":"bow",
       "weight":5
    },
    {
@@ -1894,7 +1894,7 @@
             "amount":20
          }
       ],
-      "category":"Bow",
+      "category":"bow",
       "weight":4
    },
    {
@@ -1974,7 +1974,7 @@
             "amount":15
          }
       ],
-      "category":"Claw",
+      "category":"claw",
       "weight":3
    },
    {
@@ -2054,7 +2054,7 @@
             "amount":9
          }
       ],
-      "category":"Claw",
+      "category":"claw",
       "weight":2.5
    },
    {
@@ -2134,7 +2134,7 @@
             "amount":14
          }
       ],
-      "category":"Claw",
+      "category":"claw",
       "weight":2
    },
    {
@@ -2214,7 +2214,7 @@
             "amount":14
          }
       ],
-      "category":"Claw",
+      "category":"claw",
       "weight":1.5
    },
    {
@@ -2294,7 +2294,7 @@
             "amount":10
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":22
    },
    {
@@ -2374,7 +2374,7 @@
             "amount":12
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":23
    },
    {
@@ -2454,7 +2454,7 @@
             "amount":10
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":19
    },
    {
@@ -2542,7 +2542,7 @@
             "amount":20
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":22
    },
    {
@@ -2622,7 +2622,7 @@
             "amount":11
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":15.5
    },
    {
@@ -2710,7 +2710,7 @@
             "amount":22
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":20
    },
    {
@@ -2798,7 +2798,7 @@
             "amount":20
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":17.5
    },
    {
@@ -2878,7 +2878,7 @@
             "amount":14
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":21
    },
    {
@@ -2958,7 +2958,7 @@
             "amount":16
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":23
    },
    {
@@ -3046,7 +3046,7 @@
             "amount":15
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":20
    },
    {
@@ -3134,7 +3134,7 @@
             "amount":18
          }
       ],
-      "category":"Colossal Sword",
+      "category":"colossal_sword",
       "weight":18
    },
    {
@@ -3214,7 +3214,7 @@
             "amount":10
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":19
    },
    {
@@ -3286,7 +3286,7 @@
             "amount":28
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":19.5
    },
    {
@@ -3358,7 +3358,7 @@
             "amount":35
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":17
    },
    {
@@ -3438,7 +3438,7 @@
             "amount":8
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":23.5
    },
    {
@@ -3518,7 +3518,7 @@
             "amount":10
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":20
    },
    {
@@ -3598,7 +3598,7 @@
             "amount":14
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":18
    },
    {
@@ -3678,7 +3678,7 @@
             "amount":14
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":16
    },
    {
@@ -3766,7 +3766,7 @@
             "amount":20
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":21.5
    },
    {
@@ -3838,7 +3838,7 @@
             "amount":34
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":20
    },
    {
@@ -3918,7 +3918,7 @@
             "amount":18
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":19
    },
    {
@@ -3990,7 +3990,7 @@
             "amount":60
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":26.5
    },
    {
@@ -4070,7 +4070,7 @@
             "amount":14
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":21.5
    },
    {
@@ -4158,7 +4158,7 @@
             "amount":10
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":16
    },
    {
@@ -4238,7 +4238,7 @@
             "amount":8
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":18
    },
    {
@@ -4318,7 +4318,7 @@
             "amount":10
          }
       ],
-      "category":"Colossal Weapon",
+      "category":"colossal_weapon",
       "weight":20
    },
    {
@@ -4397,7 +4397,7 @@
             "amount":8
          }
       ],
-      "category":"Crossbow",
+      "category":"crossbow",
       "weight":3.5
    },
    {
@@ -4476,7 +4476,7 @@
             "amount":8
          }
       ],
-      "category":"Crossbow",
+      "category":"crossbow",
       "weight":4
    },
    {
@@ -4555,7 +4555,7 @@
             "amount":10
          }
       ],
-      "category":"Crossbow",
+      "category":"crossbow",
       "weight":5.5
    },
    {
@@ -4634,7 +4634,7 @@
             "amount":16
          }
       ],
-      "category":"Crossbow",
+      "category":"crossbow",
       "weight":4
    },
    {
@@ -4717,7 +4717,7 @@
             "amount":14
          }
       ],
-      "category":"Crossbow",
+      "category":"crossbow",
       "weight":4
    },
    {
@@ -4805,7 +4805,7 @@
             "amount":16
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":11.5
    },
    {
@@ -4885,7 +4885,7 @@
             "amount":16
          }
       ],
-      "category":"Crossbow",
+      "category":"crossbow",
       "weight":5
    },
    {
@@ -4964,7 +4964,7 @@
             "amount":12
          }
       ],
-      "category":"Crossbow",
+      "category":"crossbow",
       "weight":6
    },
    {
@@ -5044,7 +5044,7 @@
             "amount":17
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":11.5
    },
    {
@@ -5124,7 +5124,7 @@
             "amount":16
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":10
    },
    {
@@ -5212,7 +5212,7 @@
             "amount":18
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":15
    },
    {
@@ -5292,7 +5292,7 @@
             "amount":16
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":11.5
    },
    {
@@ -5372,7 +5372,7 @@
             "amount":18
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":9
    },
    {
@@ -5452,7 +5452,7 @@
             "amount":18
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":9
    },
    {
@@ -5532,7 +5532,7 @@
             "amount":14
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":16.5
    },
    {
@@ -5620,7 +5620,7 @@
             "amount":17
          }
       ],
-      "category":"Curved Greatsword",
+      "category":"curved_greatsword",
       "weight":7.5
    },
    {
@@ -5700,7 +5700,7 @@
             "amount":13
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":3.5
    },
    {
@@ -5780,7 +5780,7 @@
             "amount":13
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":3.5
    },
    {
@@ -5860,7 +5860,7 @@
             "amount":11
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":4
    },
    {
@@ -5940,7 +5940,7 @@
             "amount":19
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":2
    },
    {
@@ -6028,7 +6028,7 @@
             "amount":16
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":4
    },
    {
@@ -6108,7 +6108,7 @@
             "amount":17
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":3.5
    },
    {
@@ -6196,7 +6196,7 @@
             "amount":20
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":2.5
    },
    {
@@ -6284,7 +6284,7 @@
             "amount":30
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":3
    },
    {
@@ -6364,7 +6364,7 @@
             "amount":9
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":4
    },
    {
@@ -6444,7 +6444,7 @@
             "amount":14
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":3.5
    },
    {
@@ -6524,7 +6524,7 @@
             "amount":12
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":4
    },
    {
@@ -6604,7 +6604,7 @@
             "amount":13
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":3
    },
    {
@@ -6684,7 +6684,7 @@
             "amount":15
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":3.5
    },
    {
@@ -6764,7 +6764,7 @@
             "amount":9
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":1.5
    },
    {
@@ -6844,7 +6844,7 @@
             "amount":12
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":4.5
    },
    {
@@ -6932,7 +6932,7 @@
             "amount":18
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2
    },
    {
@@ -7012,7 +7012,7 @@
             "amount":14
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":1.5
    },
    {
@@ -7092,7 +7092,7 @@
             "amount":12
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2
    },
    {
@@ -7180,7 +7180,7 @@
             "amount":13
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2.5
    },
    {
@@ -7268,7 +7268,7 @@
             "amount":9
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2
    },
    {
@@ -7348,7 +7348,7 @@
             "amount":11
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":1.5
    },
    {
@@ -7436,7 +7436,7 @@
             "amount":16
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":1.5
    },
    {
@@ -7516,7 +7516,7 @@
             "amount":12
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2.5
    },
    {
@@ -7596,7 +7596,7 @@
             "amount":12
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":1.5
    },
    {
@@ -7676,7 +7676,7 @@
             "amount":13
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":3
    },
    {
@@ -7756,7 +7756,7 @@
             "amount":10
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":3.5
    },
    {
@@ -7844,7 +7844,7 @@
             "amount":13
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2
    },
    {
@@ -7932,7 +7932,7 @@
             "amount":14
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2
    },
    {
@@ -8020,7 +8020,7 @@
             "amount":15
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":1.5
    },
    {
@@ -8100,7 +8100,7 @@
             "amount":12
          }
       ],
-      "category":"Dagger",
+      "category":"dagger",
       "weight":2
    },
    {
@@ -8180,7 +8180,7 @@
             "amount":10
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":2
    },
    {
@@ -8260,7 +8260,7 @@
             "amount":8
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":1.5
    },
    {
@@ -8348,7 +8348,7 @@
             "amount":16
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":2.5
    },
    {
@@ -8428,7 +8428,7 @@
             "amount":8
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":2.5
    },
    {
@@ -8508,7 +8508,7 @@
             "amount":8
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":3
    },
    {
@@ -8588,7 +8588,7 @@
             "amount":10
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":2.5
    },
    {
@@ -8676,7 +8676,7 @@
             "amount":16
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":2.5
    },
    {
@@ -8748,7 +8748,7 @@
             "amount":30
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":0
    },
    {
@@ -8828,7 +8828,7 @@
             "amount":12
          }
       ],
-      "category":"Fist",
+      "category":"fist",
       "weight":4
    },
    {
@@ -8908,7 +8908,7 @@
             "amount":24
          }
       ],
-      "category":"Flail",
+      "category":"flail",
       "weight":6
    },
    {
@@ -8988,7 +8988,7 @@
             "amount":18
          }
       ],
-      "category":"Flail",
+      "category":"flail",
       "weight":5
    },
    {
@@ -9076,7 +9076,7 @@
             "amount":16
          }
       ],
-      "category":"Flail",
+      "category":"flail",
       "weight":5.5
    },
    {
@@ -9164,7 +9164,7 @@
             "amount":22
          }
       ],
-      "category":"Flail",
+      "category":"flail",
       "weight":5.5
    },
    {
@@ -9248,7 +9248,7 @@
             "amount":10
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":3
    },
    {
@@ -9332,7 +9332,7 @@
             "amount":48
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":4.5
    },
    {
@@ -9412,7 +9412,7 @@
             "amount":12
          }
       ],
-      "category":"Flail",
+      "category":"flail",
       "weight":8
    },
    {
@@ -9504,7 +9504,7 @@
             "amount":14
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":2.5
    },
    {
@@ -9588,7 +9588,7 @@
             "amount":10
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":3
    },
    {
@@ -9680,7 +9680,7 @@
             "amount":60
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":3
    },
    {
@@ -9764,7 +9764,7 @@
             "amount":16
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":3
    },
    {
@@ -9848,7 +9848,7 @@
             "amount":12
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":4.5
    },
    {
@@ -9936,7 +9936,7 @@
             "amount":18
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":3
    },
    {
@@ -10024,7 +10024,7 @@
             "amount":12
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":2.5
    },
    {
@@ -10112,7 +10112,7 @@
             "amount":12
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":2.5
    },
    {
@@ -10196,7 +10196,7 @@
             "amount":28
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":3
    },
    {
@@ -10284,7 +10284,7 @@
             "amount":8
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":3
    },
    {
@@ -10368,7 +10368,7 @@
             "amount":52
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":4
    },
    {
@@ -10452,7 +10452,7 @@
             "amount":52
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":4
    },
    {
@@ -10536,7 +10536,7 @@
             "amount":18
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":4.5
    },
    {
@@ -10620,7 +10620,7 @@
             "amount":12
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":4.5
    },
    {
@@ -10704,7 +10704,7 @@
             "amount":48
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":4.5
    },
    {
@@ -10784,7 +10784,7 @@
             "amount":8
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":13
    },
    {
@@ -10864,7 +10864,7 @@
             "amount":12
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":11
    },
    {
@@ -10956,7 +10956,7 @@
             "amount":14
          }
       ],
-      "category":"Glintstone Staff",
+      "category":"glintstone_staff",
       "weight":2.5
    },
    {
@@ -11036,7 +11036,7 @@
             "amount":15
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":12.5
    },
    {
@@ -11116,7 +11116,7 @@
             "amount":22
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":11
    },
    {
@@ -11196,7 +11196,7 @@
             "amount":8
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":12.5
    },
    {
@@ -11276,7 +11276,7 @@
             "amount":8
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":15
    },
    {
@@ -11356,7 +11356,7 @@
             "amount":9
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":12.5
    },
    {
@@ -11436,7 +11436,7 @@
             "amount":20
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":11
    },
    {
@@ -11516,7 +11516,7 @@
             "amount":20
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":8.5
    },
    {
@@ -11596,7 +11596,7 @@
             "amount":8
          }
       ],
-      "category":"Greataxe",
+      "category":"greataxe",
       "weight":0
    },
    {
@@ -11680,7 +11680,7 @@
             "amount":18
          }
       ],
-      "category":"Greatbow",
+      "category":"great_bow",
       "weight":9.5
    },
    {
@@ -11772,7 +11772,7 @@
             "amount":14
          }
       ],
-      "category":"Greatbow",
+      "category":"great_bow",
       "weight":11
    },
    {
@@ -11856,12 +11856,12 @@
             "amount":18
          }
       ],
-      "category":"Greatbow",
+      "category":"great_bow",
       "weight":14.5
    },
    {
       "id":"17f6967c4f3l0i1p3l1xull5qamw2",
-      "name":"Greatbow",
+      "name":"great_bow",
       "image":"https://eldenring.fanapis.com/images/weapons/17f6967c4f3l0i1p3l1xull5qamw2.png",
       "description":"Enormous greatbow larger than any man. Can not be drawn with any ordinary level of strength, but the force of its shots is extraordinary. A greatbow can only fire great arrows.",
       "attack":[
@@ -11940,7 +11940,7 @@
             "amount":20
          }
       ],
-      "category":"Greatbow",
+      "category":"great_bow",
       "weight":10
    },
    {
@@ -12028,7 +12028,7 @@
             "amount":14
          }
       ],
-      "category":"Great Spear",
+      "category":"great_spear",
       "weight":10
    },
    {
@@ -12120,7 +12120,7 @@
             "amount":20
          }
       ],
-      "category":"Great Spear",
+      "category":"great_spear",
       "weight":10
    },
    {
@@ -12208,7 +12208,7 @@
             "amount":18
          }
       ],
-      "category":"Great Spear",
+      "category":"great_spear",
       "weight":8
    },
    {
@@ -12284,7 +12284,7 @@
             "amount":0
          }
       ],
-      "category":"Great Spear",
+      "category":"great_spear",
       "weight":12
    },
    {
@@ -12364,7 +12364,7 @@
             "amount":14
          }
       ],
-      "category":"Great Spear",
+      "category":"great_spear",
       "weight":9
    },
    {
@@ -12456,7 +12456,7 @@
             "amount":18
          }
       ],
-      "category":"Great Spear",
+      "category":"great_spear",
       "weight":9.5
    },
    {
@@ -12536,7 +12536,7 @@
             "amount":10
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":9
    },
    {
@@ -12616,7 +12616,7 @@
             "amount":16
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":9
    },
    {
@@ -12696,7 +12696,7 @@
             "amount":10
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":12
    },
    {
@@ -12776,7 +12776,7 @@
             "amount":10
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":9
    },
    {
@@ -12856,7 +12856,7 @@
             "amount":12
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":10
    },
    {
@@ -12936,7 +12936,7 @@
             "amount":14
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":10
    },
    {
@@ -13024,7 +13024,7 @@
             "amount":15
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":12
    },
    {
@@ -13112,7 +13112,7 @@
             "amount":18
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":8
    },
    {
@@ -13184,7 +13184,7 @@
             "amount":17
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":10
    },
    {
@@ -13272,7 +13272,7 @@
             "amount":38
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":10
    },
    {
@@ -13363,7 +13363,7 @@
             "amount":22
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":11
    },
    {
@@ -13451,7 +13451,7 @@
             "amount":22
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":11.5
    },
    {
@@ -13539,7 +13539,7 @@
             "amount":21
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":13.5
    },
    {
@@ -13627,7 +13627,7 @@
             "amount":23
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":11.5
    },
    {
@@ -13707,7 +13707,7 @@
             "amount":19
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":10
    },
    {
@@ -13795,7 +13795,7 @@
             "amount":18
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":10
    },
    {
@@ -13875,7 +13875,7 @@
             "amount":13
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":9
    },
    {
@@ -13955,7 +13955,7 @@
             "amount":10
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":11.5
    },
    {
@@ -14043,7 +14043,7 @@
             "amount":11
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":8.5
    },
    {
@@ -14131,7 +14131,7 @@
             "amount":22
          }
       ],
-      "category":"Greatsword",
+      "category":"greatsword",
       "weight":11.5
    },
    {
@@ -14211,7 +14211,7 @@
             "amount":13
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":7
    },
    {
@@ -14291,7 +14291,7 @@
             "amount":12
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":8
    },
    {
@@ -14371,7 +14371,7 @@
             "amount":12
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":7
    },
    {
@@ -14451,7 +14451,7 @@
             "amount":12
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":8
    },
    {
@@ -14531,7 +14531,7 @@
             "amount":14
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":11.5
    },
    {
@@ -14603,7 +14603,7 @@
             "amount":12
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":8.5
    },
    {
@@ -14683,7 +14683,7 @@
             "amount":10
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":12
    },
    {
@@ -14755,7 +14755,7 @@
             "amount":15
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":8
    },
    {
@@ -14843,7 +14843,7 @@
             "amount":12
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":13.5
    },
    {
@@ -14923,7 +14923,7 @@
             "amount":15
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":10
    },
    {
@@ -15011,7 +15011,7 @@
             "amount":20
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":10
    },
    {
@@ -15091,7 +15091,7 @@
             "amount":16
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":9
    },
    {
@@ -15171,7 +15171,7 @@
             "amount":10
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":10.5
    },
    {
@@ -15251,7 +15251,7 @@
             "amount":16
          }
       ],
-      "category":"Curved Sword",
+      "category":"curved_sword",
       "weight":8
    },
    {
@@ -15331,7 +15331,7 @@
             "amount":10
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":12
    },
    {
@@ -15411,7 +15411,7 @@
             "amount":7
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":4.5
    },
    {
@@ -15499,7 +15499,7 @@
             "amount":22
          }
       ],
-      "category":"Halberd",
+      "category":"halberd",
       "weight":12
    },
    {
@@ -15579,7 +15579,7 @@
             "amount":7
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":5
    },
    {
@@ -15659,7 +15659,7 @@
             "amount":9
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":2.5
    },
    {
@@ -15731,7 +15731,7 @@
             "amount":10
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":3.5
    },
    {
@@ -15811,12 +15811,12 @@
             "amount":7
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":5
    },
    {
       "id":"17f69a22461l0i1pcneoqys4gxbav",
-      "name":"Hammer",
+      "name":"hammer",
       "image":"https://eldenring.fanapis.com/images/weapons/17f69a22461l0i1pcneoqys4gxbav.png",
       "description":"Hammer comprised of a large stone affixed to a metal handle. Originally a blacksmith's tool.  The art of smithing is said to have originated among the giants. This weapon's striking attacks boast ample weight behind them.",
       "attack":[
@@ -15891,7 +15891,7 @@
             "amount":7
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":6.5
    },
    {
@@ -15979,7 +15979,7 @@
             "amount":24
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":2
    },
    {
@@ -16059,7 +16059,7 @@
             "amount":8
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":5
    },
    {
@@ -16139,7 +16139,7 @@
             "amount":13
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":6
    },
    {
@@ -16211,7 +16211,7 @@
             "amount":10
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":4
    },
    {
@@ -16299,7 +16299,7 @@
             "amount":21
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":4.5
    },
    {
@@ -16379,7 +16379,7 @@
             "amount":7
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":6.5
    },
    {
@@ -16459,7 +16459,7 @@
             "amount":7
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":4.5
    },
    {
@@ -16539,7 +16539,7 @@
             "amount":8
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":7
    },
    {
@@ -16611,7 +16611,7 @@
             "amount":20
          }
       ],
-      "category":"Hammer",
+      "category":"hammer",
       "weight":6
    },
    {
@@ -16699,7 +16699,7 @@
             "amount":17
          }
       ],
-      "category":"Heavy Thrusting Sword",
+      "category":"heavy_thrusting_sword",
       "weight":8
    },
    {
@@ -16779,7 +16779,7 @@
             "amount":16
          }
       ],
-      "category":"Heavy Thrusting Sword",
+      "category":"heavy_thrusting_sword",
       "weight":6.5
    },
    {
@@ -16859,7 +16859,7 @@
             "amount":17
          }
       ],
-      "category":"Heavy Thrusting Sword",
+      "category":"heavy_thrusting_sword",
       "weight":7
    },
    {
@@ -16939,7 +16939,7 @@
             "amount":37
          }
       ],
-      "category":"Heavy Thrusting Sword",
+      "category":"heavy_thrusting_sword",
       "weight":8
    },
    {
@@ -17019,7 +17019,7 @@
             "amount":15
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":5.5
    },
    {
@@ -17099,7 +17099,7 @@
             "amount":22
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":7
    },
    {
@@ -17179,7 +17179,7 @@
             "amount":48
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":7
    },
    {
@@ -17267,7 +17267,7 @@
             "amount":18
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":7.5
    },
    {
@@ -17355,7 +17355,7 @@
             "amount":20
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":6.5
    },
    {
@@ -17443,7 +17443,7 @@
             "amount":23
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":6.5
    },
    {
@@ -17523,7 +17523,7 @@
             "amount":20
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":5.5
    },
    {
@@ -17603,7 +17603,7 @@
             "amount":22
          }
       ],
-      "category":"Katana",
+      "category":"katana",
       "weight":6
    },
    {
@@ -17687,7 +17687,7 @@
             "amount":10
          }
       ],
-      "category":"Light Bow",
+      "category":"light_bow",
       "weight":2.5
    },
    {
@@ -17771,7 +17771,7 @@
             "amount":8
          }
       ],
-      "category":"Light Bow",
+      "category":"light_bow",
       "weight":3
    },
    {
@@ -17855,7 +17855,7 @@
             "amount":16
          }
       ],
-      "category":"Light Bow",
+      "category":"light_bow",
       "weight":2.5
    },
    {
@@ -17939,7 +17939,7 @@
             "amount":9
          }
       ],
-      "category":"Light Bow",
+      "category":"light_bow",
       "weight":2
    },
    {
@@ -18023,7 +18023,7 @@
             "amount":15
          }
       ],
-      "category":"Light Bow",
+      "category":"light_bow",
       "weight":3
    },
    {
@@ -18103,7 +18103,7 @@
             "amount":14
          }
       ],
-      "category":"Reaper",
+      "category":"reaper",
       "weight":7.5
    },
    {
@@ -18175,7 +18175,7 @@
             "amount":17
          }
       ],
-      "category":"Reaper",
+      "category":"reaper",
       "weight":9.5
    },
    {
@@ -18263,7 +18263,7 @@
             "amount":15
          }
       ],
-      "category":"Reaper",
+      "category":"reaper",
       "weight":8.5
    },
    {
@@ -18351,7 +18351,7 @@
             "amount":24
          }
       ],
-      "category":"Reaper",
+      "category":"reaper",
       "weight":7.5
    },
    {
@@ -18435,7 +18435,7 @@
             "amount":10
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":1.5
    },
    {
@@ -18519,7 +18519,7 @@
             "amount":27
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":1.5
    },
    {
@@ -18599,7 +18599,7 @@
             "amount":14
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":1.5
    },
    {
@@ -18683,7 +18683,7 @@
             "amount":10
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":1.5
    },
    {
@@ -18767,7 +18767,7 @@
             "amount":17
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":0
    },
    {
@@ -18843,7 +18843,7 @@
             "amount":40
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":0
    },
    {
@@ -18919,7 +18919,7 @@
             "amount":40
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":0
    },
    {
@@ -19003,7 +19003,7 @@
             "amount":10
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":0
    },
    {
@@ -19091,7 +19091,7 @@
             "amount":10
          }
       ],
-      "category":"Sacred Seal",
+      "category":"sacred_seal",
       "weight":0
    },
    {
@@ -19171,7 +19171,7 @@
             "amount":15
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":4.5
    },
    {
@@ -19251,7 +19251,7 @@
             "amount":10
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":4
    },
    {
@@ -19339,7 +19339,7 @@
             "amount":16
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":5.5
    },
    {
@@ -19427,7 +19427,7 @@
             "amount":0
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":5.5
    },
    {
@@ -19507,7 +19507,7 @@
             "amount":12
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":6.5
    },
    {
@@ -19587,7 +19587,7 @@
             "amount":14
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":5
    },
    {
@@ -19667,7 +19667,7 @@
             "amount":16
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":5.5
    },
    {
@@ -19747,7 +19747,7 @@
             "amount":14
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":7.5
    },
    {
@@ -19831,7 +19831,7 @@
             "amount":15
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":6
    },
    {
@@ -19911,7 +19911,7 @@
             "amount":40
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":8.5
    },
    {
@@ -19991,7 +19991,7 @@
             "amount":20
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":8
    },
    {
@@ -20079,7 +20079,7 @@
             "amount":18
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":6.5
    },
    {
@@ -20167,7 +20167,7 @@
             "amount":16
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":7.5
    },
    {
@@ -20239,7 +20239,7 @@
             "amount":14
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":6
    },
    {
@@ -20327,7 +20327,7 @@
             "amount":16
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":5.5
    },
    {
@@ -20407,7 +20407,7 @@
             "amount":11
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":4.5
    },
    {
@@ -20487,7 +20487,7 @@
             "amount":10
          }
       ],
-      "category":"Spear",
+      "category":"spear",
       "weight":4.5
    },
    {
@@ -20567,7 +20567,7 @@
             "amount":10
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3.5
    },
    {
@@ -20647,7 +20647,7 @@
             "amount":10
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3
    },
    {
@@ -20727,7 +20727,7 @@
             "amount":10
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":4
    },
    {
@@ -20807,7 +20807,7 @@
             "amount":10
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3.5
    },
    {
@@ -20887,7 +20887,7 @@
             "amount":10
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3
    },
    {
@@ -20975,7 +20975,7 @@
             "amount":14
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3.5
    },
    {
@@ -21055,7 +21055,7 @@
             "amount":14
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3
    },
    {
@@ -21127,7 +21127,7 @@
             "amount":20
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":2.5
    },
    {
@@ -21230,7 +21230,7 @@
             "amount":24
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":4
    },
    {
@@ -21318,7 +21318,7 @@
             "amount":18
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":4
    },
    {
@@ -21406,7 +21406,7 @@
             "amount":15
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":4.5
    },
    {
@@ -21501,7 +21501,7 @@
             "amount":14
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3
    },
    {
@@ -21589,7 +21589,7 @@
             "amount":16
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3.5
    },
    {
@@ -21669,7 +21669,7 @@
             "amount":11
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":2.5
    },
    {
@@ -21741,7 +21741,7 @@
             "amount":12
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":5.5
    },
    {
@@ -21813,7 +21813,7 @@
             "amount":8
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3.5
    },
    {
@@ -21893,7 +21893,7 @@
             "amount":16
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3
    },
    {
@@ -21981,7 +21981,7 @@
             "amount":15
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":4.5
    },
    {
@@ -22053,7 +22053,7 @@
             "amount":8
          }
       ],
-      "category":"Straight Sword",
+      "category":"straight_sword",
       "weight":3.5
    },
    {
@@ -22133,7 +22133,7 @@
             "amount":13
          }
       ],
-      "category":"Thrusting Sword",
+      "category":"thrusting_sword",
       "weight":4.5
    },
    {
@@ -22213,7 +22213,7 @@
             "amount":12
          }
       ],
-      "category":"Thrusting Sword",
+      "category":"thrusting_sword",
       "weight":2.5
    },
    {
@@ -22293,7 +22293,7 @@
             "amount":11
          }
       ],
-      "category":"Thrusting Sword",
+      "category":"thrusting_sword",
       "weight":4
    },
    {
@@ -22373,7 +22373,7 @@
             "amount":17
          }
       ],
-      "category":"Thrusting Sword",
+      "category":"thrusting_sword",
       "weight":3.5
    },
    {
@@ -22453,7 +22453,7 @@
             "amount":20
          }
       ],
-      "category":"Thrusting Sword",
+      "category":"thrusting_sword",
       "weight":3
    },
    {
@@ -22533,12 +22533,12 @@
             "amount":18
          }
       ],
-      "category":"Thrusting Sword",
+      "category":"thrusting_sword",
       "weight":2.5
    },
    {
       "id":"17f69a2e19cl0i1pp06n0kd7rxesjl",
-      "name":"Torch",
+      "name":"torch",
       "image":"https://eldenring.fanapis.com/images/weapons/17f69a2e19cl0i1pp06n0kd7rxesjl.png",
       "description":"This torch's tip is wrapped in oil-soaked rags and set on fire. The flame can illuminate dark locales, or used to attack enemies. Can be raised up when equipped in the left hand, illuminating more of the surrounding area.",
       "attack":[
@@ -22613,7 +22613,7 @@
             "amount":5
          }
       ],
-      "category":"Torch",
+      "category":"torch",
       "weight":1.5
    },
    {
@@ -22693,7 +22693,7 @@
             "amount":10
          }
       ],
-      "category":"Thrusting Sword",
+      "category":"thrusting_sword",
       "weight":3.5
    },
    {
@@ -22773,7 +22773,7 @@
             "amount":8
          }
       ],
-      "category":"Torch",
+      "category":"torch",
       "weight":3
    },
    {
@@ -22861,7 +22861,7 @@
             "amount":14
          }
       ],
-      "category":"Torch",
+      "category":"torch",
       "weight":3
    },
    {
@@ -22949,7 +22949,7 @@
             "amount":14
          }
       ],
-      "category":"Torch",
+      "category":"torch",
       "weight":2.5
    },
    {
@@ -23029,7 +23029,7 @@
             "amount":8
          }
       ],
-      "category":"Torch",
+      "category":"torch",
       "weight":2.5
    },
    {
@@ -23117,7 +23117,7 @@
             "amount":15
          }
       ],
-      "category":"Torch",
+      "category":"torch",
       "weight":5
    },
    {
@@ -23197,7 +23197,7 @@
             "amount":22
          }
       ],
-      "category":"Twinblade",
+      "category":"twinblade",
       "weight":8
    },
    {
@@ -23277,7 +23277,7 @@
             "amount":18
          }
       ],
-      "category":"Twinblade",
+      "category":"twinblade",
       "weight":8
    },
    {
@@ -23365,7 +23365,7 @@
             "amount":19
          }
       ],
-      "category":"Twinblade",
+      "category":"twinblade",
       "weight":6
    },
    {
@@ -23445,7 +23445,7 @@
             "amount":15
          }
       ],
-      "category":"Twinblade",
+      "category":"twinblade",
       "weight":8.5
    },
    {
@@ -23533,7 +23533,7 @@
             "amount":22
          }
       ],
-      "category":"Twinblade",
+      "category":"twinblade",
       "weight":8.5
    },
    {
@@ -23605,7 +23605,7 @@
             "amount":22
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":8.5
    },
    {
@@ -23685,7 +23685,7 @@
             "amount":10
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":10
    },
    {
@@ -23765,7 +23765,7 @@
             "amount":8
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":10
    },
    {
@@ -23837,7 +23837,7 @@
             "amount":28
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":11.5
    },
    {
@@ -23917,7 +23917,7 @@
             "amount":10
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":10
    },
    {
@@ -23997,7 +23997,7 @@
             "amount":12
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":8.5
    },
    {
@@ -24085,7 +24085,7 @@
             "amount":18
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":9
    },
    {
@@ -24165,7 +24165,7 @@
             "amount":18
          }
       ],
-      "category":"Twinblade",
+      "category":"twinblade",
       "weight":7
    },
    {
@@ -24253,7 +24253,7 @@
             "amount":18
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":9.5
    },
    {
@@ -24333,7 +24333,7 @@
             "amount":10
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":10
    },
    {
@@ -24421,7 +24421,7 @@
             "amount":22
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":12.5
    },
    {
@@ -24501,7 +24501,7 @@
             "amount":12
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":10
    },
    {
@@ -24589,7 +24589,7 @@
             "amount":25
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":11.5
    },
    {
@@ -24661,7 +24661,7 @@
             "amount":31
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":12.5
    },
    {
@@ -24741,7 +24741,7 @@
             "amount":14
          }
       ],
-      "category":"Whip",
+      "category":"whip",
       "weight":2
    },
    {
@@ -24821,7 +24821,7 @@
             "amount":8
          }
       ],
-      "category":"Warhammer",
+      "category":"warhammer",
       "weight":10
    },
    {
@@ -24901,7 +24901,7 @@
             "amount":16
          }
       ],
-      "category":"Whip",
+      "category":"whip",
       "weight":2.5
    },
    {
@@ -24989,7 +24989,7 @@
             "amount":18
          }
       ],
-      "category":"Whip",
+      "category":"whip",
       "weight":2.5
    },
    {
@@ -25069,7 +25069,7 @@
             "amount":20
          }
       ],
-      "category":"Whip",
+      "category":"whip",
       "weight":3.5
    },
    {
@@ -25157,7 +25157,7 @@
             "amount":21
          }
       ],
-      "category":"Whip",
+      "category":"whip",
       "weight":2.5
    },
    {
@@ -25237,7 +25237,7 @@
             "amount":19
          }
       ],
-      "category":"Whip",
+      "category":"whip",
       "weight":3
    }
 ]
