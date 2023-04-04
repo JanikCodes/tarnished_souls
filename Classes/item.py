@@ -1,3 +1,6 @@
+import discord_colorize
+
+import Utils.utils
 import db
 
 class Item:
@@ -17,6 +20,7 @@ class Item:
         self.price = price
         self.level = 0
         self.extra_value = 0
+        self.count = 0
         self.value = value
         self.obtainable = obtainable
         self.weight = weight
@@ -27,6 +31,9 @@ class Item:
 
     def get_name(self):
         return self.name
+
+    def get_total_value(self):
+        return self.value + self.extra_value
 
     def get_iconCategory(self):
         return self.iconCategory
@@ -76,6 +83,9 @@ class Item:
     def get_weight(self):
         return self.weight
 
+    def get_count(self):
+        return self.count
+
     def get_extra_value_text(self):
         if self.extra_value == 0:
             return str()
@@ -89,3 +99,37 @@ class Item:
 
     def set_extra_value(self, extra_value):
         self.extra_value = extra_value
+
+    def set_count(self, count):
+        self.count = count
+
+    def get_requirement_text(self, user):
+
+        def get_requirement_check_icon(req, cur):
+            if cur < req:
+                return f":red_circle: "
+            else:
+                return f":green_circle: "
+
+
+        text = str()
+
+        if self.reqVigor > 0:
+            text += f"`Vig: {self.reqVigor}` "
+        if self.reqMind > 0:
+            text += f"`Min: {self.reqMind}` "
+        if self.reqEndurance > 0:
+            text += f"`End: {self.reqEndurance}` "
+        if self.reqStrength > 0:
+            text += f"`Str: {self.reqStrength}` "
+        if self.reqDexterity > 0:
+            text += f"`Dex: {self.reqDexterity}` "
+        if self.reqIntelligence > 0:
+            text += f"`Int: {self.reqIntelligence}` "
+        if self.reqFaith > 0:
+            text += f"`Fai: {self.reqFaith}` "
+        if self.reqArcane > 0:
+            text += f"`Arc: {self.reqArcane}` "
+
+        return text
+

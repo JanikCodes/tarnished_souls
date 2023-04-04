@@ -239,3 +239,19 @@ def update_user_encounter_item(idEncounter, item, idUser):
         sql = f"UPDATE user_encounter r SET r.idItem = {item.get_idItem()}, r.extra = {item.get_extra_value()} WHERE r.idEncounter = {idEncounter} AND r.idUser = {idUser};"
         cursor.execute(sql)
         mydb.commit()
+
+def get_items_from_user_id_with_type(idUser, type):
+    items = []
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}';"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            item = Item(idItem=row[0], name=row[1], iconCategory=row[2], item_type=row[3], reqVigor=row[4], reqMind=row[5], reqEndurance=row[6], reqStrength=row[7], reqDexterity=row[8], reqIntelligence=row[9], reqFaith=row[10], reqArcane=row[11], value=row[12], price=row[13], obtainable=row[14], weight=row[15])
+            item.set_level(row[16])
+            item.set_count(row[17])
+            item.set_extra_value(row[18])
+            items.append(item)
+        return items
+    else:
+        return None
