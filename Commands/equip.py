@@ -59,7 +59,9 @@ class Equip(commands.Cog):
             embed = discord.Embed(title=f"**{item.get_name()}**",
                                   description=f"Do you want to equip this item?",
                                   colour=discord.Color.orange())
-            embed.set_thumbnail(url=f"{item.get_icon_url()}")
+
+            if item.get_icon_url() is not None and item.get_icon_url() != 'None':
+                embed.set_thumbnail(url=f"{item.get_icon_url()}")
 
             value_name = str()
 

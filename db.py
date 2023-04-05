@@ -17,6 +17,7 @@ async def init_database():
         password=config.botConfig["password"],
         port=config.botConfig["port"],
         database=config.botConfig["database"],
+        charset='utf8mb4'
     )
 
     global cursor
@@ -30,9 +31,8 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = "INSERT INTO user VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, null, null, null, null, null)"
-    val = (userId, userName, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-    cursor.execute(sql, val)
+    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null)"
+    cursor.execute(sql)
     mydb.commit()
 
     print("Added new user with userName: " + userName)
