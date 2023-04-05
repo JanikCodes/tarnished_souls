@@ -142,4 +142,21 @@ class User:
         self.e_legs = e_legs
 
     def get_is_required_for_item(self, item):
-        return self.get_vigor() >= item.get_reqVigor() & self.get_mind() >= item.get_reqMind() & self.get_endurance() >= item.get_reqEndurance() & self.get_strength() >= item.get_reqStrength() & self.get_dexterity() >= item.get_reqDexterity() & self.get_intelligence() >= item.get_reqIntelligence() & self.get_faith() >= item.get_reqFaith() & self.get_arcane() >= item.get_reqArcane()
+        if self.get_vigor() < item.get_reqVigor():
+            return False
+        if self.get_mind() < item.get_reqMind():
+            return False
+        if self.get_endurance() < item.get_reqEndurance():
+            return False
+        if self.get_strength() < item.get_reqStrength():
+            return False
+        if self.get_dexterity() < item.get_reqDexterity():
+            return False
+        if self.get_intelligence() < item.get_reqIntelligence():
+            return False
+        if self.get_faith() < item.get_reqFaith():
+            return False
+        if self.get_arcane() < item.get_reqArcane():
+            return False
+
+        return True

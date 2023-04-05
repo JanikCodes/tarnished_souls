@@ -292,9 +292,10 @@ def equip_item(idUser, item):
 
     res = cursor.fetchone()
     if res:
-        print("Yes user has the item")
         sql = f"UPDATE user u SET u.{equip_slot_name} = {item.get_idRel()} WHERE u.idUser = {idUser};"
         cursor.execute(sql)
         mydb.commit()
-    else:
-        print(f"No relID: {item.get_idRel()} could be found in user table")
+
+        return True
+
+    return False

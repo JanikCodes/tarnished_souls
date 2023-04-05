@@ -18,15 +18,26 @@ class EquipButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        db.equip_item(idUser=self.user.get_userId(), item=self.item)
+        suc = db.equip_item(idUser=self.user.get_userId(), item=self.item)
+        if suc:
+            message = interaction.message
+            edited_embed = message.embeds[0]
+            edited_embed.colour = discord.Color.green()
 
+            await interaction.message.edit(embed=edited_embed, view=EquipView(user=self.user, item=self.item))
+        else:
+            message = interaction.message
+            edited_embed = message.embeds[0]
+            edited_embed.colour = discord.Color.red()
+
+            await interaction.message.edit(embed=edited_embed, view=EquipView(user=self.user, item=self.item))
 
 class EquipView(discord.ui.View):
 
     def __init__(self, user, item):
         super().__init__()
         self.user = user.update_user()
-        self.add_item(EquipButton(user=user, item=item,disabled=user.get_is_required_for_item(item)))
+        self.add_item(EquipButton(user=user, item=item,disabled=not user.get_is_required_for_item(item)))
 
 class Equip(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -42,8 +53,6 @@ class Equip(commands.Cog):
         user = User(interaction.user.id)
         embed = None
         item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
-        print(item.get_idItem())
-        print(item.get_idRel())
         if item is None:
             pass
         else:
