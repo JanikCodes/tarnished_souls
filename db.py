@@ -107,7 +107,7 @@ def fill_db_weapons():
 
         total_dmg = sum(attack['amount'] for attack in weapon['attack'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']});"
+        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']}, '{weapon['image']}');"
 
         cursor.execute(sql)
         mydb.commit()
@@ -123,7 +123,7 @@ def fill_db_armor():
 
         total_negation = sum(negation['amount'] for negation in armor['dmgNegation'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']});"
+        sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}');"
 
         cursor.execute(sql)
         mydb.commit()
@@ -149,11 +149,11 @@ def get_encounters_from_user_with_id(idUser):
 
 
 def get_item_from_user_encounter_with_enc_id(idUser, idEncounter):
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, r.extra, i.obtainable, i.weight FROM item i, user_encounter r WHERE r.idEncounter = {idEncounter} AND r.idUser = {idUser} AND r.idItem = i.idItem;"
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, r.extra, i.obtainable, i.weight, i.iconUrl FROM item i, user_encounter r WHERE r.idEncounter = {idEncounter} AND r.idUser = {idUser} AND r.idItem = i.idItem;"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5], reqEndurance=[6], reqStrength=res[7], reqDexterity=[8], reqIntelligence=res[9], reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[15], weight=res[16])
+        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5], reqEndurance=[6], reqStrength=res[7], reqDexterity=[8], reqIntelligence=res[9], reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[15], weight=res[16], iconUrl=res[17])
         item.set_extra_value(res[14])
         return item
 
@@ -221,11 +221,11 @@ def add_item_to_user(idUser, item):
         mydb.commit()
 
 def get_item_from_item_id(idItem):
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight FROM item i WHERE i.idItem = {idItem}"
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl FROM item i WHERE i.idItem = {idItem}"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5], reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9], reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14], weight=res[15])
+        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5], reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9], reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14], weight=res[15], iconUrl=res[16])
         return item
     else:
         return None
@@ -242,16 +242,59 @@ def update_user_encounter_item(idEncounter, item, idUser):
 
 def get_items_from_user_id_with_type(idUser, type):
     items = []
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}';"
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}';"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            item = Item(idItem=row[0], name=row[1], iconCategory=row[2], item_type=row[3], reqVigor=row[4], reqMind=row[5], reqEndurance=row[6], reqStrength=row[7], reqDexterity=row[8], reqIntelligence=row[9], reqFaith=row[10], reqArcane=row[11], value=row[12], price=row[13], obtainable=row[14], weight=row[15])
+            item = Item(idItem=row[0], name=row[1], iconCategory=row[2], item_type=row[3], reqVigor=row[4], reqMind=row[5], reqEndurance=row[6], reqStrength=row[7], reqDexterity=row[8], reqIntelligence=row[9], reqFaith=row[10], reqArcane=row[11], value=row[12], price=row[13], obtainable=row[14], weight=row[15], iconUrl=row[20])
             item.set_level(row[16])
             item.set_count(row[17])
             item.set_extra_value(row[18])
+            item.set_idRel(row[19])
             items.append(item)
         return items
     else:
         return None
+
+def get_item_from_user_with_id_rel(idUser, idRel):
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.idRel = '{idRel}';"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5], reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9], reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14], weight=res[15], iconUrl=res[20])
+        item.set_level(res[16])
+        item.set_count(res[17])
+        item.set_extra_value(res[18])
+        item.set_idRel(res[19])
+        return item
+    else:
+        return None
+
+def equip_item(idUser, item):
+    equip_slot_name = str()
+
+    match item.get_iconCategory():
+        case 'leg_armor':
+            equip_slot_name = 'e_legs'
+        case 'chest_armor':
+            equip_slot_name = 'e_chest'
+        case 'helm':
+            equip_slot_name = 'e_head'
+        case 'gauntlets':
+            equip_slot_name = 'e_gauntlet'
+        case _:
+            equip_slot_name = 'e_weapon'
+
+
+    sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idRel = {item.get_idRel()} AND r.idUser = {idUser};"
+    cursor.execute(sql)
+
+    res = cursor.fetchone()
+    if res:
+        print("Yes user has the item")
+        sql = f"UPDATE user u SET u.{equip_slot_name} = {item.get_idRel()} WHERE u.idUser = {idUser};"
+        cursor.execute(sql)
+        mydb.commit()
+    else:
+        print(f"No relID: {item.get_idRel()} could be found in user table")

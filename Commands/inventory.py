@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+
 import db
 from Classes.user import User
 
@@ -65,27 +66,28 @@ async def view_inventory_page(interaction, label, items, user, page):
     new_embed = discord.Embed(title=f"Inventory '{label}'", description="Below are your items sorted by their value (*damage/armor*).")
     new_embed.colour = discord.Color.light_embed()
 
-    match label:
-        case "weapon":
-            for item in items:
-                emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
+    if items:
+        match label:
+            case "weapon":
+                for item in items:
+                    emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
 
-                new_embed.add_field(name=f"{emoji} __{item.get_count()}x {item.get_name()}__",
-                                    value=f"**Statistics:** \n"
-                                          f"`Damage:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n"
-                                          f"**Requirements:** \n"
-                                          f"{item.get_requirement_text(user)}",
-                                    inline=False)
-        case "armor":
-            for item in items:
-                emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
+                    new_embed.add_field(name=f"{emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
+                                        value=f"**Statistics:** \n"
+                                              f"`Damage:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n"
+                                              f"**Requirements:** \n"
+                                              f"{item.get_requirement_text(user)}",
+                                        inline=False)
+            case "armor":
+                for item in items:
+                    emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
 
-                new_embed.add_field(name=f"{emoji} __{item.get_count()}x {item.get_name()}__",
-                                    value=f"**Statistics:** \n"
-                                          f"`Armor:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n",
-                                    inline=False)
-        case "title":
-            pass
+                    new_embed.add_field(name=f"{emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
+                                        value=f"**Statistics:** \n"
+                                              f"`Armor:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n",
+                                        inline=False)
+            case "title":
+                pass
 
 
     new_embed.set_footer(text=f"Page {page}/1")

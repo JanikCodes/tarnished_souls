@@ -1,15 +1,14 @@
 import math
 import random
 import time
-from datetime import datetime
+
 import discord
 from discord import app_commands
 from discord.ext import commands
+
 import db
-from Classes.encounter import Encounter
 from Classes.user import User
-from Utils import utils
-from discord.utils import get
+
 
 class Explore(commands.Cog):
 

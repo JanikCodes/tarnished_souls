@@ -1,9 +1,11 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+
 import db
 from Classes.user import User
 from Utils import utils
+
 
 class UpgradeStatsButton(discord.ui.Button):
     def __init__(self, text, button_style, func, selected_choice, user, disabled=False):

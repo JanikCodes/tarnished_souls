@@ -4,7 +4,7 @@ import Utils.utils
 import db
 
 class Item:
-    def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength, reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value):
+    def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength, reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl):
         self.idItem = idItem
         self.name = name
         self.iconCategory = iconCategory
@@ -21,11 +21,18 @@ class Item:
         self.level = 0
         self.extra_value = 0
         self.count = 0
+        self.idRel = 0
         self.value = value
         self.obtainable = obtainable
         self.weight = weight
+        self.iconUrl = iconUrl
 
     # Getter methods
+    def get_icon_url(self):
+        return self.iconUrl
+    def get_idRel(self):
+        return self.idRel
+
     def get_idItem(self):
         return self.idItem
 
@@ -103,6 +110,9 @@ class Item:
     def set_count(self, count):
         self.count = count
 
+    def set_idRel(self, idRel):
+        self.idRel = idRel
+
     def get_requirement_text(self, user):
 
         def get_requirement_check_icon(req, cur):
@@ -110,7 +120,6 @@ class Item:
                 return f":red_circle: "
             else:
                 return f":green_circle: "
-
 
         text = str()
 

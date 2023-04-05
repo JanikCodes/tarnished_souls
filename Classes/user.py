@@ -140,3 +140,6 @@ class User:
 
     def set_e_legs(self, e_legs):
         self.e_legs = e_legs
+
+    def get_is_required_for_item(self, item):
+        return self.get_vigor() >= item.get_reqVigor() & self.get_mind() >= item.get_reqMind() & self.get_endurance() >= item.get_reqEndurance() & self.get_strength() >= item.get_reqStrength() & self.get_dexterity() >= item.get_reqDexterity() & self.get_intelligence() >= item.get_reqIntelligence() & self.get_faith() >= item.get_reqFaith() & self.get_arcane() >= item.get_reqArcane()
