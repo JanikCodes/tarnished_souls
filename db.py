@@ -39,10 +39,9 @@ def add_user(userId, userName):
 
 
 def get_user_with_id(userId):
-    sql = "SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          "faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs FROM user u WHERE u.idUser = %s"
-    val = (userId, )
-    cursor.execute(sql, val)
+    sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet FROM user u WHERE u.idUser = {userId};"
+    cursor.execute(sql)
     res = cursor.fetchone()
     if res:
         return res

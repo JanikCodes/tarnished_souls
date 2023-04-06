@@ -18,9 +18,11 @@ class User:
             self.faith = result[11]
             self.arcane = result[12]
             self.last_explore = result[13]
-            self.e_head = result[14]
-            self.e_chest = result[15]
-            self.e_legs = result[16]
+            self.weapon = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[14])
+            self.head = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[15])
+            self.chest = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[16])
+            self.legs = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[17])
+            self.gauntlet = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[18])
         else:
             # empty constructor
             pass
@@ -71,17 +73,17 @@ class User:
     def get_last_explore(self):
         return self.last_explore
 
-    def get_e_weapon(self):
-        return self.e_weapon
+    def get_weapon(self):
+        return self.weapon
 
-    def get_e_head(self):
-        return self.e_head
+    def get_head(self):
+        return self.head
 
-    def get_e_chest(self):
-        return self.e_chest
+    def get_chest(self):
+        return self.chest
 
-    def get_e_legs(self):
-        return self.e_legs
+    def get_legs(self):
+        return self.legs
 
     # customs
     def get_all_stat_levels(self):
@@ -129,17 +131,17 @@ class User:
     def set_last_explore(self, last_explore):
         self.last_explore = last_explore
 
-    def set_e_weapon(self, e_weapon):
-        self.e_weapon = e_weapon
+    def set_weapon(self, e_weapon):
+        self.weapon = db.get_item_from_user_with_id_rel(idUser=self.get_userId(), idRel=e_weapon)
 
-    def set_e_head(self, e_head):
-        self.e_head = e_head
+    def set_head(self, e_head):
+        self.head = db.get_item_from_user_with_id_rel(idUser=self.get_userId(), idRel=e_head)
 
-    def set_e_chest(self, e_chest):
-        self.e_chest = e_chest
+    def set_chest(self, e_chest):
+        self.chest = db.get_item_from_user_with_id_rel(idUser=self.get_userId(), idRel=e_chest)
 
-    def set_e_legs(self, e_legs):
-        self.e_legs = e_legs
+    def set_legs(self, e_legs):
+        self.legs = db.get_item_from_user_with_id_rel(idUser=self.get_userId(), idRel=e_legs)
 
     def get_is_required_for_item(self, item):
         if self.get_vigor() < item.get_reqVigor():

@@ -84,7 +84,7 @@ class InventoryCategoryButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        await view_inventory_page(interaction=interaction, label=self.func,user=self.user, page=1)
+        await view_inventory_page(interaction=interaction, label=self.func,user=self.user, page=1) # default is always page 1, that's why page=1
 
 
 async def view_inventory_page(interaction, label, user, page):
