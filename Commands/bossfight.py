@@ -4,6 +4,7 @@ from discord.ext import commands
 
 import db
 from Classes.user import User
+from Classes.enemy import Enemy
 
 MAX_USERS = 3
 
@@ -28,9 +29,9 @@ class JoinButton(discord.ui.Button):
 
         message = interaction.message
         edited_embed = message.embeds[0]
-        edited_embed.set_field_at(index=0, name="Players:", value=f"{len(self.users)}/{MAX_USERS}")
+        edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value="", inline=False)
 
-        await interaction.message.edit(embed=edited_embed, view=BossFightView(leader_user=self.leader_user, users=self.users))
+        await interaction.message.edit(embed=edited_embed, view=BossFightLobbyView(leader_user=self.leader_user, users=self.users))
 
 class StartButton(discord.ui.Button):
     def __init__(self, leader_user):
@@ -48,7 +49,7 @@ class StartButton(discord.ui.Button):
 
         print("Starting bossfight!")
 
-class BossFightView(discord.ui.View):
+class BossFightLobbyView(discord.ui.View):
     def __init__(self, leader_user, users):
         super().__init__()
         self.leader_user = leader_user.update_user()
@@ -75,13 +76,17 @@ class BossFight(commands.Cog):
         user = User(interaction.user.id)
         selected_choice = choices.value
 
+        enemy = Enemy(idEnemy=1)
+
         embed = discord.Embed(title=f" {user.get_userName()} is starting a {selected_choice} boss fight!",
                               description="",
                               colour=discord.Color.orange())
-        embed.add_field(name="Players:",value=f"1/{MAX_USERS}")
+
+        embed.add_field(name=f"Enemy: **{enemy.get_name()}**",value="")
+        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
         embed.set_footer(text="Click the button below in order to join!")
 
-        await interaction.response.send_message(embed=embed, view=BossFightView(leader_user=user, users=[user]))
+        await interaction.response.send_message(embed=embed, view=BossFightLobbyView(leader_user=user, users=[user]))
 
 async def setup(client:commands.Bot) -> None:
     await client.add_cog(BossFight(client), guild=discord.Object(id=763425801391308901))
