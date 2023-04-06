@@ -28,3 +28,21 @@ INSERT INTO encounter VALUE(NULL, "You face off against a rival adventurer who w
 INSERT INTO encounter VALUE(NULL, "You come across a mysterious portal that could lead to a new world or danger.", 10);
 INSERT INTO encounter VALUE(NULL, "You encounter a group of cultists performing a dark ritual and must stop them.", 15);
 INSERT INTO encounter VALUE(NULL, "You find a hidden underground lake and could discover ancient artifacts or hidden dangers.", 20);
+
+INSERT INTO move_type VALUE(NULL, "attack");
+INSERT INTO move_type VALUE(NULL, "dodge");
+INSERT INTO move_type VALUE(NULL, "heal");
+INSERT INTO move_type VALUE(NULL, "block");
+
+INSERT INTO enemy_logic VALUE(NULL, "none");
+INSERT INTO enemy_logic VALUE(NULL, "full");
+INSERT INTO enemy_logic VALUE(NULL, "half");
+
+INSERT INTO enemy VALUE(NULL, 1, "Walking Guru", "The first ever created test monster", 4000, 6000);
+
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** attacked a single target!", 0, 1, 1, 75, 0, 0, 1);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** Threw his blades and hit everyone!", 0, 1, 1, 55, 0, 0, 3);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** healed himself!", 0, 3, 1, 0, 200, 0, 0);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** dodged!", 0, 2, 1, 0, 0, 0, 0);
+
+

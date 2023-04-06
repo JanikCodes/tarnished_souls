@@ -1,5 +1,7 @@
 import db
 
+BASE_HEALTH = 300
+
 class User:
     def __init__(self, userId = None):
         if userId is not None:
@@ -23,6 +25,9 @@ class User:
             self.chest = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[16])
             self.legs = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[17])
             self.gauntlet = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[18])
+
+            self.health = self.get_max_health()
+            self.remaining_flasks = 0
         else:
             # empty constructor
             pass
@@ -162,3 +167,13 @@ class User:
             return False
 
         return True
+
+    def get_health(self):
+        return self.health
+
+    def get_remaining_flasks(self):
+        return self.remaining_flasks
+
+    def get_max_health(self):
+        return BASE_HEALTH + (self.vigor * 2)
+        #TODO Make better calculation ( maybe real one from wiki )

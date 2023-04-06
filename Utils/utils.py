@@ -20,6 +20,26 @@ def create_bars(value, max):
     str += emp
     return str
 
+def create_health_bar(health, max_health):
+    perc = (float(health) / float(max_health)) * 100
+    str = ""
+    emp = ""
+    first_digit = 0
+
+    if perc >= 10:
+        if perc == 100:
+            first_digit = 10
+        else:
+            first_digit = int(perc // 10)
+
+    for i in range(first_digit):
+        str += ":white_large_square:"
+    for y in range(10 - first_digit):
+        emp += ":red_square:"
+
+    str += emp
+    return str
+
 def create_invisible_spaces(amount):
     white = ""
     for x in range(amount):

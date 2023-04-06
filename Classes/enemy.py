@@ -7,9 +7,12 @@ class Enemy:
         self.name = result[0]
         self.logic = EnemyLogic(result[1])
         self.description = result[2]
-        self.health = result[3]
+        self.max_health = result[3]
         self.runes = result[4]
         self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
+
+        self.health = self.get_max_health()
+        self.phase = 0
 
     def get_id(self):
         return self.id
@@ -28,3 +31,9 @@ class Enemy:
 
     def get_runes(self):
         return self.runes
+
+    def get_max_health(self):
+        return self.max_health
+
+    def get_phase(self):
+        return self.phase
