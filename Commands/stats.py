@@ -5,6 +5,7 @@ from discord.ext import commands
 import db
 from Classes.user import User
 from Utils import utils
+from Classes.enemy import Enemy
 
 
 class Stats(commands.Cog):

@@ -6,7 +6,8 @@ import mysql.connector
 import config
 from Classes.encounter import Encounter
 from Classes.item import Item
-
+from Classes.enemy_move import EnemyMove
+from Classes.enemy_logic import EnemyLogic
 
 async def init_database():
     global mydb
@@ -309,7 +310,7 @@ def get_item_count_from_user(idUser, type):
         return 0
 
 def get_enemy_with_id(idEnemy):
-    sql = f"SELECT idEnemy, name, idLogic, description, health, runes FROM enemy WHERE idEnemy = {idEnemy};"
+    sql = f"SELECT name, idLogic, description, health, runes FROM enemy WHERE idEnemy = {idEnemy};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -325,3 +326,15 @@ def get_enemy_logic_with_id(idLogic):
         return res
     else:
         return None
+
+def get_enemy_moves_with_enemy_id(idEnemy):
+    enemy_moves = []
+    sql = f"select m.idMove, m.description, m.phase, m.idType, m.idEnemy, m.damage, m.healing, m.duration, m.maxTargets FROM enemy_moves m WHERE m.idEnemy = {idEnemy};"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            enemy_moves.append(EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+
+    return enemy_moves
