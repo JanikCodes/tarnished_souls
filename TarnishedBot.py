@@ -1,12 +1,14 @@
+import logging
 import os
 import platform
 import time
+
 import discord
+from colorama import Back, Fore, Style
 from discord.ext import commands
+
 import config
 import db
-import logging
-from colorama import Back, Fore, Style
 
 MY_GUILD = discord.Object(id=763425801391308901)
 

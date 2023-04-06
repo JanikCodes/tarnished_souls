@@ -5,6 +5,7 @@ from discord.ext import commands
 import db
 from Classes.user import User
 
+
 class EquipButton(discord.ui.Button):
     def __init__(self, user, item, disabled=False):
         super().__init__(label='Equip', style=discord.ButtonStyle.success, disabled=disabled)

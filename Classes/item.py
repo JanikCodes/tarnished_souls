@@ -1,8 +1,3 @@
-import discord_colorize
-
-import Utils.utils
-import db
-
 class Item:
     def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength, reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl):
         self.idItem = idItem

@@ -1,5 +1,3 @@
-import db
-
 class Encounter:
     def __init__(self, id, description, drop_rate):
         self.id = id

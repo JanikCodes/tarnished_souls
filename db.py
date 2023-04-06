@@ -1,13 +1,13 @@
+import json
 import random
 
 import mysql.connector
-from mysql.connector.cursor import MySQLCursor
-from mysql.connector.cursor_cext import CMySQLCursor
-import config
-import json
 
+import config
 from Classes.encounter import Encounter
 from Classes.item import Item
+
+
 async def init_database():
     global mydb
     # Connect to the database
