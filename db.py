@@ -240,9 +240,9 @@ def update_user_encounter_item(idEncounter, item, idUser):
         cursor.execute(sql)
         mydb.commit()
 
-def get_items_from_user_id_with_type(idUser, type):
+def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page):
     items = []
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}';"
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' LIMIT {max_page} OFFSET { (page - 1) * max_page };"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -299,3 +299,12 @@ def equip_item(idUser, item):
         return True
 
     return False
+
+def get_item_count_from_user(idUser, type):
+    sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}';"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        return res
+    else:
+        return 0

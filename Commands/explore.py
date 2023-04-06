@@ -12,7 +12,7 @@ from Classes.user import User
 
 class Explore(commands.Cog):
 
-    EXPLORE_TIME = 60 * 20 #20min
+    EXPLORE_TIME = 20 #20min
     ENCOUNTER_AMOUNT = 5
 
     def __init__(self, client: commands.Bot):

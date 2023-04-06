@@ -5,12 +5,24 @@ from discord.ext import commands
 import db
 from Classes.user import User
 
+MAX_ITEM_FOR_PAGE = 3
 
 class InventoryPageButton(discord.ui.Button):
-    def __init__(self, text, direction, user, disabled):
-        super().__init__(label=text, style=discord.ButtonStyle.secondary, disabled=disabled)
+    def __init__(self, text, direction, user, func, last_page, total_page_count):
+        super().__init__(label=text, style=discord.ButtonStyle.secondary, disabled=False)
         self.direction = direction
         self.user = user
+        self.func = func
+        self.last_page = last_page
+        self.total_page_count = total_page_count
+
+        if direction == 'prev':
+            if last_page == 1:
+                self.disabled = True
+        elif direction == 'next':
+            if total_page_count == last_page:
+                self.disabled = True
+
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != int(self.user.get_userId()):
             embed = discord.Embed(title=f"You're not allowed to use this action!",
@@ -19,6 +31,12 @@ class InventoryPageButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True)
 
         await interaction.response.defer()
+
+        if self.direction == 'next':
+            await view_inventory_page(interaction=interaction, user=self.user, page=self.last_page+1, label=self.func)
+        elif self.direction == 'prev':
+            await view_inventory_page(interaction=interaction, user=self.user, page=self.last_page-1, label=self.func)
+            pass
 
 class InventoryReturnButton(discord.ui.Button):
     def __init__(self, text, user):
@@ -43,12 +61,12 @@ class InventoryReturnButton(discord.ui.Button):
 
 
 class ItemInventoryView(discord.ui.View):
-    def __init__(self, user):
+    def __init__(self, user, func, current_page, total_page_count):
         super().__init__()
         self.user = user.update_user()
         self.add_item(InventoryReturnButton(text="Return", user=user))
-        self.add_item(InventoryPageButton(text="Previous",direction="prev", user=user, disabled=True))
-        self.add_item(InventoryPageButton(text="Next", direction="next", user=user, disabled=True))
+        self.add_item(InventoryPageButton(text="Previous",direction="prev", user=user, func=func, last_page=current_page, total_page_count=total_page_count))
+        self.add_item(InventoryPageButton(text="Next", direction="next", user=user, func=func, last_page=current_page, total_page_count=total_page_count))
 
 class InventoryCategoryButton(discord.ui.Button):
     def __init__(self, text, button_style, func, user):
@@ -66,14 +84,16 @@ class InventoryCategoryButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        items = db.get_items_from_user_id_with_type(idUser=self.user.get_userId(), type=self.func)
-
-        await view_inventory_page(interaction=interaction, label=self.func, items=items, user=self.user, page=1)
+        await view_inventory_page(interaction=interaction, label=self.func,user=self.user, page=1)
 
 
-async def view_inventory_page(interaction, label, items, user, page):
+async def view_inventory_page(interaction, label, user, page):
     new_embed = discord.Embed(title=f"Inventory '{label}'", description="Below are your items sorted by their value (*damage/armor*).")
     new_embed.colour = discord.Color.light_embed()
+
+    items = db.get_items_from_user_id_with_type_at_page(idUser=user.get_userId(), type=label, page=page, max_page=MAX_ITEM_FOR_PAGE)
+    item_count = db.get_item_count_from_user(idUser=user.get_userId(), type=label)
+    total_page_count = (int(item_count) + MAX_ITEM_FOR_PAGE - 1) // MAX_ITEM_FOR_PAGE
 
     if items:
         match label:
@@ -99,9 +119,9 @@ async def view_inventory_page(interaction, label, items, user, page):
                 pass
 
 
-    new_embed.set_footer(text=f"Page {page}/1")
+    new_embed.set_footer(text=f"Page {page}/{str(total_page_count)}")
 
-    await interaction.message.edit(embed=new_embed, view=ItemInventoryView(user=user))
+    await interaction.message.edit(embed=new_embed, view=ItemInventoryView(user=user, func=label, current_page=page, total_page_count=total_page_count))
 
 class DefaultInventoryView(discord.ui.View):
 
