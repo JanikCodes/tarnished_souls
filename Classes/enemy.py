@@ -37,3 +37,6 @@ class Enemy:
 
     def get_phase(self):
         return self.phase
+
+    def reduce_health(self, amount):
+        self.health = max(self.health - amount, 0)

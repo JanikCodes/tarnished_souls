@@ -1,13 +1,25 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-
 import db
 from Classes.user import User
 from Classes.enemy import Enemy
 from Utils import utils
 
 MAX_USERS = 3
+
+async def update_boss_fight_battle_view(enemy, users, interaction):
+    embed = discord.Embed(title=f"**Fight against `{enemy.get_name()}`**",
+                          description=f"`{enemy.get_name()}`\n"
+                                      f"{utils.create_health_bar(enemy.get_health(), enemy.get_max_health())} `{enemy.get_health()}/{enemy.get_max_health()}`")
+
+    for user in users:
+        embed.add_field(name=f"**`{user.get_userName()}`**",
+                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`",
+                        inline=False)
+
+    await interaction.message.edit(embed=embed, view=BossFightBattleView(users=users, enemy=enemy))
+
 
 class JoinButton(discord.ui.Button):
     def __init__(self, users, disabled=False):
@@ -30,7 +42,7 @@ class JoinButton(discord.ui.Button):
         edited_embed = message.embeds[0]
         edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value="", inline=False)
 
-        await interaction.message.edit(embed=edited_embed, view=BossFightLobbyView(users=self.users))
+        await interaction.message.edit(embed=edited_embed)
 
 class StartButton(discord.ui.Button):
     def __init__(self, users, enemy):
@@ -46,22 +58,7 @@ class StartButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
 
-
-
-        embed = discord.Embed(title=f"**Fight against `{self.enemy.get_name()}`**",
-                              description=f"`{self.enemy.get_name()}`\n"
-                                          f"{utils.create_health_bar(self.enemy.get_health(), self.enemy.get_max_health())} `{self.enemy.get_health()}/{self.enemy.get_max_health()}`")
-
-        embed.add_field(name="", value=f"Monster is about to attack!\n"
-                                       f"__Affected players:__\n"
-                                       f"**Janik** with `-120` **damage**!",
-                        inline=False)
-
-        for user in self.users:
-            embed.add_field(name=f"**`{user.get_userName()}`**", value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`", inline=False)
-
-
-        await interaction.message.edit(embed=embed, view=BossFightBattleView(users=self.users, enemy=self.enemy))
+        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction)
 
 class BossFightLobbyView(discord.ui.View):
     def __init__(self, users, enemy):
@@ -76,9 +73,11 @@ class BossFightLobbyView(discord.ui.View):
 
 
 class AttackButton(discord.ui.Button):
-    def __init__(self, current_user):
-        super().__init__(label=f"Attack (500)", style=discord.ButtonStyle.danger)
+    def __init__(self, current_user, users, enemy):
+        super().__init__(label=f"Attack ({current_user.get_damage()})", style=discord.ButtonStyle.danger)
         self.current_user = current_user
+        self.users = users
+        self.enemy = enemy
 
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.current_user.get_userId():
@@ -88,14 +87,19 @@ class AttackButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
 
-        print("Attack!")
+        self.enemy.reduce_health(self.current_user.get_damage())
+
+        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction)
 
 class BossFightBattleView(discord.ui.View):
     def __init__(self, users, enemy):
         super().__init__()
         self.users = users
         self.enemy = enemy
-        self.add_item(AttackButton(current_user=users[0]))
+
+        #TODO: Cycle between players here and assign the button to him
+
+        self.add_item(AttackButton(current_user=users[0], users=users, enemy=enemy))
 
 class BossFight(commands.Cog):
     def __init__(self, client: commands.Bot):

@@ -1,6 +1,7 @@
 import db
 
 BASE_HEALTH = 300
+BASE_DAMAGE = 25
 
 class User:
     def __init__(self, userId = None):
@@ -177,3 +178,12 @@ class User:
     def get_max_health(self):
         return BASE_HEALTH + (self.vigor * 2)
         #TODO Make better calculation ( maybe real one from wiki )
+
+    def reduce_health(self, amount):
+        self.health = max(self.health - amount, 0)
+
+    def get_damage(self):
+        if self.weapon is not None:
+            return BASE_DAMAGE + self.weapon.get_total_value()
+        else:
+            return BASE_DAMAGE
