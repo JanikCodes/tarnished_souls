@@ -14,7 +14,11 @@ class EquipButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
 
         if interaction.user.id != int(self.user.get_userId()):
-            return await interaction.response.send_message("You are not authorized to use this button.", ephemeral=True)
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
         await interaction.response.defer()
 
@@ -54,7 +58,10 @@ class Equip(commands.Cog):
         embed = None
         item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
         if item is None:
-            pass
+            embed = discord.Embed(title=f"I couldn't find the correct Item..",
+                                  description=f"You can find your Item Id inside your inventory. Access it with `/inventory`",
+                                  colour=discord.Color.red())
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
             embed = discord.Embed(title=f"**{item.get_name()}**",
                                   description=f"Do you want to equip this item?",
@@ -74,7 +81,7 @@ class Equip(commands.Cog):
             embed.add_field(name='', value=f"**Statistics:** \n"
                                  f"`{value_name}:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**")
 
-        await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
+            await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
 
 
 

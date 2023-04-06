@@ -13,7 +13,10 @@ class InventoryPageButton(discord.ui.Button):
         self.user = user
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != int(self.user.get_userId()):
-            return await interaction.response.send_message("You are not authorized to use this button.", ephemeral=True)
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
 
         await interaction.response.defer()
 
@@ -24,7 +27,10 @@ class InventoryReturnButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != int(self.user.get_userId()):
-            return await interaction.response.send_message("You are not authorized to use this button.", ephemeral=True)
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
 
         await interaction.response.defer()
 
@@ -53,7 +59,10 @@ class InventoryCategoryButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != int(self.user.get_userId()):
-            return await interaction.response.send_message("You are not authorized to use this button.", ephemeral=True)
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
 
         await interaction.response.defer()
 
