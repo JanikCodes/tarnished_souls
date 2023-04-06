@@ -24,7 +24,6 @@ class JoinButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
 
-        print("User joined fight!")
         self.users.append(interaction_user)
 
         message = interaction.message
@@ -34,20 +33,24 @@ class JoinButton(discord.ui.Button):
         await interaction.message.edit(embed=edited_embed, view=BossFightLobbyView(leader_user=self.leader_user, users=self.users))
 
 class StartButton(discord.ui.Button):
-    def __init__(self, leader_user):
+    def __init__(self, leader_user, users):
         super().__init__(label='Start!', style=discord.ButtonStyle.primary)
         self.leader_user = leader_user
+        self.users = users
 
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.leader_user.get_userId():
-            print(f"{interaction.user.id} == {self.leader_user.get_userId()}")
             embed = discord.Embed(title=f"You're not allowed to start the fight.",
                                   description="",
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
 
-        print("Starting bossfight!")
+        embed = discord.Embed(title=f"FIGHT!",
+                              description="",
+                              colour=discord.Color.light_embed())
+
+        await interaction.message.edit(embed=embed, view=BossFightBattleView(users=self.users))
 
 class BossFightLobbyView(discord.ui.View):
     def __init__(self, leader_user, users):
@@ -59,8 +62,31 @@ class BossFightLobbyView(discord.ui.View):
         if len(users) == MAX_USERS:
             disable = True
 
-        self.add_item(StartButton(leader_user=leader_user))
+        self.add_item(StartButton(leader_user=leader_user, users=users))
         self.add_item(JoinButton(leader_user=leader_user, users=users, disabled=disable))
+
+
+class AttackButton(discord.ui.Button):
+    def __init__(self, current_user):
+        super().__init__(label=f"Attack (500)", style=discord.ButtonStyle.danger)
+        self.current_user = current_user
+
+    async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != self.current_user.get_userId():
+            embed = discord.Embed(title=f"It's not your turn..",
+                                  description="",
+                                  colour=discord.Color.orange())
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.defer()
+
+        print("Attack!")
+
+class BossFightBattleView(discord.ui.View):
+    def __init__(self, users):
+        super().__init__()
+        self.users = users
+        print(users[0].get_userName())
+        self.add_item(AttackButton(current_user=users[0]))
 
 class BossFight(commands.Cog):
     def __init__(self, client: commands.Bot):
