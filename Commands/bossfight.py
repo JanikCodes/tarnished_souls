@@ -29,7 +29,8 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
 
     for user in users:
         embed.add_field(name=f"**`{user.get_userName()}`**",
-                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`",
+                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`"
+                              f"{utils.create_stamina_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`",
                         inline=False)
 
     # Check for fight end

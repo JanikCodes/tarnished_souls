@@ -40,6 +40,26 @@ def create_health_bar(health, max_health):
     str += emp
     return str
 
+def create_stamina_bar(stamina, max_stamina):
+    perc = (float(stamina) / float(max_stamina)) * 100
+    str = ""
+    emp = ""
+    first_digit = 0
+
+    if perc >= 10:
+        if perc == 100:
+            first_digit = 10
+        else:
+            first_digit = int(perc // 10)
+
+    for i in range(first_digit):
+        str += ":blue_square:"
+    for y in range(10 - first_digit):
+        emp += ":black_large_square:"
+
+    str += emp
+    return str
+
 def create_invisible_spaces(amount):
     white = ""
     for x in range(amount):

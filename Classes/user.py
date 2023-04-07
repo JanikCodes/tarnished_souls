@@ -2,6 +2,7 @@ import db
 
 BASE_HEALTH = 300
 BASE_DAMAGE = 25
+BASE_STAMINA = 100
 
 class User:
     def __init__(self, userId = None):
@@ -28,6 +29,7 @@ class User:
             self.gauntlet = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[18])
 
             self.health = self.get_max_health()
+            self.stamina = self.get_max_stamina()
             self.remaining_flasks = 0
         else:
             # empty constructor
@@ -190,3 +192,30 @@ class User:
             return BASE_DAMAGE + self.weapon.get_total_value()
         else:
             return BASE_DAMAGE
+
+    def get_total_weight(self):
+        weight = 0
+        if self.weapon:
+            weight += self.weapon.get_weight()
+        if self.head:
+            weight += self.head.get_weight()
+        if self.chest:
+            weight += self.chest.get_weight()
+        if self.legs:
+            weight += self.legs.get_weight()
+        if self.gauntlet:
+            weight += self.gauntlet.get_weight()
+
+        return weight
+
+    def reduce_stamina(self, amount):
+        self.stamina = max(self.stamina - amount, 0)
+
+    def increase_stamina(self, amount):
+        self.stamina = min(self.stamina + amount, self.get_max_stamina())
+
+    def get_max_stamina(self):
+        return max(BASE_STAMINA - self.get_total_weight(), 0)
+
+    def get_stamina(self):
+        return self.stamina
