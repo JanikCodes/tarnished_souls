@@ -1,13 +1,14 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+
 import db
-from Classes.user import User
 from Classes.enemy import Enemy
-from Classes.enemy_move import EnemyMove
+from Classes.user import User
 from Utils import utils
 
 MAX_USERS = 3
+
 
 async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     # get move from enemy
@@ -23,16 +24,16 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
 
     embed.add_field(name="Enemy action:", value=f"{enemy_move.get_description()}", inline=False)
 
-
-    embed.add_field(name="Turn order:", value=f"**{users[turn_index].get_userName()}** please choose an action..", inline=False)
+    embed.add_field(name="Turn order:", value=f"**{users[turn_index].get_userName()}** please choose an action..",
+                    inline=False)
 
     for user in users:
         embed.add_field(name=f"**`{user.get_userName()}`**",
                         value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`",
                         inline=False)
 
-
-    await interaction.message.edit(embed=embed, view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
+    await interaction.message.edit(embed=embed,
+                                   view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
 
 
 def cycle_turn_index(turn_index, users):
@@ -42,17 +43,19 @@ def cycle_turn_index(turn_index, users):
     while users[next_index].get_health() <= 0:
         next_index = (next_index + 1) % party_length
         if next_index == turn_index:
-            #Cycle goes back to the original, everyone else died.
+            # Cycle goes back to the original, everyone else died.
             return turn_index
 
-    #Switched turns!
+    # Switched turns!
 
     return next_index
+
 
 class JoinButton(discord.ui.Button):
     def __init__(self, users, disabled=False):
         super().__init__(label='Join Fight', style=discord.ButtonStyle.secondary, disabled=disabled)
         self.users = users
+
     async def callback(self, interaction: discord.Interaction):
         db.validate_user(interaction.user.id, interaction.user.name)
         interaction_user = User(interaction.user.id)
@@ -72,6 +75,7 @@ class JoinButton(discord.ui.Button):
 
         await interaction.message.edit(embed=edited_embed)
 
+
 class StartButton(discord.ui.Button):
     def __init__(self, users, enemy):
         super().__init__(label='Start!', style=discord.ButtonStyle.primary)
@@ -86,7 +90,9 @@ class StartButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
 
-        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction, turn_index=0)  # turn_index = 0 because the first player should start the turn
+        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
+                                            turn_index=0)  # turn_index = 0 because the first player should start the turn
+
 
 class BossFightLobbyView(discord.ui.View):
     def __init__(self, users, enemy):
@@ -118,7 +124,8 @@ class BattleButton(discord.ui.Button):
 
         self.execute_action()
 
-        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction, turn_index=self.turn_index)
+        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
+                                            turn_index=self.turn_index)
 
     def execute_action(self):
         pass
@@ -126,10 +133,12 @@ class BattleButton(discord.ui.Button):
 
 class AttackButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Attack ({current_user.get_damage()})", style=discord.ButtonStyle.danger)
+        super().__init__(current_user, users, enemy, turn_index, label=f"Attack ({current_user.get_damage()})",
+                         style=discord.ButtonStyle.danger)
 
     def execute_action(self):
         self.enemy.reduce_health(self.current_user.get_damage())
+
 
 class HealButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
@@ -137,6 +146,7 @@ class HealButton(BattleButton):
 
     def execute_action(self):
         self.current_user.increase_health(400)
+
 
 class BossFightBattleView(discord.ui.View):
     def __init__(self, users, enemy, turn_index):
@@ -146,6 +156,7 @@ class BossFightBattleView(discord.ui.View):
 
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+
 
 class BossFight(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -167,11 +178,12 @@ class BossFight(commands.Cog):
                               description="",
                               colour=discord.Color.orange())
 
-        embed.add_field(name=f"Enemy: **{enemy.get_name()}**",value="")
+        embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
         embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
         embed.set_footer(text="Click the button below in order to join!")
 
         await interaction.response.send_message(embed=embed, view=BossFightLobbyView(users=[user], enemy=enemy))
 
-async def setup(client:commands.Bot) -> None:
+
+async def setup(client: commands.Bot) -> None:
     await client.add_cog(BossFight(client), guild=discord.Object(id=763425801391308901))
