@@ -42,7 +42,6 @@ class EnemyMove:
 
         match self.type:
             case 1:
-                print("Is attacking")
                 targets_list = [user for user in users if user.get_health() > 0]
                 targets = random.sample(targets_list, min(self.max_targets, len(targets_list)))
                 for target in targets:
@@ -53,17 +52,13 @@ class EnemyMove:
                             users[i] = target
                             break
             case 2:
-                print("is dodging!")
                 pass
             case 3:
-                print(f"Is healing {self.healing}")
                 enemy.increase_health(self.healing)
                 pass
             case 4:
-                print("Is blocking")
                 pass
             case 5:
-                print("Does nothing")
                 pass
 
 

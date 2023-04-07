@@ -45,9 +45,7 @@ class Enemy:
         self.health = max(self.health - amount, 0)
 
     def increase_health(self, amount):
-        print(self.health)
         self.health = min(self.health + amount, self.max_health)
-        print(self.health)
 
     def set_health(self, amount):
         self.health = amount

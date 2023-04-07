@@ -32,8 +32,20 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
                         value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`",
                         inline=False)
 
-    await interaction.message.edit(embed=embed,
-                                   view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
+    # Check for fight end
+    if enemy.get_health() <= 0:
+        # Enemy died
+        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
+        embed.set_field_at(1, name="", value="", inline=False)
+
+        await interaction.message.edit(embed=embed)
+        return
+    if len([user for user in users if user.get_health() > 0]) == 0:
+        # All users died
+        await interaction.message.edit(embed=embed)
+        return
+
+    await interaction.message.edit(embed=embed, view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
 
 
 def cycle_turn_index(turn_index, users):
@@ -122,10 +134,11 @@ class BattleButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
 
-        self.execute_action()
+        if self.current_user.get_health() > 0 and self.enemy.get_health() > 0:
+            self.execute_action()
 
-        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
-                                            turn_index=self.turn_index)
+            await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
+                                                turn_index=self.turn_index)
 
     def execute_action(self):
         pass
