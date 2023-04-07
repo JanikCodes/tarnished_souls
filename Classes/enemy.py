@@ -2,6 +2,8 @@ import random
 
 import db
 from Classes.enemy_logic import EnemyLogic
+
+
 class Enemy:
     def __init__(self, idEnemy):
         result = db.get_enemy_with_id(idEnemy)

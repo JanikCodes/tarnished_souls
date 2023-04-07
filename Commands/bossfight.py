@@ -8,7 +8,7 @@ from Classes.user import User
 from Utils import utils
 
 MAX_USERS = 3
-STAMINA_REGEN = 15
+STAMINA_REGEN = 5
 
 def check_phase_change(enemy):
     enemy_logic = enemy.get_logic()
@@ -52,7 +52,7 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
 
     embed.add_field(name="Enemy action:", value=f"{enemy_move.get_description()}", inline=False)
 
-    embed.add_field(name="Turn order:", value=f"**{users[turn_index].get_userName()}** please choose an action..",
+    embed.add_field(name="Turn order:", value=f"**<@{users[turn_index].get_userId()}>** please choose an action..",
                     inline=False)
 
     for user in users:
