@@ -16,6 +16,7 @@ class Enemy:
         self.health = self.get_max_health()
         self.phase = 0
         self.last_move = None
+        self.dodge_next = False
 
     def get_id(self):
         return self.id
@@ -60,3 +61,11 @@ class Enemy:
             print("Didn't found a valid move anymore!")
             return None
 
+    def dodge(self):
+        self.dodge_next = True
+
+    def get_is_dodging(self):
+        return self.dodge_next
+
+    def reset_dodge(self):
+        self.dodge_next = False

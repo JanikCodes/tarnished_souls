@@ -45,20 +45,26 @@ class EnemyMove:
                 targets_list = [user for user in users if user.get_health() > 0]
                 targets = random.sample(targets_list, min(self.max_targets, len(targets_list)))
                 for target in targets:
-                    target.reduce_health(self.damage)
+                    if not target.get_is_dodging():
+                        target.reduce_health(self.damage)
+
                     # Update user object
                     for i, user in enumerate(users):
                         if user == target:
                             users[i] = target
                             break
             case 2:
-                pass
+                # dodge
+                enemy.dodge()
             case 3:
+                # heal
                 enemy.increase_health(self.healing)
                 pass
             case 4:
+                # block
                 pass
             case 5:
+                # leave blank
                 pass
 
 

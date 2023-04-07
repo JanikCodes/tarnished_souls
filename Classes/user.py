@@ -31,6 +31,7 @@ class User:
             self.health = self.get_max_health()
             self.stamina = self.get_max_stamina()
             self.remaining_flasks = 0
+            self.dodge_next = False
         else:
             # empty constructor
             pass
@@ -219,3 +220,14 @@ class User:
 
     def get_stamina(self):
         return self.stamina
+
+    def dodge(self, amount):
+        if self.stamina - amount >= 0:
+            self.reduce_stamina(amount)
+            self.dodge_next = True
+
+    def get_is_dodging(self):
+        return self.dodge_next
+
+    def reset_dodge(self):
+        self.dodge_next = False

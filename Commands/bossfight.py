@@ -8,15 +8,22 @@ from Classes.user import User
 from Utils import utils
 
 MAX_USERS = 3
-
+STAMINA_REGEN = 15
 
 async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
+    # reset enemy dodge state
+    enemy.reset_dodge()
+
     # get move from enemy
     enemy_phase = enemy.get_phase()
     enemy_move = enemy.get_move(phase=enemy_phase)
     enemy, users = enemy_move.execute(enemy=enemy, users=users)
-
     turn_index = cycle_turn_index(turn_index=turn_index, users=users)
+
+    for user in users:
+        user.increase_stamina(STAMINA_REGEN)
+        user.reset_dodge()
+
 
     embed = discord.Embed(title=f"**Fight against `{enemy.get_name()}`**",
                           description=f"`{enemy.get_name()}`\n"
@@ -29,8 +36,8 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
 
     for user in users:
         embed.add_field(name=f"**`{user.get_userName()}`**",
-                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`"
-                              f"{utils.create_stamina_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`",
+                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`\n"
+                              f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina())} `{user.get_stamina()}/{user.get_max_stamina()}`",
                         inline=False)
 
     # Check for fight end
@@ -43,6 +50,9 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
         return
     if len([user for user in users if user.get_health() > 0]) == 0:
         # All users died
+        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*", inline=False)
+        embed.set_field_at(1, name="", value="", inline=False)
+
         await interaction.message.edit(embed=embed)
         return
 
@@ -147,19 +157,26 @@ class BattleButton(discord.ui.Button):
 
 class AttackButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Attack ({current_user.get_damage()})",
+        super().__init__(current_user, users, enemy, turn_index, label=f"Attack (-{current_user.get_damage()})",
                          style=discord.ButtonStyle.danger)
 
     def execute_action(self):
-        self.enemy.reduce_health(self.current_user.get_damage())
-
+        if not self.enemy.get_is_dodging():
+            self.enemy.reduce_health(self.current_user.get_damage())
 
 class HealButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (400)", style=discord.ButtonStyle.success)
+        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (+150)", style=discord.ButtonStyle.success)
 
     def execute_action(self):
-        self.current_user.increase_health(400)
+        self.current_user.increase_health(150)
+
+class DodgeButton(BattleButton):
+    def __init__(self, current_user, users, enemy, turn_index):
+        super().__init__(current_user, users, enemy, turn_index, label=f"Dodge (-50)", style=discord.ButtonStyle.primary)
+
+    def execute_action(self):
+        self.current_user.dodge(50)
 
 
 class BossFightBattleView(discord.ui.View):
@@ -170,6 +187,7 @@ class BossFightBattleView(discord.ui.View):
 
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        self.add_item(DodgeButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 
 class BossFight(commands.Cog):

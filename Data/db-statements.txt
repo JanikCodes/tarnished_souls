@@ -42,10 +42,10 @@ INSERT INTO enemy_logic VALUE(NULL, "half");
 
 INSERT INTO enemy VALUE(NULL, 1, "Walking Guru", "The first ever created test monster", 4000, 6000);
 
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** attacked a single target!", 0, 1, 1, 75, 0, 0, 1);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** Threw his blades and hit everyone!", 0, 1, 1, 55, 0, 0, 3);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** tries to attack a single target!", 0, 1, 1, 75, 0, 0, 1);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** threw his blades and tries to hit everyone!", 0, 1, 1, 55, 0, 0, 3);
 INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** healed himself!", 0, 3, 1, 0, 200, 0, 0);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** dodged!", 0, 2, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** is going to dodge the next move..!", 0, 2, 1, 0, 0, 0, 0);
 INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** is just standing around!", 0, 5, 1, 0, 0, 0, 0);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** prepares for his next move..!", 0, 5, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** is making a sidestep!", 0, 2, 1, 0, 0, 0, 0);
 
