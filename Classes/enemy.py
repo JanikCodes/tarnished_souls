@@ -1,3 +1,5 @@
+import random
+
 import db
 from Classes.enemy_logic import EnemyLogic
 class Enemy:
@@ -13,6 +15,7 @@ class Enemy:
 
         self.health = self.get_max_health()
         self.phase = 0
+        self.last_move = None
 
     def get_id(self):
         return self.id
@@ -40,3 +43,22 @@ class Enemy:
 
     def reduce_health(self, amount):
         self.health = max(self.health - amount, 0)
+
+    def increase_health(self, amount):
+        print(self.health)
+        self.health = min(self.health + amount, self.max_health)
+        print(self.health)
+
+    def set_health(self, amount):
+        self.health = amount
+
+    def get_move(self, phase):
+        available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0)]
+        if available_moves:
+            selected_move = random.choice(available_moves)
+            self.last_move = selected_move
+            return selected_move
+        else:
+            print("Didn't found a valid move anymore!")
+            return None
+

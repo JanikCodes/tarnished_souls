@@ -329,7 +329,7 @@ def get_enemy_logic_with_id(idLogic):
 
 def get_enemy_moves_with_enemy_id(idEnemy):
     enemy_moves = []
-    sql = f"select m.idMove, m.description, m.phase, m.idType, m.idEnemy, m.damage, m.healing, m.duration, m.maxTargets FROM enemy_moves m WHERE m.idEnemy = {idEnemy};"
+    sql = f"select m.idMove, m.description, m.phase, m.idType, m.damage, m.healing, m.duration, m.maxTargets FROM enemy_moves m WHERE m.idEnemy = {idEnemy};"
 
     cursor.execute(sql)
     res = cursor.fetchall()

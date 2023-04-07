@@ -33,6 +33,7 @@ INSERT INTO move_type VALUE(NULL, "attack");
 INSERT INTO move_type VALUE(NULL, "dodge");
 INSERT INTO move_type VALUE(NULL, "heal");
 INSERT INTO move_type VALUE(NULL, "block");
+INSERT INTO move_type VALUE(NULL, "none");
 
 INSERT INTO enemy_logic VALUE(NULL, "none");
 INSERT INTO enemy_logic VALUE(NULL, "full");
@@ -44,5 +45,6 @@ INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** attacked a single target!"
 INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** Threw his blades and hit everyone!", 0, 1, 1, 55, 0, 0, 3);
 INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** healed himself!", 0, 3, 1, 0, 200, 0, 0);
 INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** dodged!", 0, 2, 1, 0, 0, 0, 0);
-
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** is just standing around!", 0, 5, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** prepares for his next move..!", 0, 5, 1, 0, 0, 0, 0);
 
