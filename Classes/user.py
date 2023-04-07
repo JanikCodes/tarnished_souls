@@ -182,6 +182,9 @@ class User:
     def reduce_health(self, amount):
         self.health = max(self.health - amount, 0)
 
+    def increase_health(self, amount):
+        self.health = min(self.health + amount, self.get_max_health())
+
     def get_damage(self):
         if self.weapon is not None:
             return BASE_DAMAGE + self.weapon.get_total_value()

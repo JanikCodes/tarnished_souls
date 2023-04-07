@@ -100,9 +100,9 @@ class BossFightLobbyView(discord.ui.View):
         self.add_item(JoinButton(users=users, disabled=disable))
 
 
-class AttackButton(discord.ui.Button):
-    def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(label=f"Attack ({current_user.get_damage()})", style=discord.ButtonStyle.danger)
+class BattleButton(discord.ui.Button):
+    def __init__(self, current_user, users, enemy, turn_index, label, style):
+        super().__init__(label=label, style=style)
         self.current_user = current_user
         self.users = users
         self.enemy = enemy
@@ -116,31 +116,27 @@ class AttackButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
 
+        self.execute_action()
+
+        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction, turn_index=self.turn_index)
+
+    def execute_action(self):
+        pass
+
+
+class AttackButton(BattleButton):
+    def __init__(self, current_user, users, enemy, turn_index):
+        super().__init__(current_user, users, enemy, turn_index, label=f"Attack ({current_user.get_damage()})", style=discord.ButtonStyle.danger)
+
+    def execute_action(self):
         self.enemy.reduce_health(self.current_user.get_damage())
 
-        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction, turn_index=self.turn_index)
-
-class KillButton(discord.ui.Button):
+class HealButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(label=f"Damage yourself (5000)", style=discord.ButtonStyle.danger)
-        self.current_user = current_user
-        self.users = users
-        self.enemy = enemy
-        self.turn_index = turn_index
+        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (400)", style=discord.ButtonStyle.success)
 
-    async def callback(self, interaction: discord.Interaction):
-        if str(interaction.user.id) != self.current_user.get_userId():
-            embed = discord.Embed(title=f"It's not your turn..",
-                                  description="",
-                                  colour=discord.Color.orange())
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
-        await interaction.response.defer()
-
-        self.current_user.reduce_health(500)
-
-        self.turn_index = cycle_turn_index(turn_index=self.turn_index, users=self.users)
-
-        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction, turn_index=self.turn_index)
+    def execute_action(self):
+        self.current_user.increase_health(400)
 
 class BossFightBattleView(discord.ui.View):
     def __init__(self, users, enemy, turn_index):
@@ -149,7 +145,7 @@ class BossFightBattleView(discord.ui.View):
         self.enemy = enemy
 
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
-        self.add_item(KillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 class BossFight(commands.Cog):
     def __init__(self, client: commands.Bot):
