@@ -10,9 +10,30 @@ from Utils import utils
 MAX_USERS = 3
 STAMINA_REGEN = 15
 
+def check_phase_change(enemy):
+    enemy_logic = enemy.get_logic()
+
+    match enemy_logic.get_id():
+        case 1:
+            # none ( do nothing )
+            pass
+        case 2:
+            # full
+            if enemy.get_health() == 0:
+                enemy.set_health(enemy.get_max_health())
+                enemy.increase_phase()
+        case 3:
+            # half
+            if enemy.get_health() <= enemy.get_max_health() / 2:
+                enemy.increase_phase()
+        case _:
+            raise ValueError(f"Invalid enemy logic ID: {enemy_logic.get_id()}")
+
 async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     # reset enemy dodge state
     enemy.reset_dodge()
+
+    check_phase_change(enemy)
 
     # get move from enemy
     enemy_phase = enemy.get_phase()

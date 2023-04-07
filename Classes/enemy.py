@@ -69,3 +69,6 @@ class Enemy:
 
     def reset_dodge(self):
         self.dodge_next = False
+
+    def increase_phase(self):
+        self.phase += 1
