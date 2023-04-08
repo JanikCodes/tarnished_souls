@@ -21,7 +21,6 @@ class EquipButton(discord.ui.Button):
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True)
 
-
         await interaction.response.defer()
 
         suc = db.equip_item(idUser=self.user.get_userId(), item=self.item)
@@ -38,12 +37,14 @@ class EquipButton(discord.ui.Button):
 
             await interaction.message.edit(embed=edited_embed, view=EquipView(user=self.user, item=self.item))
 
+
 class EquipView(discord.ui.View):
 
     def __init__(self, user, item):
         super().__init__()
         self.user = user.update_user()
-        self.add_item(EquipButton(user=user, item=item,disabled=not user.get_is_required_for_item(item)))
+        self.add_item(EquipButton(user=user, item=item, disabled=not user.get_is_required_for_item(item)))
+
 
 class Equip(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -81,13 +82,12 @@ class Equip(commands.Cog):
                         value_name = "Armor"
 
                 embed.add_field(name='', value=f"**Statistics:** \n"
-                                     f"`{value_name}:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**")
+                                               f"`{value_name}:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**")
 
                 await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
         else:
             await class_selection(interaction=interaction)
 
 
-
-async def setup(client:commands.Bot) -> None:
+async def setup(client: commands.Bot) -> None:
     await client.add_cog(Equip(client), guild=discord.Object(id=763425801391308901))

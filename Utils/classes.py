@@ -82,8 +82,10 @@ class ClassSelectionView(discord.ui.View):
         super().__init__()
         class_name = data[current_page]['name'].replace("'", "''")
         self.user = user
-        self.add_item(ClassSelectionPageButton(text="Previous", direction="prev", user=user, last_page=current_page, data=data))
-        self.add_item(ClassSelectionPageButton(text="Next", direction="next", user=user, last_page=current_page, data=data))
+        self.add_item(
+            ClassSelectionPageButton(text="Previous", direction="prev", user=user, last_page=current_page, data=data))
+        self.add_item(
+            ClassSelectionPageButton(text="Next", direction="next", user=user, last_page=current_page, data=data))
         self.add_item(ClassSelectButton(text=f"Select {class_name}", user=user, last_page=current_page, data=data))
 
 
@@ -96,7 +98,6 @@ async def class_selection(interaction: discord.Interaction):
 
 
 async def view_class_selection_page(interaction, data, index):
-
     embed = discord.Embed(title=f"Welcome! *please choose your start class!*",
                           description=f"")
     # iterate over the objects
@@ -127,6 +128,9 @@ async def view_class_selection_page(interaction, data, index):
     embed.set_thumbnail(url=class_img_url)
 
     if interaction.message:
-        await interaction.message.edit(embed=embed, view=ClassSelectionView(user=interaction.user, current_page=index, data=data))
+        await interaction.message.edit(embed=embed,
+                                       view=ClassSelectionView(user=interaction.user, current_page=index, data=data))
     else:
-        await interaction.response.send_message(embed=embed, view=ClassSelectionView(user=interaction.user, current_page=index, data=data))
+        await interaction.response.send_message(embed=embed,
+                                                view=ClassSelectionView(user=interaction.user, current_page=index,
+                                                                        data=data))

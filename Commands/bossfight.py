@@ -12,6 +12,7 @@ MAX_USERS = 3
 STAMINA_REGEN = 5
 STAMINA_COST = 50
 
+
 def check_phase_change(enemy):
     enemy_logic = enemy.get_logic()
 
@@ -31,6 +32,7 @@ def check_phase_change(enemy):
         case _:
             raise ValueError(f"ERROR: Invalid enemy logic ID: {enemy_logic.get_id()}")
 
+
 async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     # reset enemy dodge state
     enemy.reset_dodge()
@@ -46,7 +48,6 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     for user in users:
         user.increase_stamina(STAMINA_REGEN)
         user.reset_dodge()
-
 
     embed = discord.Embed(title=f"**Fight against `{enemy.get_name()}`**",
                           description=f"`{enemy.get_name()}`\n"
@@ -79,13 +80,15 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
         return
     if len([user for user in users if user.get_health() > 0]) == 0:
         # All users died
-        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*", inline=False)
+        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
+                           inline=False)
         embed.set_field_at(1, name="", value="", inline=False)
 
         await interaction.message.edit(embed=embed, view=None)
         return
 
-    await interaction.message.edit(embed=embed, view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
+    await interaction.message.edit(embed=embed,
+                                   view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
 
 
 def cycle_turn_index(turn_index, users):
@@ -123,7 +126,8 @@ class JoinButton(discord.ui.Button):
 
             message = interaction.message
             edited_embed = message.embeds[0]
-            edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value="", inline=False)
+            edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value="",
+                                      inline=False)
 
             await interaction.message.edit(embed=edited_embed)
         else:
@@ -191,22 +195,27 @@ class AttackButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
         super().__init__(current_user, users, enemy, turn_index, label=f"Attack (-{current_user.get_damage()})",
                          style=discord.ButtonStyle.danger)
+
     def execute_action(self):
         if not self.enemy.get_is_dodging():
             self.enemy.reduce_health(self.current_user.get_damage())
 
+
 class HealButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (+150)", style=discord.ButtonStyle.success)
+        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (+150)",
+                         style=discord.ButtonStyle.success)
         # Disable button if no flasks remaining
         self.disabled = current_user.get_remaining_flasks() == 0
 
     def execute_action(self):
         self.current_user.increase_health(150)
 
+
 class DodgeButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Dodge (-{STAMINA_COST})", style=discord.ButtonStyle.primary)
+        super().__init__(current_user, users, enemy, turn_index, label=f"Dodge (-{STAMINA_COST})",
+                         style=discord.ButtonStyle.primary)
 
         # Disable button if not enough stamina
         self.disabled = current_user.get_stamina() < STAMINA_COST
@@ -252,7 +261,8 @@ class BossFight(commands.Cog):
                 embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
                 embed.set_footer(text="Click the button below in order to join!")
 
-                await interaction.response.send_message(embed=embed, view=BossFightLobbyView(users=[user], enemy=enemy, solo=False))
+                await interaction.response.send_message(embed=embed,
+                                                        view=BossFightLobbyView(users=[user], enemy=enemy, solo=False))
             elif selected_choice == 'solo':
                 embed = discord.Embed(title=f" {user.get_userName()} is starting a **solo** boss fight!",
                                       description="",
@@ -261,11 +271,13 @@ class BossFight(commands.Cog):
                 embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
                 embed.set_footer(text="Click the button below in order to start the fight!")
 
-                await interaction.response.send_message(embed=embed, view=BossFightLobbyView(users=[user], enemy=enemy, solo=True))
+                await interaction.response.send_message(embed=embed,
+                                                        view=BossFightLobbyView(users=[user], enemy=enemy, solo=True))
             else:
                 pass
         else:
             await class_selection(interaction=interaction)
+
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(BossFight(client), guild=discord.Object(id=763425801391308901))

@@ -1,5 +1,6 @@
 class Item:
-    def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength, reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl):
+    def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength,
+                 reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl):
         self.idItem = idItem
         self.name = name
         self.iconCategory = iconCategory
@@ -25,6 +26,7 @@ class Item:
     # Getter methods
     def get_icon_url(self):
         return self.iconUrl
+
     def get_idRel(self):
         return self.idRel
 
@@ -136,4 +138,3 @@ class Item:
             text += f"`Arc: {self.reqArcane}` "
 
         return text
-

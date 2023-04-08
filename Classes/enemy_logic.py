@@ -1,4 +1,6 @@
 import db
+
+
 class EnemyLogic:
     def __init__(self, idLogic):
         result = db.get_enemy_logic_with_id(idLogic)

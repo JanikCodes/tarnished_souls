@@ -25,5 +25,6 @@ class Runes(commands.Cog):
         else:
             await class_selection(interaction=interaction)
 
-async def setup(client:commands.Bot) -> None:
+
+async def setup(client: commands.Bot) -> None:
     await client.add_cog(Runes(client), guild=discord.Object(id=763425801391308901))

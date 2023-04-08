@@ -38,7 +38,7 @@ class EnemyMove:
         return self.max_targets
 
     def execute(self, enemy, users):
-        #TODO: Make a seperate move_type class and use those instead of the raw id's here
+        # TODO: Make a seperate move_type class and use those instead of the raw id's here
 
         match self.type:
             case 1:
@@ -66,6 +66,5 @@ class EnemyMove:
             case 5:
                 # leave blank
                 pass
-
 
         return (enemy, users)

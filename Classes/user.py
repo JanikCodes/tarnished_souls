@@ -16,8 +16,9 @@ lookup_table = {
     91: 2070, 92: 2074, 93: 2078, 94: 2082, 95: 2086, 96: 2090, 97: 2094, 98: 2097, 99: 2100
 }
 
+
 class User:
-    def __init__(self, userId = None):
+    def __init__(self, userId=None):
         if userId is not None:
             result = db.get_user_with_id(userId)
             self.userId = result[0]
@@ -134,6 +135,7 @@ class User:
 
     def get_all_stat_levels(self):
         return self.strength + self.endurance + self.faith + self.vigor + self.intelligence + self.arcane + self.dexterity + self.mind
+
     def set_userId(self, userId):
         self.userId = userId
 

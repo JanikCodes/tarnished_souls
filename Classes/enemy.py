@@ -54,7 +54,8 @@ class Enemy:
         self.health = amount
 
     def get_move(self, phase):
-        available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0)]
+        available_moves = [move for move in self.moves if
+                           move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0)]
         if available_moves:
             selected_move = random.choice(available_moves)
             self.last_move = selected_move

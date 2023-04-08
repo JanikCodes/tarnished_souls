@@ -31,12 +31,18 @@ class UpgradeStatsButton(discord.ui.Button):
             if self.user.get_runes() >= runes_cost:
                 db.increase_stat_from_user_with_id(userId=self.user.get_userId(), stat_name=self.selected_choice)
                 db.decrease_runes_from_user_with_id(userId=self.user.get_userId(), amount=runes_cost)
-                current_level = db.get_stat_level_from_user_with_id(userId=self.user.get_userId(), value=self.selected_choice)
+                current_level = db.get_stat_level_from_user_with_id(userId=self.user.get_userId(),
+                                                                    value=self.selected_choice)
                 message = interaction.message
                 edited_embed = message.embeds[0]
-                edited_embed.set_field_at(0, name=f"**{self.selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
+                edited_embed.set_field_at(0, name=f"**{self.selected_choice}**",
+                                          value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(
+                                              3) + str(current_level) + "/100", inline=False)
 
-                await interaction.message.edit(embed=edited_embed, view=UpgradeStatsView(current_level=current_level, user=self.user, selected_choice=self.selected_choice, next_upgrade_cost=False))
+                await interaction.message.edit(embed=edited_embed,
+                                               view=UpgradeStatsView(current_level=current_level, user=self.user,
+                                                                     selected_choice=self.selected_choice,
+                                                                     next_upgrade_cost=False))
 
 
 class UpgradeStatsView(discord.ui.View):
@@ -45,9 +51,13 @@ class UpgradeStatsView(discord.ui.View):
         super().__init__()
         self.user = user.update_user()
         self.current_level = current_level
-        disabled = True if utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=next_upgrade_cost) > user.get_runes() else False
-        self.add_item(UpgradeStatsButton(f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=next_upgrade_cost)} runes", discord.ButtonStyle.success, "upgrade", selected_choice, user, disabled=disabled))
-        self.add_item(UpgradeStatsButton(f"{self.user.get_runes()} runes", discord.ButtonStyle.grey, "soul-display", selected_choice, user, True))
+        disabled = True if utils.calculate_upgrade_cost(user=self.user,
+                                                        next_upgrade_cost=next_upgrade_cost) > user.get_runes() else False
+        self.add_item(UpgradeStatsButton(
+            f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=next_upgrade_cost)} runes",
+            discord.ButtonStyle.success, "upgrade", selected_choice, user, disabled=disabled))
+        self.add_item(UpgradeStatsButton(f"{self.user.get_runes()} runes", discord.ButtonStyle.grey, "soul-display",
+                                         selected_choice, user, True))
 
 
 class UpgradeStats(commands.Cog):
@@ -65,18 +75,25 @@ class UpgradeStats(commands.Cog):
         app_commands.Choice(name="Faith", value="faith"),
         app_commands.Choice(name="Arcane", value="arcane"),
     ])
-
     async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
             selected_choice = choices.value
             current_level = db.get_stat_level_from_user_with_id(user.get_userId(), selected_choice)
 
-            embed = discord.Embed(title=f"**Upgrade {selected_choice}**", description=f"Click the button below to upgrade your skill!")
+            embed = discord.Embed(title=f"**Upgrade {selected_choice}**",
+                                  description=f"Click the button below to upgrade your skill!")
             embed.set_author(name=user.get_userName())
-            embed.add_field(name=f"**{selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
-            await interaction.response.send_message(embed=embed, view=UpgradeStatsView(user=user, current_level=current_level, selected_choice=selected_choice, next_upgrade_cost=True))
+            embed.add_field(name=f"**{selected_choice}**",
+                            value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(
+                                current_level) + "/100", inline=False)
+            await interaction.response.send_message(embed=embed,
+                                                    view=UpgradeStatsView(user=user, current_level=current_level,
+                                                                          selected_choice=selected_choice,
+                                                                          next_upgrade_cost=True))
         else:
             await class_selection(interaction=interaction)
-async def setup(client:commands.Bot) -> None:
+
+
+async def setup(client: commands.Bot) -> None:
     await client.add_cog(UpgradeStats(client), guild=discord.Object(id=763425801391308901))

@@ -4,5 +4,3 @@ class Battle:
 
     def get_all_users(self):
         return self.users
-
-
