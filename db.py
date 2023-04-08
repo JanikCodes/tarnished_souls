@@ -82,7 +82,7 @@ def increase_stat_from_user_with_id(userId, stat_name):
     mydb.commit()
 
 
-def decrease_souls_from_user_with_id(userId, amount):
+def decrease_runes_from_user_with_id(userId, amount):
     sql = f"UPDATE user u SET souls = souls - {amount} WHERE u.idUser = {userId};"
     cursor.execute(sql)
     mydb.commit()
@@ -338,3 +338,8 @@ def get_enemy_moves_with_enemy_id(idEnemy):
             enemy_moves.append(EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
 
     return enemy_moves
+
+def increase_runes_from_user_with_id(idUser, amount):
+    sql = f"UPDATE user u SET souls = souls + {amount} WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()

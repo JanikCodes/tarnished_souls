@@ -3,6 +3,7 @@ import db
 BASE_HEALTH = 300
 BASE_DAMAGE = 25
 BASE_STAMINA = 100
+BASE_FLASK_AMOUNT = 2
 
 class User:
     def __init__(self, userId = None):
@@ -12,7 +13,7 @@ class User:
             self.userName = result[1]
             self.level = result[2]
             self.xp = result[3]
-            self.souls = result[4]
+            self.runes = result[4]
             self.vigor = result[5]
             self.mind = result[6]
             self.endurance = result[7]
@@ -30,7 +31,7 @@ class User:
 
             self.health = self.get_max_health()
             self.stamina = self.get_max_stamina()
-            self.remaining_flasks = 0
+            self.remaining_flasks = self.get_max_flasks()
             self.dodge_next = False
         else:
             # empty constructor
@@ -52,8 +53,8 @@ class User:
     def get_xp(self):
         return self.xp
 
-    def get_souls(self):
-        return self.souls
+    def get_runes(self):
+        return self.runes
 
     def get_vigor(self):
         return self.vigor
@@ -110,8 +111,8 @@ class User:
     def set_xp(self, xp):
         self.xp = xp
 
-    def set_souls(self, souls):
-        self.souls = souls
+    def set_runes(self, runes):
+        self.runes = runes
 
     def set_vigor(self, vigor):
         self.vigor = vigor
@@ -186,7 +187,9 @@ class User:
         self.health = max(self.health - amount, 0)
 
     def increase_health(self, amount):
-        self.health = min(self.health + amount, self.get_max_health())
+        if self.remaining_flasks > 0:
+            self.health = min(self.health + amount, self.get_max_health())
+            self.remaining_flasks = max(self.remaining_flasks - 1, 0)
 
     def get_damage(self):
         if self.weapon is not None:
@@ -231,3 +234,7 @@ class User:
 
     def reset_dodge(self):
         self.dodge_next = False
+
+    def get_max_flasks(self):
+        return BASE_FLASK_AMOUNT
+        # TODO: Figure a way out to increase flask amount ( attribute or via items? )

@@ -9,6 +9,7 @@ from Utils import utils
 
 MAX_USERS = 3
 STAMINA_REGEN = 5
+STAMINA_COST = 50
 
 def check_phase_change(enemy):
     enemy_logic = enemy.get_logic()
@@ -55,8 +56,10 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     embed.add_field(name="Turn order:", value=f"**<@{users[turn_index].get_userId()}>** please choose an action..",
                     inline=False)
 
+    flask_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='flask')
+    # create UI for every user
     for user in users:
-        embed.add_field(name=f"**`{user.get_userName()}`**",
+        embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
                         value=f"{utils.create_health_bar(user.get_health(), user.get_max_health())} `{user.get_health()}/{user.get_max_health()}`\n"
                               f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina())} `{user.get_stamina()}/{user.get_max_stamina()}`",
                         inline=False)
@@ -65,16 +68,20 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     if enemy.get_health() <= 0:
         # Enemy died
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
-        embed.set_field_at(1, name="", value="", inline=False)
+        embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
 
-        await interaction.message.edit(embed=embed)
+        # grant rune rewards to all players
+        for user in users:
+            db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
+
+        await interaction.message.edit(embed=embed, view=None)
         return
     if len([user for user in users if user.get_health() > 0]) == 0:
         # All users died
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*", inline=False)
         embed.set_field_at(1, name="", value="", inline=False)
 
-        await interaction.message.edit(embed=embed)
+        await interaction.message.edit(embed=embed, view=None)
         return
 
     await interaction.message.edit(embed=embed, view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
@@ -181,7 +188,6 @@ class AttackButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
         super().__init__(current_user, users, enemy, turn_index, label=f"Attack (-{current_user.get_damage()})",
                          style=discord.ButtonStyle.danger)
-
     def execute_action(self):
         if not self.enemy.get_is_dodging():
             self.enemy.reduce_health(self.current_user.get_damage())
@@ -189,16 +195,21 @@ class AttackButton(BattleButton):
 class HealButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
         super().__init__(current_user, users, enemy, turn_index, label=f"Heal (+150)", style=discord.ButtonStyle.success)
+        # Disable button if no flasks remaining
+        self.disabled = current_user.get_remaining_flasks() == 0
 
     def execute_action(self):
         self.current_user.increase_health(150)
 
 class DodgeButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Dodge (-50)", style=discord.ButtonStyle.primary)
+        super().__init__(current_user, users, enemy, turn_index, label=f"Dodge (-{STAMINA_COST})", style=discord.ButtonStyle.primary)
+
+        # Disable button if not enough stamina
+        self.disabled = current_user.get_stamina() < STAMINA_COST
 
     def execute_action(self):
-        self.current_user.dodge(50)
+        self.current_user.dodge(STAMINA_COST)
 
 
 class BossFightBattleView(discord.ui.View):

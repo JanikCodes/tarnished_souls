@@ -26,11 +26,11 @@ class UpgradeStatsButton(discord.ui.Button):
 
         if self.func == "upgrade":
             current_level = db.get_stat_level_from_user_with_id(userId=self.user.get_userId(), value=self.selected_choice)
-            soul_cost = utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)
+            runes_cost = utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)
 
-            if self.user.get_souls() >= soul_cost:
+            if self.user.get_runes() >= runes_cost:
                 db.increase_stat_from_user_with_id(userId=self.user.get_userId(), stat_name=self.selected_choice)
-                db.decrease_souls_from_user_with_id(userId=self.user.get_userId(), amount=soul_cost)
+                db.decrease_runes_from_user_with_id(userId=self.user.get_userId(), amount=runes_cost)
                 current_level = db.get_stat_level_from_user_with_id(userId=self.user.get_userId(), value=self.selected_choice)
                 message = interaction.message
                 edited_embed = message.embeds[0]
@@ -45,8 +45,8 @@ class UpgradeStatsView(discord.ui.View):
         super().__init__()
         self.user = user.update_user()
         self.current_level = current_level
-        self.add_item(UpgradeStatsButton(f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)} souls", discord.ButtonStyle.success, "upgrade", selected_choice, user))
-        self.add_item(UpgradeStatsButton(f"{self.user.get_souls()} souls", discord.ButtonStyle.grey, "soul-display", selected_choice, user, True))
+        self.add_item(UpgradeStatsButton(f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, level=current_level, next_upgrade_cost=True)} runes", discord.ButtonStyle.success, "upgrade", selected_choice, user))
+        self.add_item(UpgradeStatsButton(f"{self.user.get_runes()} runes", discord.ButtonStyle.grey, "soul-display", selected_choice, user, True))
 
 
 class UpgradeStats(commands.Cog):

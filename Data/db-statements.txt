@@ -40,12 +40,20 @@ INSERT INTO enemy_logic VALUE(NULL, "none");
 INSERT INTO enemy_logic VALUE(NULL, "full");
 INSERT INTO enemy_logic VALUE(NULL, "half");
 
-INSERT INTO enemy VALUE(NULL, 1, "Walking Guru", "The first ever created test monster", 4000, 6000);
+INSERT INTO enemy VALUE(1, 1, "Margit, the Fell Omen", "*Someone must extinguish thy flame. Let it be Margit the Fell!*", 4174, 12000);
 
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** tries to attack a single target!", 0, 1, 1, 75, 0, 0, 1);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** threw his blades and tries to hit everyone!", 0, 1, 1, 55, 0, 0, 3);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** healed himself!", 0, 3, 1, 0, 200, 0, 0);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** is going to dodge the next move..!", 0, 2, 1, 0, 0, 0, 0);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** is just standing around!", 0, 5, 1, 0, 0, 0, 0);
-INSERT INTO enemy_moves VALUE(NULL, "**Walking Guru** is making a sidestep!", 0, 2, 1, 0, 0, 0, 0);
-
+INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** swings his staff in many directions with wind-ups ranging from fast to slow.', 0, 1, 1, 85, 0, 0, 3);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit** stabs his staff directly forward.', 0, 1, 1, 35, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** pulls his staff behind his back, then slams it into the ground', 0, 1, 1, 105, 0, 0, 2);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit** quickly slashes a spectral dagger in front of him.', 0, 1, 1, 60, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit** throws one or two daggers', 0, 1, 1, 65, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** slashes once with a dagger, then jumps backwards and throws it.', 0, 1, 1, 95, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit** swings his tail to hit everyone behind him.', 0, 1, 1, 50, 0, 0, 3);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** slashes simultaneously with both his staff and spectral sword', 0, 1, 1, 120, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit** leaps towards you, hovers in the air for a moment, then slams his staff down.', 0, 1, 1, 100, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** summons his spectral hammer to his shoulder, swings it in front of him, leaps high into the air, and slams it down to the ground, creating a shockwave.', 0, 1, 1, 140, 0, 0, 3);
+INSERT INTO enemy_moves VALUES(NULL, 'With a quick hop to the side, **Margit** avoids your next strike!', 0, 2, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**Margit's** eyes remain locked on her opponent, ready to evade the next move..", 0, 2, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, '**Margit** stands tall and still, watching you closely with a piercing gaze', 0, 5, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, 'Despite your movements, **Margit** remains calm and collected, waiting for the right moment to strike..', 0, 5, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, '**The Fell Omen** takes a moment to catch his breath', 0, 5, 1, 0, 0, 0, 0);
