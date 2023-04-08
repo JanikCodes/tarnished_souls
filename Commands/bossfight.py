@@ -109,23 +109,25 @@ class JoinButton(discord.ui.Button):
         self.users = users
 
     async def callback(self, interaction: discord.Interaction):
-        db.validate_user(interaction.user.id)
-        interaction_user = User(interaction.user.id)
+        if db.validate_user(interaction.user.id):
+            interaction_user = User(interaction.user.id)
 
-        if any(user.get_userId() == interaction_user.get_userId() for user in self.users):
-            embed = discord.Embed(title=f"You're already taking part in this fight..",
-                                  description="",
-                                  colour=discord.Color.red())
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
-        await interaction.response.defer()
+            if any(user.get_userId() == interaction_user.get_userId() for user in self.users):
+                embed = discord.Embed(title=f"You're already taking part in this fight..",
+                                      description="",
+                                      colour=discord.Color.red())
+                return await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.defer()
 
-        self.users.append(interaction_user)
+            self.users.append(interaction_user)
 
-        message = interaction.message
-        edited_embed = message.embeds[0]
-        edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value="", inline=False)
+            message = interaction.message
+            edited_embed = message.embeds[0]
+            edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value="", inline=False)
 
-        await interaction.message.edit(embed=edited_embed)
+            await interaction.message.edit(embed=edited_embed)
+        else:
+            await class_selection(interaction=interaction)
 
 
 class StartButton(discord.ui.Button):
