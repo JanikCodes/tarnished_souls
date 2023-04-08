@@ -1,9 +1,24 @@
+import math
 import db
 
+MAX_HEALTH = 2100
 BASE_HEALTH = 300
 BASE_DAMAGE = 25
 BASE_STAMINA = 100
 BASE_FLASK_AMOUNT = 2
+
+lookup_table = {
+    1: 300, 2: 304, 3: 312, 4: 322, 5: 334, 6: 347, 7: 362, 8: 378, 9: 396, 10: 414,
+    11: 434, 12: 455, 13: 476, 14: 499, 15: 522, 16: 547, 17: 572, 18: 598, 19: 624, 20: 652,
+    21: 680, 22: 709, 23: 738, 24: 769, 25: 800, 26: 833, 27: 870, 28: 910, 29: 951, 30: 994,
+    31: 1037, 32: 1081, 33: 1125, 34: 1170, 35: 1216, 36: 1262, 37: 1308, 38: 1355, 39: 1402, 40: 1450,
+    41: 1476, 42: 1503, 43: 1529, 44: 1555, 45: 1581, 46: 1606, 47: 1631, 48: 1656, 49: 1680, 50: 1704,
+    51: 1727, 52: 1750, 53: 1772, 54: 1793, 55: 1814, 56: 1834, 57: 1853, 58: 1871, 59: 1887, 60: 1900,
+    61: 1906, 62: 1912, 63: 1918, 64: 1924, 65: 1930, 66: 1936, 67: 1942, 68: 1948, 69: 1954, 70: 1959,
+    71: 1965, 72: 1971, 73: 1977, 74: 1982, 75: 1988, 76: 1993, 77: 1999, 78: 2004, 79: 2010, 80: 2015,
+    81: 2020, 82: 2026, 83: 2031, 84: 2036, 85: 2041, 86: 2046, 87: 2051, 88: 2056, 89: 2060, 90: 2065,
+    91: 2070, 92: 2074, 93: 2078, 94: 2082, 95: 2086, 96: 2090, 97: 2094, 98: 2097, 99: 2100
+}
 
 class User:
     def __init__(self, userId = None):
@@ -95,10 +110,8 @@ class User:
     def get_legs(self):
         return self.legs
 
-    # customs
     def get_all_stat_levels(self):
         return self.strength + self.endurance + self.faith + self.vigor + self.intelligence + self.arcane + self.dexterity + self.mind
-    # setters
     def set_userId(self, userId):
         self.userId = userId
 
@@ -180,8 +193,7 @@ class User:
         return self.remaining_flasks
 
     def get_max_health(self):
-        return BASE_HEALTH + (self.vigor * 2)
-        #TODO Make better calculation ( maybe real one from wiki )
+        return lookup_table[self.vigor] if self.vigor in lookup_table else None
 
     def reduce_health(self, amount):
         print(f"Damage: {amount}")
@@ -256,3 +268,22 @@ class User:
             armor += self.gauntlet.get_total_value()
 
         return armor
+
+    def has_item_equipped(self, item):
+        if self.weapon:
+            if self.weapon.get_idRel() == item.get_idRel():
+                return True
+        if self.head:
+            if self.head.get_idRel() == item.get_idRel():
+                return True
+        if self.chest:
+            if self.chest.get_idRel() == item.get_idRel():
+                return True
+        if self.legs:
+            if self.legs.get_idRel() == item.get_idRel():
+                return True
+        if self.gauntlet:
+            if self.gauntlet.get_idRel() == item.get_idRel():
+                return True
+
+        return False

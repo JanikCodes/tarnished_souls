@@ -19,6 +19,8 @@ class Runes(commands.Cog):
             embed = discord.Embed(title=f" {user.get_userName()} runes",
                                   description=f"**{user.get_runes()}** runes")
 
+            print(user.get_max_health())
+
             await interaction.response.send_message(embed=embed)
         else:
             await class_selection(interaction=interaction)

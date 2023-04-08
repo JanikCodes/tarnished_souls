@@ -100,9 +100,12 @@ async def view_inventory_page(interaction, label, user, page):
         match label:
             case "weapon":
                 for item in items:
-                    emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
+                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
+                    equipped_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='equipped')
 
-                    new_embed.add_field(name=f"{emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
+                    eq_text = equipped_emoji if user.has_item_equipped(item) else str()
+
+                    new_embed.add_field(name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                                         value=f"**Statistics:** \n"
                                               f"`Damage:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n"
                                               f"**Requirements:** \n"
@@ -110,9 +113,12 @@ async def view_inventory_page(interaction, label, user, page):
                                         inline=False)
             case "armor":
                 for item in items:
-                    emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
+                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
+                    equipped_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='equipped')
 
-                    new_embed.add_field(name=f"{emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
+                    eq_text = equipped_emoji if user.has_item_equipped(item) else str()
+
+                    new_embed.add_field(name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                                         value=f"**Statistics:** \n"
                                               f"`Armor:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n",
                                         inline=False)
