@@ -67,7 +67,7 @@ class UpgradeStats(commands.Cog):
     ])
 
     async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
-        if db.validate_user(interaction.user.id, interaction.user.name):
+        if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
             selected_choice = choices.value
             current_level = db.get_stat_level_from_user_with_id(user.get_userId(), selected_choice)

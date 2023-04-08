@@ -139,7 +139,7 @@ class Inventory(commands.Cog):
 
     @app_commands.command(name="inventory", description="Display your inventory")
     async def inventory(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id, interaction.user.name):
+        if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
 
             embed = discord.Embed(title=f" {user.get_userName()}'s Inventory", description="Please select an inventory category below!")

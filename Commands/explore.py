@@ -21,7 +21,7 @@ class Explore(commands.Cog):
 
     @app_commands.command(name="explore", description="Explore the world, encounter events & receive items and souls!")
     async def explore(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id, interaction.user.name):
+        if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
 
             current_time = (round(time.time() * 1000)) // 1000

@@ -13,7 +13,7 @@ class Runes(commands.Cog):
 
     @app_commands.command(name="runes", description="Display your runes amount")
     async def runes(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id, interaction.user.name):
+        if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
 
             embed = discord.Embed(title=f" {user.get_userName()} runes",

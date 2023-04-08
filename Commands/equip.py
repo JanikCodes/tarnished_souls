@@ -55,7 +55,7 @@ class Equip(commands.Cog):
     )
     @app_commands.rename(item_id='id')
     async def equip(self, interaction: discord.Interaction, item_id: int):
-        if db.validate_user(interaction.user.id, interaction.user.name):
+        if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
             embed = None
             item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)

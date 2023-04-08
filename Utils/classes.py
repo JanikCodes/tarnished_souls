@@ -20,19 +20,35 @@ class ClassSelectButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        db.add_user(self.user.id, self.user.name)
-        print("User selected a new class!")
+        # check if user already has a class, just in case
+        if not db.validate_user(self.user.id):
+            # add user now to database
+            db.add_user(self.user.id, self.user.name)
 
-        for stat_name, stat_value in self.data[self.last_page]['stats'].items():
-            db.set_stat_from_user_with_id(self.user.id, stat_name, stat_value)
+            # update attributes according to selected class
+            for stat_name, stat_value in self.data[self.last_page]['stats'].items():
+                db.set_stat_from_user_with_id(self.user.id, stat_name, stat_value)
 
-        class_name = self.data[self.last_page]['name'].replace("'", "''")
-        message = interaction.message
-        edited_embed = message.embeds[0]
-        edited_embed.colour = discord.Color.green()
-        edited_embed.add_field(name=f"Success!", value=f"You've selected the class **{class_name}**!", inline=False)
+            for eq_name, eq_value in self.data[self.last_page]['equip'].items():
+                if eq_value:
+                    item = db.add_item_to_user_with_item_name(idUser=self.user.id, item_name=eq_value)
+                    db.equip_item(idUser=self.user.id, item=item)
 
-        await interaction.message.edit(embed=edited_embed, view=None)
+            # update embed to inform player of the success.
+            class_name = self.data[self.last_page]['name'].replace("'", "''")
+            message = interaction.message
+            edited_embed = message.embeds[0]
+            edited_embed.colour = discord.Color.green()
+            edited_embed.add_field(name=f"Success!", value=f"You've selected the class **{class_name}**!", inline=False)
+
+            await interaction.message.edit(embed=edited_embed, view=None)
+        else:
+            message = interaction.message
+            edited_embed = message.embeds[0]
+            edited_embed.colour = discord.Color.red()
+            edited_embed.add_field(name=f"Failure!", value=f"You've already selected a class..", inline=False)
+
+            await interaction.message.edit(embed=edited_embed, view=None)
 
 
 class ClassSelectionPageButton(discord.ui.Button):
@@ -83,7 +99,6 @@ async def view_class_selection_page(interaction, data, index):
     embed = discord.Embed(title=f"Welcome! *please choose your start class!*",
                           description=f"")
     # iterate over the objects
-    print(index)
     ed_class = data[index]
 
     class_name = ed_class['name'].replace("'", "''")

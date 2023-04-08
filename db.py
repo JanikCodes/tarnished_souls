@@ -63,9 +63,8 @@ def does_user_exist(idUser):
         return False
 
 
-def validate_user(userId, userName):
+def validate_user(userId):
     if not does_user_exist(userId):
-        #add_user(userId, userName)
         return False
 
     return True
@@ -229,8 +228,35 @@ def add_item_to_user(idUser, item):
         cursor.execute(sql)
         mydb.commit()
 
+def add_item_to_user_with_item_name(idUser, item_name):
+    item = get_item_from_item_name(item_name=item_name)
+
+    # add new item to table
+    sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, 1, {item.get_extra_value()});"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.count = 1 and r.value = {item.get_extra_value()};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        item.set_idRel(res[0])
+        return item
+
+    return None
+
 def get_item_from_item_id(idItem):
     sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl FROM item i WHERE i.idItem = {idItem}"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5], reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9], reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14], weight=res[15], iconUrl=res[16])
+        return item
+    else:
+        return None
+
+def get_item_from_item_name(item_name):
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl FROM item i WHERE i.name = '{item_name}'"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:

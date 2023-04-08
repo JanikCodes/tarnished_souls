@@ -14,7 +14,7 @@ class Stats(commands.Cog):
 
     @app_commands.command(name="stats", description="Display your universal character stats")
     async def stats(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id, interaction.user.name):
+        if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
 
             embed = discord.Embed(title="Stats", description="Below are your statistics. These statistics are universal and apply on every server with this bot.")

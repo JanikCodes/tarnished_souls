@@ -109,7 +109,7 @@ class JoinButton(discord.ui.Button):
         self.users = users
 
     async def callback(self, interaction: discord.Interaction):
-        db.validate_user(interaction.user.id, interaction.user.name)
+        db.validate_user(interaction.user.id)
         interaction_user = User(interaction.user.id)
 
         if any(user.get_userId() == interaction_user.get_userId() for user in self.users):
@@ -235,7 +235,7 @@ class BossFight(commands.Cog):
         app_commands.Choice(name="Clan", value="clan"),
     ])
     async def startboss(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
-        if db.validate_user(interaction.user.id, interaction.user.name):
+        if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
             selected_choice = choices.value
 
