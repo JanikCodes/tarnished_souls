@@ -4,6 +4,7 @@ from discord.ext import commands
 
 import db
 from Classes.user import User
+from Utils.classes import class_selection
 
 
 class EquipButton(discord.ui.Button):
@@ -54,35 +55,37 @@ class Equip(commands.Cog):
     )
     @app_commands.rename(item_id='id')
     async def equip(self, interaction: discord.Interaction, item_id: int):
-        db.validate_user(interaction.user.id, interaction.user.name)
-        user = User(interaction.user.id)
-        embed = None
-        item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
-        if item is None:
-            embed = discord.Embed(title=f"I couldn't find the correct Item..",
-                                  description=f"You can find your Item Id inside your inventory. Access it with `/inventory`",
-                                  colour=discord.Color.red())
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+        if db.validate_user(interaction.user.id, interaction.user.name):
+            user = User(interaction.user.id)
+            embed = None
+            item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
+            if item is None:
+                embed = discord.Embed(title=f"I couldn't find the correct Item..",
+                                      description=f"You can find your Item Id inside your inventory. Access it with `/inventory`",
+                                      colour=discord.Color.red())
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+            else:
+                embed = discord.Embed(title=f"**{item.get_name()}**",
+                                      description=f"Do you want to equip this item?",
+                                      colour=discord.Color.orange())
+
+                if item.get_icon_url() is not None and item.get_icon_url() != 'None':
+                    embed.set_thumbnail(url=f"{item.get_icon_url()}")
+
+                value_name = str()
+
+                match item.get_item_type():
+                    case 'Weapon':
+                        value_name = "Damage"
+                    case 'Armor':
+                        value_name = "Armor"
+
+                embed.add_field(name='', value=f"**Statistics:** \n"
+                                     f"`{value_name}:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**")
+
+                await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
         else:
-            embed = discord.Embed(title=f"**{item.get_name()}**",
-                                  description=f"Do you want to equip this item?",
-                                  colour=discord.Color.orange())
-
-            if item.get_icon_url() is not None and item.get_icon_url() != 'None':
-                embed.set_thumbnail(url=f"{item.get_icon_url()}")
-
-            value_name = str()
-
-            match item.get_item_type():
-                case 'Weapon':
-                    value_name = "Damage"
-                case 'Armor':
-                    value_name = "Armor"
-
-            embed.add_field(name='', value=f"**Statistics:** \n"
-                                 f"`{value_name}:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**")
-
-            await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
+            await class_selection(interaction=interaction)
 
 
 

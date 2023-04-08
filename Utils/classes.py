@@ -1,11 +1,41 @@
 import discord
 import json
-from discord import app_commands
-from discord.ext import commands
-import db
-from Classes.user import User
 
-class InventoryPageButton(discord.ui.Button):
+import db
+
+
+class ClassSelectButton(discord.ui.Button):
+    def __init__(self, text, user, last_page, data):
+        super().__init__(label=text, style=discord.ButtonStyle.primary, disabled=False)
+        self.user = user
+        self.last_page = last_page
+        self.data = data
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user.id:
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
+
+        await interaction.response.defer()
+
+        db.add_user(self.user.id, self.user.name)
+        print("User selected a new class!")
+
+        for stat_name, stat_value in self.data[self.last_page]['stats'].items():
+            db.set_stat_from_user_with_id(self.user.id, stat_name, stat_value)
+
+        class_name = self.data[self.last_page]['name'].replace("'", "''")
+        message = interaction.message
+        edited_embed = message.embeds[0]
+        edited_embed.colour = discord.Color.green()
+        edited_embed.add_field(name=f"Success!", value=f"You've selected the class **{class_name}**!", inline=False)
+
+        await interaction.message.edit(embed=edited_embed, view=None)
+
+
+class ClassSelectionPageButton(discord.ui.Button):
     def __init__(self, text, direction, user, last_page, data):
         super().__init__(label=text, style=discord.ButtonStyle.secondary, disabled=False)
         self.direction = direction
@@ -33,9 +63,11 @@ class InventoryPageButton(discord.ui.Button):
 class ClassSelectionView(discord.ui.View):
     def __init__(self, user, current_page, data):
         super().__init__()
+        class_name = data[current_page]['name'].replace("'", "''")
         self.user = user
-        self.add_item(InventoryPageButton(text="Previous",direction="prev", user=user, last_page=current_page, data=data))
-        self.add_item(InventoryPageButton(text="Next", direction="next", user=user, last_page=current_page, data=data))
+        self.add_item(ClassSelectionPageButton(text="Previous", direction="prev", user=user, last_page=current_page, data=data))
+        self.add_item(ClassSelectionPageButton(text="Next", direction="next", user=user, last_page=current_page, data=data))
+        self.add_item(ClassSelectButton(text=f"Select {class_name}", user=user, last_page=current_page, data=data))
 
 
 async def class_selection(interaction: discord.Interaction):

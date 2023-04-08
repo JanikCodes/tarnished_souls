@@ -4,6 +4,7 @@ from discord.ext import commands
 
 import db
 from Classes.user import User
+from Utils.classes import class_selection
 
 MAX_ITEM_FOR_PAGE = 3
 
@@ -138,13 +139,15 @@ class Inventory(commands.Cog):
 
     @app_commands.command(name="inventory", description="Display your inventory")
     async def inventory(self, interaction: discord.Interaction):
-        db.validate_user(interaction.user.id, interaction.user.name)
-        user = User(interaction.user.id)
+        if db.validate_user(interaction.user.id, interaction.user.name):
+            user = User(interaction.user.id)
 
-        embed = discord.Embed(title=f" {user.get_userName()}'s Inventory", description="Please select an inventory category below!")
-        embed.colour = discord.Color.green()
-        embed.set_footer(text="You'll unlock more items & titles while playing!")
-        await interaction.response.send_message(embed=embed, view=DefaultInventoryView(user=user))
+            embed = discord.Embed(title=f" {user.get_userName()}'s Inventory", description="Please select an inventory category below!")
+            embed.colour = discord.Color.green()
+            embed.set_footer(text="You'll unlock more items & titles while playing!")
+            await interaction.response.send_message(embed=embed, view=DefaultInventoryView(user=user))
+        else:
+            await class_selection(interaction=interaction)
 
 async def setup(client:commands.Bot) -> None:
     await client.add_cog(Inventory(client), guild=discord.Object(id=763425801391308901))

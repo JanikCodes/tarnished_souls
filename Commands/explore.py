@@ -8,6 +8,7 @@ from discord.ext import commands
 
 import db
 from Classes.user import User
+from Utils.classes import class_selection
 
 
 class Explore(commands.Cog):
@@ -20,19 +21,21 @@ class Explore(commands.Cog):
 
     @app_commands.command(name="explore", description="Explore the world, encounter events & receive items and souls!")
     async def explore(self, interaction: discord.Interaction):
-        db.validate_user(interaction.user.id, interaction.user.name)
-        user = User(interaction.user.id)
+        if db.validate_user(interaction.user.id, interaction.user.name):
+            user = User(interaction.user.id)
 
-        current_time = (round(time.time() * 1000)) // 1000
-        last_time = user.get_last_explore()
+            current_time = (round(time.time() * 1000)) // 1000
+            last_time = user.get_last_explore()
 
-        if float(current_time) - float(last_time) > self.EXPLORE_TIME:
-            #display a recap off the old explore message because it's finished
-            await self.explore_status(interaction, percentage=100, user=user, finished=True)
-            db.remove_user_encounters(idUser=user.get_userId())
-            db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(), current_time=current_time)
+            if float(current_time) - float(last_time) > self.EXPLORE_TIME:
+                #display a recap off the old explore message because it's finished
+                await self.explore_status(interaction, percentage=100, user=user, finished=True)
+                db.remove_user_encounters(idUser=user.get_userId())
+                db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(), current_time=current_time)
+            else:
+                await self.explore_status(interaction, percentage=(current_time - last_time) / self.EXPLORE_TIME * 100, user=user, finished=False)
         else:
-            await self.explore_status(interaction, percentage=(current_time - last_time) / self.EXPLORE_TIME * 100, user=user, finished=False)
+            await class_selection(interaction=interaction)
 
     async def explore_status(self, interaction, percentage, user, finished):
         embed = discord.Embed(title=f"**Exploring: {percentage:.1f}%**")

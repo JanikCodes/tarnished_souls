@@ -8,6 +8,8 @@ from Classes.encounter import Encounter
 from Classes.item import Item
 from Classes.enemy_move import EnemyMove
 from Classes.enemy_logic import EnemyLogic
+from Classes.user import User
+
 
 async def init_database():
     global mydb
@@ -84,6 +86,10 @@ def increase_stat_from_user_with_id(userId, stat_name):
     cursor.execute(sql)
     mydb.commit()
 
+def set_stat_from_user_with_id(userId, stat_name, value):
+    sql = f"UPDATE user u SET {stat_name} = {value} WHERE u.idUser = {userId};"
+    cursor.execute(sql)
+    mydb.commit()
 
 def decrease_runes_from_user_with_id(userId, amount):
     sql = f"UPDATE user u SET souls = souls - {amount} WHERE u.idUser = {userId};"

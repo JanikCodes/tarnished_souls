@@ -5,6 +5,7 @@ from discord.ext import commands
 import db
 from Classes.user import User
 from Utils import utils
+from Utils.classes import class_selection
 
 
 class UpgradeStatsButton(discord.ui.Button):
@@ -66,15 +67,16 @@ class UpgradeStats(commands.Cog):
     ])
 
     async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
-        db.validate_user(interaction.user.id, interaction.user.name)
-        user = User(interaction.user.id)
-        selected_choice = choices.value
-        current_level = db.get_stat_level_from_user_with_id(user.get_userId(), selected_choice)
+        if db.validate_user(interaction.user.id, interaction.user.name):
+            user = User(interaction.user.id)
+            selected_choice = choices.value
+            current_level = db.get_stat_level_from_user_with_id(user.get_userId(), selected_choice)
 
-        embed = discord.Embed(title=f"**Upgrade {selected_choice}**", description=f"Click the button below to upgrade your skill!")
-        embed.set_author(name=user.get_userName())
-        embed.add_field(name=f"**{selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
-        await interaction.response.send_message(embed=embed, view=UpgradeStatsView(user=user, current_level=current_level, selected_choice=selected_choice))
-
+            embed = discord.Embed(title=f"**Upgrade {selected_choice}**", description=f"Click the button below to upgrade your skill!")
+            embed.set_author(name=user.get_userName())
+            embed.add_field(name=f"**{selected_choice}**", value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(current_level) + "/100", inline=False)
+            await interaction.response.send_message(embed=embed, view=UpgradeStatsView(user=user, current_level=current_level, selected_choice=selected_choice))
+        else:
+            await class_selection(interaction=interaction)
 async def setup(client:commands.Bot) -> None:
     await client.add_cog(UpgradeStats(client), guild=discord.Object(id=763425801391308901))

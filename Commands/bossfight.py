@@ -6,6 +6,7 @@ import db
 from Classes.enemy import Enemy
 from Classes.user import User
 from Utils import utils
+from Utils.classes import class_selection
 
 MAX_USERS = 3
 STAMINA_REGEN = 5
@@ -234,33 +235,35 @@ class BossFight(commands.Cog):
         app_commands.Choice(name="Clan", value="clan"),
     ])
     async def startboss(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
-        db.validate_user(interaction.user.id, interaction.user.name)
-        user = User(interaction.user.id)
-        selected_choice = choices.value
+        if db.validate_user(interaction.user.id, interaction.user.name):
+            user = User(interaction.user.id)
+            selected_choice = choices.value
 
-        enemy = Enemy(idEnemy=1)
+            enemy = Enemy(idEnemy=1)
 
-        if selected_choice == 'public':
-            embed = discord.Embed(title=f" {user.get_userName()} is starting a **public** boss fight!",
-                                  description="",
-                                  colour=discord.Color.orange())
+            if selected_choice == 'public':
+                embed = discord.Embed(title=f" {user.get_userName()} is starting a **public** boss fight!",
+                                      description="",
+                                      colour=discord.Color.orange())
 
-            embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
-            embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
-            embed.set_footer(text="Click the button below in order to join!")
+                embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
+                embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
+                embed.set_footer(text="Click the button below in order to join!")
 
-            await interaction.response.send_message(embed=embed, view=BossFightLobbyView(users=[user], enemy=enemy, solo=False))
-        elif selected_choice == 'solo':
-            embed = discord.Embed(title=f" {user.get_userName()} is starting a **solo** boss fight!",
-                                  description="",
-                                  colour=discord.Color.orange())
+                await interaction.response.send_message(embed=embed, view=BossFightLobbyView(users=[user], enemy=enemy, solo=False))
+            elif selected_choice == 'solo':
+                embed = discord.Embed(title=f" {user.get_userName()} is starting a **solo** boss fight!",
+                                      description="",
+                                      colour=discord.Color.orange())
 
-            embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
-            embed.set_footer(text="Click the button below in order to start the fight!")
+                embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
+                embed.set_footer(text="Click the button below in order to start the fight!")
 
-            await interaction.response.send_message(embed=embed, view=BossFightLobbyView(users=[user], enemy=enemy, solo=True))
+                await interaction.response.send_message(embed=embed, view=BossFightLobbyView(users=[user], enemy=enemy, solo=True))
+            else:
+                pass
         else:
-            pass
+            await class_selection(interaction=interaction)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(BossFight(client), guild=discord.Object(id=763425801391308901))
