@@ -1,10 +1,7 @@
 import math
 import db
 
-MAX_HEALTH = 2100
-BASE_HEALTH = 300
 BASE_DAMAGE = 25
-BASE_STAMINA = 100
 BASE_FLASK_AMOUNT = 2
 
 lookup_table = {
@@ -196,10 +193,8 @@ class User:
         return lookup_table[self.vigor] if self.vigor in lookup_table else None
 
     def reduce_health(self, amount):
-        print(f"Damage: {amount}")
         armor = int((self.get_total_armor() / 4))
         absorb = min(amount - armor, 15)
-        print(f"Armor absorbed: {absorb}")
 
         self.health = max(self.health - (amount - absorb), 0)
 
@@ -236,7 +231,17 @@ class User:
         self.stamina = min(self.stamina + amount, self.get_max_stamina())
 
     def get_max_stamina(self):
-        return max(BASE_STAMINA - self.get_total_weight(), 0)
+        value = self.endurance
+        if value >= 1 and value <= 15:
+            return max(int(80 + 25 * ((value - 1) / 14)) - self.get_total_weight(), 0)
+        elif value >= 16 and value <= 35:
+            return max(int(105 + 25 * ((value - 15) / 15)) - self.get_total_weight(), 0)
+        elif value >= 36 and value <= 60:
+            return max(int(130 + 25 * ((value - 30) / 20)) - self.get_total_weight(), 0)
+        elif value >= 61 and value <= 99:
+            return max(int(155 + 15 * ((value - 50) / 49)) - self.get_total_weight(), 0)
+        else:
+            return 0  # return 0 for invalid endurance value
 
     def get_stamina(self):
         return self.stamina
