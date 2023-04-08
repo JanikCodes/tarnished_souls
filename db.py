@@ -63,7 +63,10 @@ def does_user_exist(idUser):
 
 def validate_user(userId, userName):
     if not does_user_exist(userId):
-        add_user(userId, userName)
+        #add_user(userId, userName)
+        return False
+
+    return True
 
 
 def get_stat_level_from_user_with_id(userId, value):

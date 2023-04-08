@@ -184,6 +184,7 @@ class User:
         #TODO Make better calculation ( maybe real one from wiki )
 
     def reduce_health(self, amount):
+        print(self.get_total_armor())
         self.health = max(self.health - amount, 0)
 
     def increase_health(self, amount):
@@ -238,3 +239,16 @@ class User:
     def get_max_flasks(self):
         return BASE_FLASK_AMOUNT
         # TODO: Figure a way out to increase flask amount ( attribute or via items? )
+
+    def get_total_armor(self):
+        armor = 0
+        if self.head:
+            armor += self.head.get_total_value()
+        if self.chest:
+            armor += self.chest.get_total_value()
+        if self.legs:
+            armor += self.legs.get_total_value()
+        if self.gauntlet:
+            armor += self.gauntlet.get_total_value()
+
+        return armor
