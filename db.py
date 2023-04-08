@@ -256,7 +256,7 @@ def get_item_from_item_id(idItem):
         return None
 
 def get_item_from_item_name(item_name):
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl FROM item i WHERE i.name = '{item_name}'"
+    sql = f'SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl FROM item i WHERE i.name = "{item_name}"'
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
