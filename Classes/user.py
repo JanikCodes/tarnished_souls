@@ -1,4 +1,3 @@
-import math
 import db
 
 BASE_DAMAGE = 25

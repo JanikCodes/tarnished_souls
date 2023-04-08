@@ -1,5 +1,6 @@
-import discord
 import json
+
+import discord
 
 import db
 

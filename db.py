@@ -5,10 +5,8 @@ import mysql.connector
 
 import config
 from Classes.encounter import Encounter
-from Classes.item import Item
 from Classes.enemy_move import EnemyMove
-from Classes.enemy_logic import EnemyLogic
-from Classes.user import User
+from Classes.item import Item
 
 
 async def init_database():
