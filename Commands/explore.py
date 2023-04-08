@@ -42,7 +42,7 @@ class Explore(commands.Cog):
         embed.description = "You can find items, encounter events and explore the world."
         embed.colour = discord.Color.green() if finished else discord.Color.orange()
 
-        total_souls = 0
+        total_runes = 0
 
         seconds = self.EXPLORE_TIME * percentage / 100
         required_encounters = int((seconds / self.EXPLORE_TIME * self.ENCOUNTER_AMOUNT))
@@ -87,7 +87,8 @@ class Explore(commands.Cog):
 
         if not finished:
             embed.add_field(name=". . .", value="", inline=False)
-
+        else:
+            pass
 
         await interaction.response.send_message(embed=embed)
 

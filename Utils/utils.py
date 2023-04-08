@@ -66,7 +66,9 @@ def create_invisible_spaces(amount):
         white += "\u200E "
     return white
 
-def calculate_upgrade_cost(level, user, next_upgrade_cost):
-    cost = 150 + round((int(level) * 150) * 2, 0) + (
-                (user.get_all_stat_levels() + (1 if next_upgrade_cost else 0)) * 150)
-    return cost
+def calculate_upgrade_cost(user, next_upgrade_cost):
+    level = user.get_all_stat_levels() + (1 if next_upgrade_cost else 0) - 80 # -80 because that's if every stat default is 10
+    x = max(((level+81)-92)*0.02, 0) # Ensure x is not negative
+    rune_cost = int((x+0.1)*((level+81)**2))+1
+    total_cost = 150 + round((int(level)*150)*2, 0)
+    return total_cost + rune_cost

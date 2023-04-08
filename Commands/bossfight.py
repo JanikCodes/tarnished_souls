@@ -29,7 +29,7 @@ def check_phase_change(enemy):
             if enemy.get_health() <= enemy.get_max_health() / 2:
                 enemy.increase_phase()
         case _:
-            raise ValueError(f"Invalid enemy logic ID: {enemy_logic.get_id()}")
+            raise ValueError(f"ERROR: Invalid enemy logic ID: {enemy_logic.get_id()}")
 
 async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     # reset enemy dodge state

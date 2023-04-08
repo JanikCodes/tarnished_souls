@@ -50,7 +50,33 @@ class User:
             pass
 
     def update_user(self):
-        return User(self.userId)
+        result = db.get_user_with_id(self.userId)
+        self.userId = result[0]
+        self.userName = result[1]
+        self.level = result[2]
+        self.xp = result[3]
+        self.runes = result[4]
+        self.vigor = result[5]
+        self.mind = result[6]
+        self.endurance = result[7]
+        self.strength = result[8]
+        self.dexterity = result[9]
+        self.intelligence = result[10]
+        self.faith = result[11]
+        self.arcane = result[12]
+        self.last_explore = result[13]
+        self.weapon = db.get_item_from_user_with_id_rel(idUser=self.userId, idRel=result[14])
+        self.head = db.get_item_from_user_with_id_rel(idUser=self.userId, idRel=result[15])
+        self.chest = db.get_item_from_user_with_id_rel(idUser=self.userId, idRel=result[16])
+        self.legs = db.get_item_from_user_with_id_rel(idUser=self.userId, idRel=result[17])
+        self.gauntlet = db.get_item_from_user_with_id_rel(idUser=self.userId, idRel=result[18])
+
+        self.health = self.get_max_health()
+        self.stamina = self.get_max_stamina()
+        self.remaining_flasks = self.get_max_flasks()
+        self.dodge_next = False
+
+        return self
 
     # getters
     def get_userId(self):

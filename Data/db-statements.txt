@@ -40,8 +40,10 @@ INSERT INTO enemy_logic VALUE(NULL, "none");
 INSERT INTO enemy_logic VALUE(NULL, "full");
 INSERT INTO enemy_logic VALUE(NULL, "half");
 
+#
 INSERT INTO enemy VALUE(1, 1, "Margit, the Fell Omen", "*Someone must extinguish thy flame. Let it be Margit the Fell!*", 4174, 12000);
 
+# idMove, description, phase (if enemy has multiple phase 0 means can do that move in every phase ), idType ( 1=attack, 2=dodge, 3=heal, 4=block, 5=none ), idEnemy, damage, healing, 0, maxTargets
 INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** swings his staff in many directions with wind-ups ranging from fast to slow.', 0, 1, 1, 85, 0, 0, 3);
 INSERT INTO enemy_moves VALUES(NULL, '**Margit** stabs his staff directly forward.', 0, 1, 1, 35, 0, 0, 1);
 INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** pulls his staff behind his back, then slams it into the ground', 0, 1, 1, 105, 0, 0, 2);
