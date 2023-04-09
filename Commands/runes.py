@@ -16,10 +16,10 @@ class Runes(commands.Cog):
         if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
 
-            embed = discord.Embed(title=f" {user.get_userName()} runes",
+            embed = discord.Embed(title=f"<@{user.get_userId()}> runes amount",
                                   description=f"**{user.get_runes()}** runes")
 
-            print(user.get_max_health())
+            embed.set_footer(text="You can earn more while defeating enemies or doing /explore")
 
             await interaction.response.send_message(embed=embed)
         else:

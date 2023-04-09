@@ -412,3 +412,17 @@ def increase_runes_from_user_with_id(idUser, amount):
     sql = f"UPDATE user u SET souls = souls + {amount} WHERE u.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
+
+
+def reset_user(idUser):
+    sql = f"DELETE FROM user_encounter e WHERE e.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"DELETE FROM user_has_item r WHERE r.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"DELETE FROM user u WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
