@@ -426,3 +426,22 @@ def reset_user(idUser):
     sql = f"DELETE FROM user u WHERE u.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
+
+
+def unequip(idUser, item):
+    match item.get_iconCategory():
+        case 'leg_armor':
+            equip_slot_name = 'e_legs'
+        case 'chest_armor':
+            equip_slot_name = 'e_chest'
+        case 'helm':
+            equip_slot_name = 'e_head'
+        case 'gauntlets':
+            equip_slot_name = 'e_gauntlet'
+        case _:
+            equip_slot_name = 'e_weapon'
+
+    sql = f"UPDATE user u SET u.{equip_slot_name} = NULL WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
