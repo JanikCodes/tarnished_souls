@@ -110,31 +110,26 @@ class Item:
     def set_idRel(self, idRel):
         self.idRel = idRel
 
-    def get_requirement_text(self, user):
-
-        def get_requirement_check_icon(req, cur):
-            if cur < req:
-                return f":red_circle: "
-            else:
-                return f":green_circle: "
-
+    def get_requirement_text(self):
         text = str()
+        text += f"`Vig:` `{self.reqVigor}` "
+        text += f"`Str:` `{self.reqMind}` "
+        text += f"`End:` `{self.reqEndurance}` "
+        text += f"`Str:` `{self.reqStrength}` "
+        text += f"`Dex:` `{self.reqDexterity}` "
+        text += f"`Int:` `{self.reqIntelligence}` "
+        text += f"`Fai:` `{self.reqFaith}` "
 
-        if self.reqVigor > 0:
-            text += f"`Vig: {self.reqVigor}` "
-        if self.reqMind > 0:
-            text += f"`Min: {self.reqMind}` "
-        if self.reqEndurance > 0:
-            text += f"`End: {self.reqEndurance}` "
-        if self.reqStrength > 0:
-            text += f"`Str: {self.reqStrength}` "
-        if self.reqDexterity > 0:
-            text += f"`Dex: {self.reqDexterity}` "
-        if self.reqIntelligence > 0:
-            text += f"`Int: {self.reqIntelligence}` "
-        if self.reqFaith > 0:
-            text += f"`Fai: {self.reqFaith}` "
-        if self.reqArcane > 0:
-            text += f"`Arc: {self.reqArcane}` "
+        return text
+
+    def get_scaling_text(self):
+        text = str()
+        text += f"`Vig:` `-` "
+        text += f"`Str:` `-` "
+        text += f"`End:` `-` "
+        text += f"`Str:` `-` "
+        text += f"`Dex:` `-` "
+        text += f"`Int:` `-` "
+        text += f"`Fai:` `-` "
 
         return text

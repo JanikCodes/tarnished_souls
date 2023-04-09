@@ -319,3 +319,6 @@ class User:
                 return True
 
         return False
+
+    def get_gauntlet(self):
+        return self.gauntlet

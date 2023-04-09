@@ -120,7 +120,9 @@ async def view_inventory_page(interaction, label, user, page):
                         value=f"**Statistics:** \n"
                               f"`Damage:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n"
                               f"**Requirements:** \n"
-                              f"{item.get_requirement_text(user)}",
+                              f"{item.get_requirement_text()}\n"
+                              f"**Scaling:** \n"
+                              f"{item.get_scaling_text()}",
                         inline=False)
             case "armor":
                 for item in items:
