@@ -148,6 +148,9 @@ class StartButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         await interaction.response.defer()
 
+        health_increase = 1 if len(self.users) == 1 else ((len(self.users) - 1) * 0.5)
+        self.enemy.set_max_health(self.enemy.get_max_health() + (self.enemy.get_max_health() * health_increase))
+
         await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
                                             turn_index=0)  # turn_index = 0 because the first player should start the turn
 

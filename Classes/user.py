@@ -232,7 +232,7 @@ class User:
 
     def get_damage(self):
         if self.weapon is not None:
-            return BASE_DAMAGE + self.weapon.get_total_value()
+            return BASE_DAMAGE + self.weapon.get_total_value(self)
         else:
             return BASE_DAMAGE
 
@@ -291,13 +291,13 @@ class User:
     def get_total_armor(self):
         armor = 0
         if self.head:
-            armor += self.head.get_total_value()
+            armor += self.head.get_total_value(self)
         if self.chest:
-            armor += self.chest.get_total_value()
+            armor += self.chest.get_total_value(self)
         if self.legs:
-            armor += self.legs.get_total_value()
+            armor += self.legs.get_total_value(self)
         if self.gauntlet:
-            armor += self.gauntlet.get_total_value()
+            armor += self.gauntlet.get_total_value(self)
 
         return armor
 

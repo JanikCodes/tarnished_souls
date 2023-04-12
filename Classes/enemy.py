@@ -75,3 +75,7 @@ class Enemy:
 
     def increase_phase(self):
         self.phase += 1
+
+    def set_max_health(self, health):
+        self.max_health = health
+        self.health = health

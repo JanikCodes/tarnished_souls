@@ -82,7 +82,7 @@ class Equip(commands.Cog):
                         value_name = "Armor"
 
                 embed.add_field(name='', value=f"**Statistics:** \n"
-                                               f"`{value_name}:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**")
+                                               f"`{value_name}:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**")
 
                 await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
         else:

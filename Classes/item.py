@@ -1,10 +1,23 @@
+
+SCALING_VALUES = {
+    '-': 0,
+    'E': 0.25,
+    'D': 0.45,
+    'C': 0.75,
+    'B': 1.15,
+    'A': 1.55,
+    'S': 1.75,
+}
+
 class Item:
     def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength,
-                 reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl):
+                 reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl, sclVigor, sclMind, sclEndurance, sclStrength, sclDexterity, sclIntelligence, sclFaith, sclArcane):
         self.idItem = idItem
         self.name = name
         self.iconCategory = iconCategory
         self.item_type = item_type
+
+        # Requirements
         self.reqVigor = reqVigor
         self.reqMind = reqMind
         self.reqEndurance = reqEndurance
@@ -13,15 +26,27 @@ class Item:
         self.reqIntelligence = reqIntelligence
         self.reqFaith = reqFaith
         self.reqArcane = reqArcane
+
+        #Scaling
+        self.sclVigor = sclVigor
+        self.sclMind = sclMind
+        self.sclEndurance = sclEndurance
+        self.sclStrength = sclStrength
+        self.sclDexterity = sclDexterity
+        self.sclIntelligence = sclIntelligence
+        self.sclFaith = sclFaith
+        self.sclArcane = sclArcane
+
         self.price = price
-        self.level = 0
-        self.extra_value = 0
-        self.count = 0
-        self.idRel = 0
         self.value = value
         self.obtainable = obtainable
         self.weight = weight
         self.iconUrl = iconUrl
+
+        self.level = 0
+        self.extra_value = 0
+        self.count = 0
+        self.idRel = 0
 
     # Getter methods
     def get_icon_url(self):
@@ -36,8 +61,27 @@ class Item:
     def get_name(self):
         return self.name
 
-    def get_total_value(self):
-        return self.value + self.extra_value
+    def get_scaling_value(self, scaling, attribute):
+        val = 0
+        if scaling != "-":
+            val = SCALING_VALUES[scaling] * (self.value + self.extra_value) * (attribute / 100)
+        return val
+
+    def get_total_value(self, user):
+        return self.value + self.extra_value + self.get_total_scaling_value(user)
+
+    def get_total_scaling_value(self, user):
+        total_value = 0
+        total_value += self.get_scaling_value(self.sclVigor, user.get_vigor())
+        total_value += self.get_scaling_value(self.sclMind, user.get_mind())
+        total_value += self.get_scaling_value(self.sclEndurance, user.get_endurance())
+        total_value += self.get_scaling_value(self.sclStrength, user.get_strength())
+        total_value += self.get_scaling_value(self.sclDexterity, user.get_dexterity())
+        total_value += self.get_scaling_value(self.sclIntelligence, user.get_intelligence())
+        total_value += self.get_scaling_value(self.sclFaith, user.get_faith())
+        total_value += self.get_scaling_value(self.sclArcane, user.get_arcane())
+        return int(total_value)
+
 
     def get_iconCategory(self):
         return self.iconCategory
@@ -124,12 +168,12 @@ class Item:
 
     def get_scaling_text(self):
         text = str()
-        text += f"`Vig:` `-` "
-        text += f"`Str:` `-` "
-        text += f"`End:` `-` "
-        text += f"`Str:` `-` "
-        text += f"`Dex:` `-` "
-        text += f"`Int:` `-` "
-        text += f"`Fai:` `-` "
+        text += f"`Vig:` `{self.sclVigor}` "
+        text += f"`Min:` `{self.sclMind}` "
+        text += f"`End:` `{self.sclEndurance}` "
+        text += f"`Str:` `{self.sclStrength}` "
+        text += f"`Dex:` `{self.sclDexterity}` "
+        text += f"`Int:` `{self.sclIntelligence}` "
+        text += f"`Fai:` `{self.sclFaith}` "
 
         return text

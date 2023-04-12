@@ -118,7 +118,7 @@ async def view_inventory_page(interaction, label, user, page):
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Damage:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n"
+                              f"`Damage:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**\n"
                               f"**Requirements:** \n"
                               f"{item.get_requirement_text()}\n"
                               f"**Scaling:** \n"
@@ -136,7 +136,7 @@ async def view_inventory_page(interaction, label, user, page):
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Armor:` **{item.get_total_value()}** `Weight:` **{item.get_weight()}**\n",
+                              f"`Armor:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**\n",
                         inline=False)
             case "title":
                 pass
