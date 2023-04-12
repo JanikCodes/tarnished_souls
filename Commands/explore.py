@@ -99,7 +99,7 @@ class Explore(commands.Cog):
             embed.add_field(name=". . .", value="", inline=False)
         else:
             # grant runes as reward
-            rune_amount = ( ENCOUNTER_AMOUNT * BASE_RUNE_REWARD + user.get_all_stat_levels() ) * user.get_all_stat_levels() / 15
+            rune_amount = int(( ENCOUNTER_AMOUNT * BASE_RUNE_REWARD + user.get_all_stat_levels() ) * user.get_all_stat_levels() / 15)
             db.increase_runes_from_user_with_id(idUser=user.get_userId(), amount=rune_amount)
             embed.set_footer(text=f"You've received {rune_amount} runes!")
 

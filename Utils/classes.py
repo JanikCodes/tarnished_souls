@@ -17,7 +17,7 @@ class ClassSelectButton(discord.ui.Button):
             embed = discord.Embed(title=f"You're not allowed to use this action!",
                                   description="",
                                   colour=discord.Color.red())
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
         await interaction.response.defer()
 
@@ -65,7 +65,7 @@ class ClassSelectionPageButton(discord.ui.Button):
             embed = discord.Embed(title=f"You're not allowed to use this action!",
                                   description="",
                                   colour=discord.Color.red())
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
         await interaction.response.defer()
 
@@ -98,7 +98,7 @@ async def class_selection(interaction: discord.Interaction):
 
 
 async def view_class_selection_page(interaction, data, index):
-    embed = discord.Embed(title=f"Welcome! *please choose your start class!*",
+    embed = discord.Embed(title=f"Welcome {interaction.user.name}! *please choose your start class!*",
                           description=f"")
     # iterate over the objects
     ed_class = data[index]
