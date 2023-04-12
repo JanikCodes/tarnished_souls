@@ -36,8 +36,8 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
-        #db.fill_db_weapons()
-        #db.fill_db_armor()
+        db.fill_db_weapons()
+        db.fill_db_armor()
 
 
 client = Client()

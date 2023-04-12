@@ -114,9 +114,18 @@ def fill_db_weapons():
         req_faith = get_json_req_attribute(weapon, "Fai")
         req_arcane = get_json_req_attribute(weapon, "Arc")
 
+        scl_vigor = get_json_scale_attribute(weapon, "Vig")
+        scl_mind = get_json_scale_attribute(weapon, "Min")
+        scl_endurance = get_json_scale_attribute(weapon, "End")
+        scl_strength = get_json_scale_attribute(weapon, "Str")
+        scl_dexterity = get_json_scale_attribute(weapon, "Dex")
+        scl_intelligence = get_json_scale_attribute(weapon, "Int")
+        scl_faith = get_json_scale_attribute(weapon, "Fai")
+        scl_arcane = get_json_scale_attribute(weapon, "Arc")
+
         total_dmg = sum(attack['amount'] for attack in weapon['attack'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']}, '{weapon['image']}');"
+        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']}, '{weapon['image']}', '{scl_vigor}', '{scl_mind}', '{scl_endurance}', '{scl_strength}', '{scl_dexterity}', '{scl_intelligence}', '{scl_faith}', '{scl_arcane}' );"
 
         cursor.execute(sql)
         mydb.commit()
@@ -133,20 +142,26 @@ def fill_db_armor():
 
         total_negation = sum(negation['amount'] for negation in armor['dmgNegation'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}');"
+        sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}', '-', '-', '-', '-', '-', '-', '-', '-');"
 
         cursor.execute(sql)
         mydb.commit()
 
 
-def get_json_req_attribute(weapon, attribute_name):
+def get_json_req_attribute(item, attribute_name):
     try:
-        req_value = next(
-            attribute['amount'] for attribute in weapon['requiredAttributes'] if attribute['name'] == attribute_name)
+        req_value = next(attribute['amount'] for attribute in item['requiredAttributes'] if attribute['name'] == attribute_name)
     except StopIteration:
         req_value = 0
     return req_value
 
+def get_json_scale_attribute(item, attribute_name):
+    req_value = "-"
+    for attribute in item['scalesWith']:
+        if attribute['name'] == attribute_name and 'scaling' in attribute:
+            req_value = attribute['scaling']
+            break
+    return req_value
 
 def get_encounters_from_user_with_id(idUser):
     encounters = []

@@ -699,11 +699,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"D"
          }
       ],
       "requiredAttributes":[
@@ -5435,11 +5435,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"D"
          }
       ],
       "requiredAttributes":[
@@ -5515,11 +5515,7 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
-         },
-         {
-            "name":"Dex",
-            "scaling":"?"
+            "scaling":"C"
          }
       ],
       "requiredAttributes":[
@@ -8411,11 +8407,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"E"
          }
       ],
       "requiredAttributes":[
@@ -9911,15 +9907,15 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"E"
          },
          {
             "name":"Int",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Fai",
-            "scaling":"?"
+            "scaling":"D"
          }
       ],
       "requiredAttributes":[
@@ -11179,11 +11175,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"D"
          }
       ],
       "requiredAttributes":[
@@ -12679,11 +12675,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"C"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"E"
          }
       ],
       "requiredAttributes":[
@@ -15562,11 +15558,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"C"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"E"
          }
       ],
       "requiredAttributes":[
@@ -19314,15 +19310,15 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"E"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Int",
-            "scaling":"?"
+            "scaling":"E"
          }
       ],
       "requiredAttributes":[
@@ -19570,11 +19566,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"E"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"D"
          }
       ],
       "requiredAttributes":[
@@ -20302,15 +20298,15 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"E"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Int",
-            "scaling":"?"
+            "scaling":"E"
          }
       ],
       "requiredAttributes":[
@@ -23980,11 +23976,11 @@
       "scalesWith":[
          {
             "name":"Str",
-            "scaling":"?"
+            "scaling":"D"
          },
          {
             "name":"Dex",
-            "scaling":"?"
+            "scaling":"D"
          }
       ],
       "requiredAttributes":[
