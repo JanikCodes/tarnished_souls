@@ -131,8 +131,10 @@ class JoinButton(discord.ui.Button):
 
             await interaction.message.edit(embed=edited_embed)
         else:
-            await class_selection(interaction=interaction)
-
+            embed = discord.Embed(title=f"Please choose a class first",
+                                  description=f"You can do that by tying any command for example `/explore` or `/character`",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=8)
 
 class StartButton(discord.ui.Button):
     def __init__(self, users, enemy):
