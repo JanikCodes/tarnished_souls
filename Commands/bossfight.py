@@ -119,7 +119,7 @@ class JoinButton(discord.ui.Button):
                 embed = discord.Embed(title=f"You're already taking part in this fight..",
                                       description="",
                                       colour=discord.Color.red())
-                return await interaction.response.send_message(embed=embed, ephemeral=True)
+                return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
             await interaction.response.defer()
 
             self.users.append(interaction_user)
@@ -145,7 +145,7 @@ class StartButton(discord.ui.Button):
             embed = discord.Embed(title=f"You're not allowed to start the fight.",
                                   description="",
                                   colour=discord.Color.red())
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         await interaction.response.defer()
 
         await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
@@ -178,7 +178,7 @@ class BattleButton(discord.ui.Button):
             embed = discord.Embed(title=f"It's not your turn..",
                                   description="",
                                   colour=discord.Color.orange())
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         await interaction.response.defer()
 
         if self.current_user.get_health() > 0 and self.enemy.get_health() > 0:

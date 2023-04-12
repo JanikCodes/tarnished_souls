@@ -19,7 +19,7 @@ class UnEquipButton(discord.ui.Button):
             embed = discord.Embed(title=f"You're not allowed to use this action!",
                                   description="",
                                   colour=discord.Color.red())
-            return await interaction.response.send_message(embed=embed, ephemeral=True)
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
         await interaction.response.defer()
 
