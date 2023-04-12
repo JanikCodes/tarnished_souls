@@ -10,10 +10,13 @@ import db
 from Classes.user import User
 from Utils.classes import class_selection
 
+EXPLORE_TIME = 60 * 20
+ENCOUNTER_AMOUNT = 5
+BASE_RUNE_REWARD = 200
 
 class Explore(commands.Cog):
-    EXPLORE_TIME = 60 * 20
-    ENCOUNTER_AMOUNT = 5
+
+
 
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -26,13 +29,13 @@ class Explore(commands.Cog):
             current_time = (round(time.time() * 1000)) // 1000
             last_time = user.get_last_explore()
 
-            if float(current_time) - float(last_time) > self.EXPLORE_TIME:
+            if float(current_time) - float(last_time) > EXPLORE_TIME:
                 # display a recap off the old explore message because it's finished
                 await self.explore_status(interaction, percentage=100, user=user, finished=True)
                 db.remove_user_encounters(idUser=user.get_userId())
                 db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(), current_time=current_time)
             else:
-                await self.explore_status(interaction, percentage=(current_time - last_time) / self.EXPLORE_TIME * 100,
+                await self.explore_status(interaction, percentage=(current_time - last_time) / EXPLORE_TIME * 100,
                                           user=user, finished=False)
         else:
             await class_selection(interaction=interaction)
@@ -44,8 +47,8 @@ class Explore(commands.Cog):
 
         total_runes = 0
 
-        seconds = self.EXPLORE_TIME * percentage / 100
-        required_encounters = int((seconds / self.EXPLORE_TIME * self.ENCOUNTER_AMOUNT))
+        seconds = EXPLORE_TIME * percentage / 100
+        required_encounters = int((seconds / EXPLORE_TIME * ENCOUNTER_AMOUNT))
 
         encounters = db.get_encounters_from_user_with_id(user.get_userId())
         # display previous encounters
@@ -62,7 +65,7 @@ class Explore(commands.Cog):
                 loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
 
             embed.add_field(
-                name=f"*After {math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * i + 1)} minutes..*",
+                name=f"*After {math.ceil(EXPLORE_TIME / 60 / ENCOUNTER_AMOUNT * i + 1)} minutes..*",
                 value=encounters[i].get_description() + loot_sentence, inline=False)
 
         # generate new encounters
@@ -89,13 +92,16 @@ class Explore(commands.Cog):
                 pass
 
             embed.add_field(
-                name=f"*After {math.ceil(self.EXPLORE_TIME / 60 / self.ENCOUNTER_AMOUNT * (len(encounters) + i + 1))} minutes..*",
+                name=f"*After {math.ceil(EXPLORE_TIME / 60 / ENCOUNTER_AMOUNT * (len(encounters) + i + 1))} minutes..*",
                 value=new_encounter.get_description() + loot_sentence, inline=False)
 
         if not finished:
             embed.add_field(name=". . .", value="", inline=False)
         else:
-            pass
+            # grant runes as reward
+            rune_amount = ( ENCOUNTER_AMOUNT * BASE_RUNE_REWARD + user.get_all_stat_levels() ) * user.get_all_stat_levels() / 15
+            db.increase_runes_from_user_with_id(idUser=user.get_userId(), amount=rune_amount)
+            embed.set_footer(text=f"You've received {rune_amount} runes!")
 
         await interaction.response.send_message(embed=embed)
 

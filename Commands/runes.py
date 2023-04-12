@@ -16,7 +16,7 @@ class Runes(commands.Cog):
         if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
 
-            embed = discord.Embed(title=f"<@{user.get_userId()}> runes amount",
+            embed = discord.Embed(title=f"{user.get_userName()} rune amount",
                                   description=f"**{user.get_runes()}** runes")
 
             embed.set_footer(text="You can earn more while defeating enemies or doing /explore")

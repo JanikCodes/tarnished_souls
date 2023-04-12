@@ -42,7 +42,7 @@ class UpgradeStatsButton(discord.ui.Button):
                 await interaction.message.edit(embed=edited_embed,
                                                view=UpgradeStatsView(current_level=current_level, user=self.user,
                                                                      selected_choice=self.selected_choice,
-                                                                     next_upgrade_cost=False))
+                                                                     next_upgrade_cost=True))
 
 
 class UpgradeStatsView(discord.ui.View):
