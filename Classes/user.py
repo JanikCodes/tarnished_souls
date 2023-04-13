@@ -41,6 +41,9 @@ class User:
             self.legs = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[17])
             self.gauntlet = db.get_item_from_user_with_id_rel(idUser=userId, idRel=result[18])
 
+            self.current_location = db.get_location_from_id(idLocation=result[19])
+            self.max_location = db.get_location_from_id(idLocation=result[20])
+
             self.health = self.get_max_health()
             self.stamina = self.get_max_stamina()
             self.remaining_flasks = self.get_max_flasks()

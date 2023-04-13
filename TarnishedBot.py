@@ -36,8 +36,9 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
-        #db.fill_db_weapons()
-        #db.fill_db_armor()
+        if int(db.check_if_add_all_items()) == 0:
+            db.fill_db_weapons()
+            db.fill_db_armor()
 
 
 client = Client()

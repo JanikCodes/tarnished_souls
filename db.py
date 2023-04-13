@@ -7,6 +7,7 @@ import config
 from Classes.encounter import Encounter
 from Classes.enemy_move import EnemyMove
 from Classes.item import Item
+from Classes.location import Location
 
 
 async def init_database():
@@ -32,7 +33,7 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null)"
+    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1)"
     cursor.execute(sql)
     mydb.commit()
 
@@ -41,7 +42,7 @@ def add_user(userId, userName):
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet FROM user u WHERE u.idUser = {userId};"
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation FROM user u WHERE u.idUser = {userId};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -51,9 +52,8 @@ def get_user_with_id(userId):
 
 
 def does_user_exist(idUser):
-    sql = "SELECT * FROM user u WHERE u.idUser = %s"
-    val = (idUser,)
-    cursor.execute(sql, val)
+    sql = f"SELECT * FROM user u WHERE u.idUser = {idUser}"
+    cursor.execute(sql)
     res = cursor.fetchone()
     if res:
         return True
@@ -69,9 +69,8 @@ def validate_user(userId):
 
 
 def get_stat_level_from_user_with_id(userId, value):
-    sql = f"SELECT {value} FROM user u WHERE u.idUser = %s"
-    val = (userId,)
-    cursor.execute(sql, val)
+    sql = f"SELECT {value} FROM user u WHERE u.idUser = {userId};"
+    cursor.execute(sql)
     res = str(cursor.fetchone()).strip("(,)")
     if res:
         return res
@@ -460,3 +459,22 @@ def unequip(idUser, item):
     cursor.execute(sql)
     mydb.commit()
 
+def check_if_add_all_items():
+    sql = f"SELECT count(*) from item;"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        return res
+    else:
+        return None
+
+
+def get_location_from_id(idLocation):
+    sql = f"SELECT idLocation, name, description FROM location idLocation = {idLocation};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        location = Location(res[0], res[1], res[2])
+        return location
+    else:
+        return None
