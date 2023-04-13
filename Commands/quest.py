@@ -25,7 +25,6 @@ class FinishQuest(discord.ui.Button):
         edited_embed = message.embeds[0]
         edited_embed.colour = discord.Color.green()
 
-        #TODO: Delete old quest from rel and add new quest into rel
         db.remove_quest_from_user_with_quest_id(idUser=self.user.get_userId(), idQuest=self.idQuest)
         db.add_quest_to_user(idUser=self.user.get_userId(), idQuest=self.idQuest + 1)
 
