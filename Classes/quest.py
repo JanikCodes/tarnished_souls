@@ -1,4 +1,5 @@
 import db
+from Classes.enemy import Enemy
 
 
 class Quest:
@@ -10,7 +11,7 @@ class Quest:
         self.req_item_count = req_item_count
         self.req_runes = req_runes
         self.req_item = db.get_item_from_item_id(idItem)
-        self.req_enemy = db.get_enemy_with_id(idEnemy)
+        self.req_enemy = Enemy(idEnemy)
 
     def get_id(self):
         return self.id

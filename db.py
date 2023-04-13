@@ -5,9 +5,12 @@ import mysql.connector
 
 import config
 from Classes.encounter import Encounter
+from Classes.enemy import Enemy
 from Classes.enemy_move import EnemyMove
 from Classes.item import Item
 from Classes.location import Location
+from Classes.quest import Quest
+from Classes.quest_progress import QuestProgress
 
 
 async def init_database():
@@ -273,6 +276,9 @@ def add_item_to_user_with_item_name(idUser, item_name):
 
 
 def get_item_from_item_id(idItem):
+    if idItem is None:
+        return None
+
     sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i WHERE i.idItem = {idItem}"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -470,11 +476,42 @@ def check_if_add_all_items():
 
 
 def get_location_from_id(idLocation):
-    sql = f"SELECT idLocation, name, description FROM location idLocation = {idLocation};"
+    sql = f"SELECT idLocation, name, description FROM location WHERE idLocation = {idLocation};"
     cursor.execute(sql)
-    res = cursor.fetchall()
+    res = cursor.fetchone()
     if res:
         location = Location(res[0], res[1], res[2])
         return location
     else:
         return None
+
+
+def get_user_quest_with_user_id(idUser):
+    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes FROM user_has_quest WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5])
+        return quest_progress
+    else:
+        return None
+
+
+def get_quest_with_id(idQuest):
+    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy FROM quest WHERE idQuest = {idQuest};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7])
+        return quest
+    else:
+        return None
+
+
+def add_init_quest_to_user(idUser):
+    first_quest = get_quest_with_id(1)
+    sql = f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()});"
+    cursor.execute(sql)
+    mydb.commit()
+
+    return get_quest_with_id(1)

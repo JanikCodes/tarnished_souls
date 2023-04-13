@@ -54,8 +54,8 @@ INSERT INTO location VALUE(11, "Forbidden Lands", "");
 INSERT INTO location VALUE(12, "Consecrated Snowfield", "");
 INSERT INTO location VALUE(13, "Miquella's Haligtree", "");
 
-INSERT INTO quest VALUE(1, "An early beginning..", "This is only the beginning..", 1, NULL, NULL, NULL, 1);
-INSERT INTO quest VALUE(2, "Small steps", "You've made great progress so far..", 3, NULL, NULL, NULL, 1);
+INSERT INTO quest VALUE(1, "An early beginning..", "This is only the beginning..", 1, 0, 0, 0, 1);
+INSERT INTO quest VALUE(2, "Small steps", "You've made great progress so far..", 3, 0, 0, 0, 1);
 
 INSERT INTO enemy VALUE(1, 1, "Margit, the Fell Omen", "*Someone must extinguish thy flame. Let it be Margit the Fell!*", 4174, 12000);
 
