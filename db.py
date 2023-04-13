@@ -435,6 +435,10 @@ def increase_runes_from_user_with_id(idUser, amount):
 
 
 def reset_user(idUser):
+    sql = f"DELETE FROM user_has_quest r WHERE r.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
     sql = f"DELETE FROM user_encounter e WHERE e.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
@@ -514,8 +518,19 @@ def add_init_quest_to_user(idUser):
     cursor.execute(sql)
     mydb.commit()
 
-    return get_quest_with_id(1)
+    return get_user_quest_with_user_id(idUser=idUser)
 
+
+def remove_quest_from_user_with_quest_id(idUser, idQuest):
+    sql = f"DELETE FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
+    cursor.execute(sql)
+    mydb.commit()
+
+def add_quest_to_user(idUser, idQuest):
+    first_quest = get_quest_with_id(idQuest)
+    sql = f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()});"
+    cursor.execute(sql)
+    mydb.commit()
 
 def check_for_quest_update(idUser, idItem, runes, idEnemy):
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"

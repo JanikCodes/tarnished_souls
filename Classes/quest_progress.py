@@ -39,3 +39,6 @@ class QuestProgress:
             text += f"**Earn** `runes` **{remaining}/{self.quest.req_runes}**"
 
         return text
+
+    def is_finished(self):
+        return self.remaining_runes == 0 and self.remaining_kills == 0 and self.remaining_item_count == 0
