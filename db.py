@@ -515,3 +515,28 @@ def add_init_quest_to_user(idUser):
     mydb.commit()
 
     return get_quest_with_id(1)
+
+
+def check_for_quest_update(idUser, idItem, runes, idEnemy):
+    sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        quest = get_quest_with_id(res[0])
+
+        if quest.get_item():
+            if quest.get_item().get_idItem() == idItem:
+                sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - 1, 0) WHERE r.idUser = {idUser};"
+                cursor.execute(sql)
+                mydb.commit()
+
+        if quest.get_enemy():
+            if quest.get_enemy().get_id() == idEnemy:
+                sql = f"UPDATE user_has_quest r SET r.remaining_kills = GREATEST(remaining_kills - 1, 0) WHERE r.idUser = {idUser};"
+                cursor.execute(sql)
+                mydb.commit()
+
+        if runes > 0:
+            sql = f"UPDATE user_has_quest r SET r.remaining_runes = GREATEST(remaining_runes - {runes}, 0) WHERE r.idUser = {idUser};"
+            cursor.execute(sql)
+            mydb.commit()

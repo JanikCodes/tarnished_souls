@@ -1,11 +1,9 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-
 import db
 from Classes.user import User
 from Utils.classes import class_selection
-
 
 class Quest(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -22,8 +20,8 @@ class Quest(commands.Cog):
                 # create new quest rel
                 current_quest = db.add_init_quest_to_user(idUser=user.get_userId())
 
-            embed = discord.Embed(title=f"Current Quest: {current_quest.quest.get_title()}",
-                                  description=f"{current_quest.quest.get_description()}")
+            embed = discord.Embed(title=f"{user.get_userName()}'s current quest:",
+                                  description=f"**{current_quest.quest.get_title()}** \n{current_quest.quest.get_description()}")
 
             embed.add_field(name="Progress:", value=current_quest.get_quest_progress_text())
 

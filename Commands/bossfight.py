@@ -76,6 +76,10 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
         for user in users:
             db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
 
+        # update quest progress for host
+        db.check_for_quest_update(idUser=users[0].get_userId(), idItem=0, runes=enemy.get_runes(), idEnemy=enemy.get_id())
+        print("Updated quest progress!")
+
         await interaction.message.edit(embed=embed, view=None)
         return
     if len([user for user in users if user.get_health() > 0]) == 0:
@@ -150,8 +154,13 @@ class StartButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         await interaction.response.defer()
 
-        health_increase = 1 if len(self.users) == 1 else ((len(self.users) - 1) * 0.5)
-        self.enemy.set_max_health(self.enemy.get_max_health() + (self.enemy.get_max_health() * health_increase))
+        health_multip = 1 if len(self.users) == 1 else ((len(self.users) - 1) * 0.5)
+        health_increase = 0
+
+        if health_multip is not 1:
+            health_increase = self.enemy.get_max_health() * health_multip
+
+        self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
 
         await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
                                             turn_index=0)  # turn_index = 0 because the first player should start the turn

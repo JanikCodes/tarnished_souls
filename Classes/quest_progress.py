@@ -30,12 +30,12 @@ class QuestProgress:
 
         if self.quest.req_item_count > 0:
             remaining = self.quest.req_item_count - self.remaining_item_count
-            text += f"**Collect** `{self.quest.req_item.get_name()}` {remaining}/{self.quest.req_item_count} \n"
+            text += f"**Collect** `{self.quest.req_item.get_name()}` **{remaining}/{self.quest.req_item_count}** \n"
         if self.quest.req_kills > 0:
             remaining = self.quest.req_kills - self.remaining_kills
-            text += f"**Defeat** `{self.quest.req_enemy.get_name()}` {remaining}/{self.quest.req_kills} \n"
+            text += f"**Defeat** `{self.quest.req_enemy.get_name()}` **{remaining}/{self.quest.req_kills}** \n"
         if self.quest.req_runes > 0:
             remaining = self.quest.req_runes - self.remaining_runes
-            text += f"**Earn** `runes` {remaining}/{self.quest.req_runes}"
+            text += f"**Earn** `runes` **{remaining}/{self.quest.req_runes}**"
 
         return text
