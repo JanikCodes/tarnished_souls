@@ -325,3 +325,9 @@ class User:
 
     def get_gauntlet(self):
         return self.gauntlet
+
+    def get_max_location(self):
+        return self.max_location
+
+    def get_current_location(self):
+        return self.current_location

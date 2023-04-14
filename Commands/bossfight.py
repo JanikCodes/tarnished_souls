@@ -77,7 +77,7 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
             db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
 
         # update quest progress for host
-        db.check_for_quest_update(idUser=users[0].get_userId(), idItem=0, runes=enemy.get_runes(), idEnemy=enemy.get_id())
+        db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes(), idEnemy=enemy.get_id())
         print("Updated quest progress!")
 
         await interaction.message.edit(embed=embed, view=None)

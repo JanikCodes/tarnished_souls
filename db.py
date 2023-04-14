@@ -532,7 +532,7 @@ def add_quest_to_user(idUser, idQuest):
     cursor.execute(sql)
     mydb.commit()
 
-def check_for_quest_update(idUser, idItem, runes, idEnemy):
+def check_for_quest_update(idUser, idItem = None, runes = None, idEnemy = None):
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -555,3 +555,22 @@ def check_for_quest_update(idUser, idItem, runes, idEnemy):
             sql = f"UPDATE user_has_quest r SET r.remaining_runes = GREATEST(remaining_runes - {runes}, 0) WHERE r.idUser = {idUser};"
             cursor.execute(sql)
             mydb.commit()
+
+
+def get_all_locations_from_user(user):
+    locations = []
+
+    sql = f"SELECT idLocation, name, description FROM location WHERE idLocation <= {user.get_max_location().get_id()} ORDER BY idLocation;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            locations.append(Location(row[0], row[1], row[2]))
+
+    return locations
+
+
+def update_location_from_user(idUser, idLocation):
+    sql = f"UPDATE user Set currentLocation = {idLocation} WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
