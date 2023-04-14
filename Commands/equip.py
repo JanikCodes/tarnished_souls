@@ -29,7 +29,7 @@ class EquipButton(discord.ui.Button):
             edited_embed = message.embeds[0]
             edited_embed.colour = discord.Color.green()
 
-            await interaction.message.edit(embed=edited_embed, view=EquipView(user=self.user, item=self.item))
+            await interaction.message.edit(embed=edited_embed, view=None)
         else:
             message = interaction.message
             edited_embed = message.embeds[0]
