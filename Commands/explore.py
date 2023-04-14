@@ -16,8 +16,6 @@ BASE_RUNE_REWARD = 200
 
 class Explore(commands.Cog):
 
-
-
     def __init__(self, client: commands.Bot):
         self.client = client
 
@@ -50,7 +48,7 @@ class Explore(commands.Cog):
         seconds = EXPLORE_TIME * percentage / 100
         required_encounters = int((seconds / EXPLORE_TIME * ENCOUNTER_AMOUNT))
 
-        encounters = db.get_encounters_from_user_with_id(user.get_userId())
+        encounters = db.get_encounters_from_user(user=user)
         # display previous encounters
         for i in range(0, len(encounters)):
             loot_sentence = str()

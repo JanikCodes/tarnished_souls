@@ -157,7 +157,7 @@ class StartButton(discord.ui.Button):
         health_multip = 1 if len(self.users) == 1 else ((len(self.users) - 1) * 0.5)
         health_increase = 0
 
-        if health_multip is not 1:
+        if health_multip != 1:
             health_increase = self.enemy.get_max_health() * health_multip
 
         self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
@@ -205,6 +205,13 @@ class BattleButton(discord.ui.Button):
         pass
 
 
+class InstaKillButton(BattleButton):
+    def __init__(self, current_user, users, enemy, turn_index):
+        super().__init__(current_user, users, enemy, turn_index, label=f"Attack (-99999)",
+                         style=discord.ButtonStyle.danger)
+    def execute_action(self):
+        self.enemy.reduce_health(99999)
+
 class AttackButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
         super().__init__(current_user, users, enemy, turn_index, label=f"Attack (-{current_user.get_damage()})",
@@ -247,6 +254,8 @@ class BossFightBattleView(discord.ui.View):
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(DodgeButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        #TODO: REMOVE DEBUG BUTTON
+        self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 
 class BossFight(commands.Cog):

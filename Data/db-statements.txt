@@ -1,45 +1,3 @@
-INSERT INTO encounter VALUE(NULL, "You stumble upon a cursed village and must break the curse to save the inhabitants.", 10);
-INSERT INTO encounter VALUE(NULL, "You come across a mysterious traveler who offers to join you on your journey.", 5);
-INSERT INTO encounter VALUE(NULL, "You encounter a powerful wizard who challenges you to a magical duel.", 10);
-INSERT INTO encounter VALUE(NULL, "You discover a hidden underground city filled with treasures and dangers.", 30);
-INSERT INTO encounter VALUE(NULL, "You come across a group of refugees who need your help to escape danger.", 15);
-INSERT INTO encounter VALUE(NULL, "You explore a dark forest filled with deadly creatures and valuable resources.", 20);
-INSERT INTO encounter VALUE(NULL, "You face a powerful necromancer who raises an army of undead to defeat you.", 10);
-INSERT INTO encounter VALUE(NULL, "You come across an ancient ruin that could hold secrets to your destiny.", 20);
-INSERT INTO encounter VALUE(NULL, "You encounter a group of smugglers who offer to sell you rare items.", 5);
-INSERT INTO encounter VALUE(NULL, "You find a hidden laboratory filled with alchemical potions and dangerous experiments.", 25);
-INSERT INTO encounter VALUE(NULL, "You stumble upon a pack of wolves led by an alpha who must be defeated.", 15);
-INSERT INTO encounter VALUE(NULL, "You come across a group of miners who need your help to escape a cave-in.", 15);
-INSERT INTO encounter VALUE(NULL, "You discover a hidden library filled with ancient knowledge and powerful spells.", 30);
-INSERT INTO encounter VALUE(NULL, "You encounter a powerful demon who guards a valuable artifact.", 10);
-INSERT INTO encounter VALUE(NULL, "You explore a dangerous swamp filled with poisonous creatures and hidden treasures.", 20);
-INSERT INTO encounter VALUE(NULL, "You face a powerful enemy who knows your weaknesses and exploits them.", 5);
-INSERT INTO encounter VALUE(NULL, "You come across a hidden temple guarded by powerful monks.", 15);
-INSERT INTO encounter VALUE(NULL, "You encounter a group of rebels who need your help to overthrow a tyrant.", 10);
-INSERT INTO encounter VALUE(NULL, "You find a hidden portal to an alternate dimension filled with unknown dangers and treasures.", 20);
-INSERT INTO encounter VALUE(NULL, "You stumble upon a mysterious traveler who can predict your fate and offers to help you change it.", 5);
-INSERT INTO encounter VALUE(NULL, "You stumble upon an abandoned castle and explore its ruins.", 5);
-INSERT INTO encounter VALUE(NULL, "You come across a caravan of merchants traveling through the desert.", 15);
-INSERT INTO encounter VALUE(NULL, "You discover a hidden dungeon filled with dangerous traps and valuable treasures.", 30);
-INSERT INTO encounter VALUE(NULL, "You encounter a group of thieves attempting to rob a wealthy merchant.", 10);
-INSERT INTO encounter VALUE(NULL, "You come across a pack of wild animals that could be dangerous or tame.", 15);
-INSERT INTO encounter VALUE(NULL, "You explore a haunted mansion filled with ghosts and other supernatural creatures.", 20);
-INSERT INTO encounter VALUE(NULL, "You face off against a rival adventurer who wants to take all the glory for themselves.", 5);
-INSERT INTO encounter VALUE(NULL, "You come across a mysterious portal that could lead to a new world or danger.", 10);
-INSERT INTO encounter VALUE(NULL, "You encounter a group of cultists performing a dark ritual and must stop them.", 15);
-INSERT INTO encounter VALUE(NULL, "You find a hidden underground lake and could discover ancient artifacts or hidden dangers.", 20);
-UPDATE encounter SET dropRate = dropRate * 2;
-
-INSERT INTO move_type VALUE(NULL, "attack");
-INSERT INTO move_type VALUE(NULL, "dodge");
-INSERT INTO move_type VALUE(NULL, "heal");
-INSERT INTO move_type VALUE(NULL, "block");
-INSERT INTO move_type VALUE(NULL, "none");
-
-INSERT INTO enemy_logic VALUE(NULL, "none");
-INSERT INTO enemy_logic VALUE(NULL, "full");
-INSERT INTO enemy_logic VALUE(NULL, "half");
-
 INSERT INTO location VALUE(1, "Limgrave", "");
 INSERT INTO location VALUE(2, "Weeping Peninsula", "");
 INSERT INTO location VALUE(3, "Liurnia of the lakes", "");
@@ -54,8 +12,51 @@ INSERT INTO location VALUE(11, "Forbidden Lands", "");
 INSERT INTO location VALUE(12, "Consecrated Snowfield", "");
 INSERT INTO location VALUE(13, "Miquella's Haligtree", "");
 
-INSERT INTO quest VALUE(1, "An early beginning..", "This is only the beginning..", 1, 0, 0, 0, 1);
-INSERT INTO quest VALUE(2, "Small steps", "You've made great progress so far..", 3, 0, 0, 0, 1);
+INSERT INTO encounter VALUE(NULL, "You stumble upon a cursed village and must break the curse to save the inhabitants.", 10, 1);
+INSERT INTO encounter VALUE(NULL, "You come across a mysterious traveler who offers to join you on your journey.", 5, 1);
+INSERT INTO encounter VALUE(NULL, "You encounter a powerful wizard who challenges you to a magical duel.", 10, 1);
+INSERT INTO encounter VALUE(NULL, "You discover a hidden underground city filled with treasures and dangers.", 30, 1);
+INSERT INTO encounter VALUE(NULL, "You come across a group of refugees who need your help to escape danger.", 15, 1);
+INSERT INTO encounter VALUE(NULL, "You explore a dark forest filled with deadly creatures and valuable resources.", 20, 1);
+INSERT INTO encounter VALUE(NULL, "You face a powerful necromancer who raises an army of undead to defeat you.", 10, 1);
+INSERT INTO encounter VALUE(NULL, "You come across an ancient ruin that could hold secrets to your destiny.", 20, 1);
+INSERT INTO encounter VALUE(NULL, "You encounter a group of smugglers who offer to sell you rare items.", 5, 1);
+INSERT INTO encounter VALUE(NULL, "You find a hidden laboratory filled with alchemical potions and dangerous experiments.", 25, 1);
+INSERT INTO encounter VALUE(NULL, "You stumble upon a pack of wolves led by an alpha who must be defeated.", 15, 1);
+INSERT INTO encounter VALUE(NULL, "You come across a group of miners who need your help to escape a cave-in.", 15, 1);
+INSERT INTO encounter VALUE(NULL, "You discover a hidden library filled with ancient knowledge and powerful spells.", 30, 1);
+INSERT INTO encounter VALUE(NULL, "You encounter a powerful demon who guards a valuable artifact.", 10, 1);
+INSERT INTO encounter VALUE(NULL, "You explore a dangerous swamp filled with poisonous creatures and hidden treasures.", 20, 1);
+INSERT INTO encounter VALUE(NULL, "You face a powerful enemy who knows your weaknesses and exploits them.", 5, 1);
+INSERT INTO encounter VALUE(NULL, "You come across a hidden temple guarded by powerful monks.", 15, 1);
+INSERT INTO encounter VALUE(NULL, "You encounter a group of rebels who need your help to overthrow a tyrant.", 10, 1);
+INSERT INTO encounter VALUE(NULL, "You find a hidden portal to an alternate dimension filled with unknown dangers and treasures.", 20, 1);
+INSERT INTO encounter VALUE(NULL, "You stumble upon a mysterious traveler who can predict your fate and offers to help you change it.", 5, 1);
+INSERT INTO encounter VALUE(NULL, "You stumble upon an abandoned castle and explore its ruins.", 5, 1);
+INSERT INTO encounter VALUE(NULL, "You come across a caravan of merchants traveling through the desert.", 15, 1);
+INSERT INTO encounter VALUE(NULL, "You discover a hidden dungeon filled with dangerous traps and valuable treasures.", 30, 1);
+INSERT INTO encounter VALUE(NULL, "You encounter a group of thieves attempting to rob a wealthy merchant.", 10, 1);
+INSERT INTO encounter VALUE(NULL, "You come across a pack of wild animals that could be dangerous or tame.", 15, 1);
+INSERT INTO encounter VALUE(NULL, "You explore a haunted mansion filled with ghosts and other supernatural creatures.", 20, 1);
+INSERT INTO encounter VALUE(NULL, "You face off against a rival adventurer who wants to take all the glory for themselves.", 5, 1);
+INSERT INTO encounter VALUE(NULL, "You come across a mysterious portal that could lead to a new world or danger.", 10, 1);
+INSERT INTO encounter VALUE(NULL, "You encounter a group of cultists performing a dark ritual and must stop them.", 15, 1);
+INSERT INTO encounter VALUE(NULL, "You find a hidden underground lake and could discover ancient artifacts or hidden dangers.", 20, 1);
+UPDATE encounter SET dropRate = dropRate * 2;
+
+INSERT INTO move_type VALUE(NULL, "attack");
+INSERT INTO move_type VALUE(NULL, "dodge");
+INSERT INTO move_type VALUE(NULL, "heal");
+INSERT INTO move_type VALUE(NULL, "block");
+INSERT INTO move_type VALUE(NULL, "none");
+
+INSERT INTO enemy_logic VALUE(NULL, "none");
+INSERT INTO enemy_logic VALUE(NULL, "full");
+INSERT INTO enemy_logic VALUE(NULL, "half");
+
+INSERT INTO quest VALUE(1, "An early beginning..", "This is only the beginning..", 1, 0, 0, 0, 1, 4500, 2);
+INSERT INTO quest VALUE(2, "Small steps", "You've made great progress so far..", 3, 0, 0, 0, 1, 0, 0);
+INSERT INTO quest VALUE(3, "Collectors collecting", "Show that you're worthy and collect the needed resources.", 0, 0, 7500, 0, 1, 0, 3);
 
 INSERT INTO enemy VALUE(1, 1, "Margit, the Fell Omen", "*Someone must extinguish thy flame. Let it be Margit the Fell!*", 4174, 12000);
 

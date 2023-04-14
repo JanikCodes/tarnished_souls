@@ -40,5 +40,18 @@ class QuestProgress:
 
         return text
 
+    def has_rewards(self):
+        return self.quest.get_rune_reward() > 0 or self.quest.get_location_reward()
+
+    def get_quest_reward_text(self):
+        text = str()
+
+        if self.quest.get_rune_reward() > 0:
+            text += f"- `{self.quest.get_rune_reward()}` runes!\n"
+        if self.quest.get_location_reward():
+            text += f"- `{self.quest.get_location_reward().get_name()}` as a new location!"
+
+        return text
+
     def is_finished(self):
         return self.remaining_runes == 0 and self.remaining_kills == 0 and self.remaining_item_count == 0

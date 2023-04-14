@@ -165,14 +165,14 @@ def get_json_scale_attribute(item, attribute_name):
             break
     return req_value
 
-def get_encounters_from_user_with_id(idUser):
+def get_encounters_from_user(user):
     encounters = []
-    sql = f"SELECT e.idEncounter, e.description, e.dropRate FROM encounter e, user_encounter r WHERE r.idEncounter = e.idEncounter AND r.idUser = {idUser};"
+    sql = f"SELECT e.idEncounter, e.description, e.dropRate, e.idLocation FROM encounter e, user_encounter r WHERE r.idEncounter = e.idEncounter AND r.idUser = {user.get_userId()} AND e.idLocation = {user.get_current_location().get_id()};"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            encounters.append(Encounter(id=row[0], description=row[1], drop_rate=row[2]))
+            encounters.append(Encounter(id=row[0], description=row[1], drop_rate=row[2], idLocation=row[3]))
 
     return encounters
 
@@ -198,13 +198,13 @@ def update_last_explore_timer_from_user_with_id(idUser, current_time):
 
 def get_all_unique_encounters_for_user(idUser):
     encounters = []
-    sql = f"SELECT e.idEncounter, e.description, e.dropRate FROM encounter e WHERE e.idEncounter NOT IN (SELECT idEncounter FROM user_encounter r WHERE r.idUser = {idUser});"
+    sql = f"SELECT e.idEncounter, e.description, e.dropRate, e.idLocation FROM encounter e WHERE e.idEncounter NOT IN (SELECT idEncounter FROM user_encounter r WHERE r.idUser = {idUser});"
 
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            encounters.append(Encounter(id=row[0], description=row[1], drop_rate=row[2]))
+            encounters.append(Encounter(id=row[0], description=row[1], drop_rate=row[2], idLocation=row[3]))
 
     return encounters
 
@@ -502,11 +502,11 @@ def get_user_quest_with_user_id(idUser):
 
 
 def get_quest_with_id(idQuest):
-    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy FROM quest WHERE idQuest = {idQuest};"
+    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward FROM quest WHERE idQuest = {idQuest};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7])
+        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9])
         return quest
     else:
         return None
@@ -572,5 +572,11 @@ def get_all_locations_from_user(user):
 
 def update_location_from_user(idUser, idLocation):
     sql = f"UPDATE user Set currentLocation = {idLocation} WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def update_max_location_from_user(idUser, idLocation):
+    sql = f"UPDATE user Set maxLocation = {idLocation} WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()

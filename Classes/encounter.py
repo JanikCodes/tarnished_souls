@@ -1,8 +1,12 @@
+import db
+
+
 class Encounter:
-    def __init__(self, id, description, drop_rate):
+    def __init__(self, id, description, drop_rate, idLocation):
         self.id = id
         self.description = description
         self.drop_rate = drop_rate
+        self.location = db.get_location_from_id(idLocation=idLocation)
 
     def get_id(self):
         return self.id

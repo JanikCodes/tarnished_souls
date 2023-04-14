@@ -3,7 +3,7 @@ from Classes.enemy import Enemy
 
 
 class Quest:
-    def __init__(self, id, title, description, req_kills, req_item_count, req_runes, idItem, idEnemy):
+    def __init__(self, id, title, description, req_kills, req_item_count, req_runes, idItem, idEnemy, runeReward, locationIdReward):
         self.id = id
         self.title = title
         self.description = description
@@ -12,6 +12,8 @@ class Quest:
         self.req_runes = req_runes
         self.req_item = db.get_item_from_item_id(idItem)
         self.req_enemy = Enemy(idEnemy)
+        self.rune_reward = runeReward
+        self.location_reward = db.get_location_from_id(locationIdReward)
 
     def get_id(self):
         return self.id
@@ -36,3 +38,9 @@ class Quest:
 
     def get_enemy(self):
         return self.req_enemy
+
+    def get_rune_reward(self):
+        return self.rune_reward
+
+    def get_location_reward(self):
+        return self.location_reward
