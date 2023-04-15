@@ -74,7 +74,7 @@ class UnEquip(commands.Cog):
             has_equipped = selected_item
 
             if has_equipped:
-                embed = discord.Embed(title=f"**{selected_item.get_name()}**",
+                embed = discord.Embed(title=f"**{selected_item.get_name()}** `id: {selected_item.get_idRel()}`",
                                       description=f"Do you want to unequip this item?",
                                       colour=discord.Color.orange())
 

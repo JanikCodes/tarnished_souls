@@ -66,7 +66,7 @@ class Equip(commands.Cog):
                                       colour=discord.Color.red())
                 await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
-                embed = discord.Embed(title=f"**{item.get_name()}**",
+                embed = discord.Embed(title=f"**{item.get_name()}** `id: {item.get_idRel()}`",
                                       description=f"Do you want to equip this item?")
 
                 if item.get_icon_url() is not None and item.get_icon_url() != 'None':
