@@ -54,11 +54,13 @@ INSERT INTO enemy_logic VALUE(NULL, "none");
 INSERT INTO enemy_logic VALUE(NULL, "full");
 INSERT INTO enemy_logic VALUE(NULL, "half");
 
-INSERT INTO quest VALUE(1, "An early beginning..", "This is only the beginning..", 1, 0, 0, 0, 1, 4500, 2);
-INSERT INTO quest VALUE(2, "Small steps", "You've made great progress so far..", 3, 0, 0, 0, 1, 0, 0);
-INSERT INTO quest VALUE(3, "Collectors collecting", "Show that you're worthy and collect the needed resources.", 0, 0, 7500, 0, 1, 0, 3);
+INSERT INTO quest VALUE(1, "The worthy", "Can you prove that you're worthy to join these lands?", 1, 0, 0, 0, 1, 4500, 2);
+INSERT INTO quest VALUE(2, "One bird at the time", "I.. I didn't expect this from you..", 2, 0, 0, 0, 3, 6000, 0);
+INSERT INTO quest VALUE(3, "Collectors collecting", "Show that you're worthy and collect the needed resources.", 0, 0, 7500, 0, 0, 0, 3);
+INSERT INTO quest VALUE(4, "Boaring times", "Interesting.. can you perhaps help me out here?", 5, 0, 20000, 0, 2, 2500, 0);
 
-INSERT INTO enemy VALUE(1, 1, "Margit, the Fell Omen", "*Someone must extinguish thy flame. Let it be Margit the Fell!*", 4174, 12000, 1);
+INSERT INTO enemy VALUE(1, 1, "Margit, the Fell Omen", "Boss", 4174, 12000, 1);
+
 
 INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** swings his staff in many directions with wind-ups ranging from fast to slow.', 0, 1, 1, 85, 0, 0, 3);
 INSERT INTO enemy_moves VALUES(NULL, '**Margit** stabs his staff directly forward.', 0, 1, 1, 35, 0, 0, 1);
@@ -75,3 +77,24 @@ INSERT INTO enemy_moves VALUES(NULL, "**Margit's** eyes remain locked on her opp
 INSERT INTO enemy_moves VALUES(NULL, '**Margit** stands tall and still, watching you closely with a piercing gaze', 0, 5, 1, 0, 0, 0, 0);
 INSERT INTO enemy_moves VALUES(NULL, 'Despite your movements, **Margit** remains calm and collected, waiting for the right moment to strike..', 0, 5, 1, 0, 0, 0, 0);
 INSERT INTO enemy_moves VALUES(NULL, '**The Fell Omen** takes a moment to catch his breath', 0, 5, 1, 0, 0, 0, 0);
+
+INSERT INTO enemy VALUE(2, 1, "Boar", "", 1020, 1350, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The boar** charges forward, using its tusks to deal great damage!", 0, 1, 2, 120, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The boar** charges and pushes away the players", 0, 1, 2, 55, 0, 0, 3);
+INSERT INTO enemy_moves VALUES(NULL, "**The boar** becomes more aggresive but stalls for a moment.", 0, 5, 2, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The boar** jumps into the air and lands heavily, dealing massive damage to **everyone**", 0, 1, 2, 100, 0, 0, 3);
+INSERT INTO enemy_moves VALUES(NULL, "**The boar** raises its tusks, **becoming temporarily immune** to physical attacks!", 0, 2, 2, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The boar** snorts, healing a small amount of health..", 0, 3, 2, 0, 350, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The boar** stands still and does **nothing**, waiting for the player to make the next move..", 0, 5, 2, 0, 0, 0, 0);
+
+# idmove, description, phase, idType, idEnemy, damage, healing, duration, maxTargets
+
+INSERT INTO enemy VALUE(3, 1, "Warhawk", "", 1645, 1550, 2);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** slashes at the players with its sharp talons, dealing good amount of damage!", 0, 1, 3, 90, 0, 0, 2);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** pecks with its beak, dealing damage", 0, 1, 3, 45, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** swoops down and slams into the ground near you, dealing massive damage!", 0, 1, 3, 130, 0, 0, 3);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** flaps its wings fiercely, creating a gust of wind that **prevents** the **next incoming attack**", 0, 2, 3, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** emits a piercing cry that disorients everyone, causing them to miss their next attack..", 0, 2, 3, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** summons a bolt of lighting to strike, dealing damage", 0, 1, 3, 80, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** uses a feather to **heal itself** for a small amount of health", 0, 3, 3, 0, 150, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** flies to a nearby perch, gaining a defensive advantage and **dodging** the **next incoming attack!**", 0, 2, 3, 0, 0, 0, 0);

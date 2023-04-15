@@ -540,13 +540,13 @@ def check_for_quest_update(idUser, idItem = None, runes = None, idEnemy = None):
         quest = get_quest_with_id(res[0])
 
         if quest.get_item():
-            if quest.get_item().get_idItem() == idItem:
+            if quest.get_item().get_idItem() == int(idItem):
                 sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - 1, 0) WHERE r.idUser = {idUser};"
                 cursor.execute(sql)
                 mydb.commit()
 
         if quest.get_enemy():
-            if quest.get_enemy().get_id() == idEnemy:
+            if quest.get_enemy().get_id() == int(idEnemy):
                 sql = f"UPDATE user_has_quest r SET r.remaining_kills = GREATEST(remaining_kills - 1, 0) WHERE r.idUser = {idUser};"
                 cursor.execute(sql)
                 mydb.commit()

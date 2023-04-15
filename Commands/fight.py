@@ -247,6 +247,7 @@ class FightBattleView(discord.ui.View):
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(DodgeButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 class FightLobbyView(discord.ui.View):
     def __init__(self, users, enemy, visibility):
@@ -268,7 +269,7 @@ class FightEnemySelect(discord.ui.Select):
         self.visibility = visibility
 
         for enemy in db.get_all_enemies_from_location(idLocation=users[0].get_current_location().get_id()):
-            self.add_option(label=f"{enemy.get_name()}", value=f"{enemy.get_id()}")
+            self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}", value=f"{enemy.get_id()}")
 
     async def callback(self, interaction: discord.Interaction):
 

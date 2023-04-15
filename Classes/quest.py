@@ -11,7 +11,7 @@ class Quest:
         self.req_item_count = req_item_count
         self.req_runes = req_runes
         self.req_item = db.get_item_from_item_id(idItem)
-        self.req_enemy = Enemy(idEnemy)
+        self.req_enemy = Enemy(idEnemy) if idEnemy is not 0 else None
         self.rune_reward = runeReward
         self.location_reward = db.get_location_from_id(locationIdReward)
 
