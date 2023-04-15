@@ -396,7 +396,7 @@ def get_item_count_from_user(idUser, type):
 
 
 def get_enemy_with_id(idEnemy):
-    sql = f"SELECT name, idLogic, description, health, runes FROM enemy WHERE idEnemy = {idEnemy};"
+    sql = f"SELECT name, idLogic, description, health, runes, idLocation FROM enemy WHERE idEnemy = {idEnemy};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:

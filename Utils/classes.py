@@ -42,14 +42,14 @@ class ClassSelectButton(discord.ui.Button):
             edited_embed.colour = discord.Color.green()
             edited_embed.add_field(name=f"Success!", value=f"You've selected the class **{class_name}**!", inline=False)
 
-            await interaction.message.edit(embed=edited_embed, view=None)
+            await interaction.message.edit(embed=edited_embed, view=None, delete_after=2)
         else:
             message = interaction.message
             edited_embed = message.embeds[0]
             edited_embed.colour = discord.Color.red()
             edited_embed.add_field(name=f"Failure!", value=f"You've already selected a class..", inline=False)
 
-            await interaction.message.edit(embed=edited_embed, view=None)
+            await interaction.message.edit(embed=edited_embed, view=None, delete_after=2)
 
 
 class ClassSelectionPageButton(discord.ui.Button):

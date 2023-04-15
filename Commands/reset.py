@@ -32,7 +32,7 @@ class ChoiceButton(discord.ui.Button):
 
             edited_embed.add_field(name="Success", value="You've successfully reset your whole character..", inline=False)
 
-            await interaction.message.edit(embed=edited_embed, view=None)
+            await interaction.message.edit(embed=edited_embed, view=None, delete_after=2)
         else:
             message = interaction.message
             edited_embed = message.embeds[0]
@@ -40,7 +40,7 @@ class ChoiceButton(discord.ui.Button):
 
             edited_embed.add_field(name="Aborted", value="This process has been aborted!", inline=False)
 
-            await interaction.message.edit(embed=edited_embed, view=None)
+            await interaction.message.edit(embed=edited_embed, view=None, delete_after=2)
 
 
 class ResetView(discord.ui.View):

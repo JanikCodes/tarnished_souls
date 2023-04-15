@@ -78,7 +78,6 @@ async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
 
         # update quest progress for host
         db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes(), idEnemy=enemy.get_id())
-        print("Updated quest progress!")
 
         await interaction.message.edit(embed=embed, view=None)
         return
@@ -258,17 +257,16 @@ class BossFightBattleView(discord.ui.View):
         self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 
-class BossFight(commands.Cog):
+class Fight(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @app_commands.command(name="startboss", description="Start a boss fight!")
+    @app_commands.command(name="fight", description="Choose an enemy to fight in your current location")
     @app_commands.choices(choices=[
         app_commands.Choice(name="Solo", value="solo"),
         app_commands.Choice(name="Public", value="public"),
-        app_commands.Choice(name="Clan", value="clan"),
     ])
-    async def startboss(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+    async def fight(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
             selected_choice = choices.value
@@ -303,4 +301,4 @@ class BossFight(commands.Cog):
 
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(BossFight(client), guild=discord.Object(id=763425801391308901))
+    await client.add_cog(Fight(client), guild=discord.Object(id=763425801391308901))

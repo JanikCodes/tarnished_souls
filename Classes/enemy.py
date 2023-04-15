@@ -14,6 +14,7 @@ class Enemy:
         self.max_health = result[3]
         self.runes = result[4]
         self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
+        self.location = db.get_location_from_id(result[5])
 
         self.health = self.get_max_health()
         self.phase = 0
@@ -79,3 +80,6 @@ class Enemy:
     def set_max_health(self, health):
         self.max_health = health
         self.health = health
+
+    def get_location(self):
+        return self.location
