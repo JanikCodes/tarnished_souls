@@ -217,13 +217,13 @@ class AttackButton(BattleButton):
 
 class HealButton(BattleButton):
     def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (+150)",
+        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (+300)",
                          style=discord.ButtonStyle.success)
         # Disable button if no flasks remaining
         self.disabled = current_user.get_remaining_flasks() == 0
 
     def execute_action(self):
-        self.current_user.increase_health(150)
+        self.current_user.increase_health(300)
 
 
 class DodgeButton(BattleButton):
@@ -269,7 +269,10 @@ class FightEnemySelect(discord.ui.Select):
         self.visibility = visibility
 
         for enemy in db.get_all_enemies_from_location(idLocation=users[0].get_current_location().get_id()):
-            self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}", value=f"{enemy.get_id()}")
+            if enemy.get_description() == "Boss":
+                self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}", value=f"{enemy.get_id()}", emoji="💀")
+            else:
+                self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}",value=f"{enemy.get_id()}")
 
     async def callback(self, interaction: discord.Interaction):
 
