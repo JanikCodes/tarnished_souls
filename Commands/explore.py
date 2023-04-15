@@ -68,31 +68,33 @@ class Explore(commands.Cog):
 
         # generate new encounters
         for i in range(0, required_encounters - (len(encounters))):
-            new_encounter = db.create_new_encounter(user.get_userId())
+            new_encounter = db.create_new_encounter_from_location(user.get_userId(), user.get_current_location().get_id())
             loot_sentence = str()
 
-            if new_encounter.get_drop_rate() >= random.randint(0, 100):
-                # we received an item drop!
-                all_item_ids = db.get_all_item_ids()
-                random_item_id = random.choice(all_item_ids)
-                item = db.get_item_from_item_id(random_item_id)
-                random_stats = self.calculate_random_stats()
-                item.set_extra_value(random_stats)
+            if new_encounter:
+                if new_encounter.get_drop_rate() >= random.randint(0, 100):
+                    # we received an item drop!
+                    all_item_ids = db.get_all_item_ids()
+                    random_item_id = random.choice(all_item_ids)
+                    item = db.get_item_from_item_id(random_item_id)
+                    random_stats = self.calculate_random_stats()
+                    item.set_extra_value(random_stats)
 
-                emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis,
-                                          name=item.get_iconCategory())
+                    emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis,
+                                              name=item.get_iconCategory())
 
-                db.add_item_to_user(idUser=user.get_userId(), item=item)
-                db.update_user_encounter_item(idEncounter=new_encounter.get_id(), item=item, idUser=user.get_userId())
+                    db.add_item_to_user(idUser=user.get_userId(), item=item)
+                    db.update_user_encounter_item(idEncounter=new_encounter.get_id(), item=item, idUser=user.get_userId())
 
-                loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
+                    loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
+                else:
+                    pass
+
+                embed.add_field(
+                    name=f"*After {math.ceil(EXPLORE_TIME / 60 / ENCOUNTER_AMOUNT * (len(encounters) + i + 1))} minutes..*",
+                    value=new_encounter.get_description() + loot_sentence, inline=False)
             else:
-                pass
-
-            embed.add_field(
-                name=f"*After {math.ceil(EXPLORE_TIME / 60 / ENCOUNTER_AMOUNT * (len(encounters) + i + 1))} minutes..*",
-                value=new_encounter.get_description() + loot_sentence, inline=False)
-
+                print(f"WARNING: Not enough encounters for location: {user.get_current_location().get_name()}")
         if not finished:
             embed.add_field(name=". . .", value="", inline=False)
         else:

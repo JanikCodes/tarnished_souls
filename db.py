@@ -196,9 +196,9 @@ def update_last_explore_timer_from_user_with_id(idUser, current_time):
     mydb.commit()
 
 
-def get_all_unique_encounters_for_user(idUser):
+def get_all_unique_encounters_for_user_from_location(idUser, idLocation):
     encounters = []
-    sql = f"SELECT e.idEncounter, e.description, e.dropRate, e.idLocation FROM encounter e WHERE e.idEncounter NOT IN (SELECT idEncounter FROM user_encounter r WHERE r.idUser = {idUser});"
+    sql = f"SELECT e.idEncounter, e.description, e.dropRate, e.idLocation FROM encounter e WHERE e.idEncounter NOT IN (SELECT idEncounter FROM user_encounter r WHERE r.idUser = {idUser}) AND e.idLocation = {idLocation};"
 
     cursor.execute(sql)
     res = cursor.fetchall()
@@ -209,16 +209,18 @@ def get_all_unique_encounters_for_user(idUser):
     return encounters
 
 
-def create_new_encounter(idUser):
-    all_encounters = get_all_unique_encounters_for_user(idUser=idUser)
+def create_new_encounter_from_location(idUser, idLocation):
+    all_encounters = get_all_unique_encounters_for_user_from_location(idUser=idUser, idLocation=idLocation)
 
-    selected_encounter = random.choice(all_encounters)
+    if len(all_encounters) > 0:
+        selected_encounter = random.choice(all_encounters)
 
-    sql = f"INSERT INTO user_encounter VALUE(NULL, {selected_encounter.get_id()}, {idUser}, NULL, 0);"
-    cursor.execute(sql)
-    mydb.commit()
+        sql = f"INSERT INTO user_encounter VALUE(NULL, {selected_encounter.get_id()}, {idUser}, NULL, 0);"
+        cursor.execute(sql)
+        mydb.commit()
 
-    return selected_encounter
+        return selected_encounter
+    return None
 
 
 def remove_user_encounters(idUser):
@@ -532,7 +534,7 @@ def add_quest_to_user(idUser, idQuest):
     cursor.execute(sql)
     mydb.commit()
 
-def check_for_quest_update(idUser, idItem = None, runes = None, idEnemy = None):
+def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0):
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
