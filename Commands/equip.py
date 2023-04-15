@@ -28,8 +28,9 @@ class EquipButton(discord.ui.Button):
             message = interaction.message
             edited_embed = message.embeds[0]
             edited_embed.colour = discord.Color.green()
+            edited_embed.set_footer(text="Successfully equipped!")
 
-            await interaction.message.edit(embed=edited_embed, view=None)
+            await interaction.message.edit(embed=edited_embed, view=None, delete_after=2)
         else:
             message = interaction.message
             edited_embed = message.embeds[0]
@@ -58,7 +59,6 @@ class Equip(commands.Cog):
     async def equip(self, interaction: discord.Interaction, item_id: int):
         if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
-            embed = None
             item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
             if item is None:
                 embed = discord.Embed(title=f"I couldn't find the correct Item..",
@@ -67,8 +67,7 @@ class Equip(commands.Cog):
                 await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
                 embed = discord.Embed(title=f"**{item.get_name()}**",
-                                      description=f"Do you want to equip this item?",
-                                      colour=discord.Color.orange())
+                                      description=f"Do you want to equip this item?")
 
                 if item.get_icon_url() is not None and item.get_icon_url() != 'None':
                     embed.set_thumbnail(url=f"{item.get_icon_url()}")
@@ -81,8 +80,17 @@ class Equip(commands.Cog):
                     case 'Armor':
                         value_name = "Armor"
 
-                embed.add_field(name='', value=f"**Statistics:** \n"
-                                               f"`{value_name}:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**")
+                embed.add_field(name="", value=f"**Statistics:** \n"
+                                               f"`{value_name}:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**", inline=False)
+                embed.add_field(name="", value=f"**Requirements** \n"
+                                               f"{item.get_requirement_text()}", inline=False)
+
+                embed.colour = discord.Color.orange()
+
+                # user doesnt met requirements
+                if not user.get_is_required_for_item(item):
+                    embed.colour = discord.Color.red()
+                    embed.set_footer(text=f"You don't meet the requirements!")
 
                 await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
         else:

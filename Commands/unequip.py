@@ -26,10 +26,11 @@ class UnEquipButton(discord.ui.Button):
         message = interaction.message
         edited_embed = message.embeds[0]
         edited_embed.colour = discord.Color.green()
+        edited_embed.set_footer(text="Successfully unequipped!")
 
         db.unequip(idUser=self.user.get_userId(), item=self.item)
 
-        await interaction.message.edit(embed=edited_embed, view=UnEquipView(user=self.user, item=self.item))
+        await interaction.message.edit(embed=edited_embed, view=None, delete_after=2)
 
 
 class UnEquipView(discord.ui.View):
@@ -89,7 +90,7 @@ class UnEquip(commands.Cog):
                         value_name = "Armor"
 
                 embed.add_field(name='', value=f"**Statistics:** \n"
-                                               f"`{value_name}:` **{selected_item.get_total_value()}** `Weight:` **{selected_item.get_weight()}**")
+                                               f"`{value_name}:` **{selected_item.get_total_value(user=user)}** `Weight:` **{selected_item.get_weight()}**")
 
                 await interaction.response.send_message(embed=embed, view=UnEquipView(user=user, item=selected_item))
             else:
