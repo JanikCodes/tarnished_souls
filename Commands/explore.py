@@ -99,6 +99,10 @@ class Explore(commands.Cog):
             # grant runes as reward
             rune_amount = int(( ENCOUNTER_AMOUNT * BASE_RUNE_REWARD + user.get_all_stat_levels() ) * user.get_all_stat_levels() / 15)
             db.increase_runes_from_user_with_id(idUser=user.get_userId(), amount=rune_amount)
+
+            # update quest progress for host
+            db.check_for_quest_update(idUser=user.get_userId(), runes=rune_amount)
+
             embed.set_footer(text=f"You've received {rune_amount} runes!")
 
         await interaction.response.send_message(embed=embed)

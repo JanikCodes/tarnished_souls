@@ -580,3 +580,16 @@ def update_max_location_from_user(idUser, idLocation):
     sql = f"UPDATE user Set maxLocation = {idLocation} WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
+
+
+def get_all_enemies_from_location(idLocation):
+    enemies = []
+
+    sql = f"SELECT idEnemy FROM enemy WHERE idLocation = {idLocation};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            enemies.append(Enemy(row[0]))
+
+    return enemies

@@ -33,7 +33,7 @@ def check_phase_change(enemy):
             raise ValueError(f"ERROR: Invalid enemy logic ID: {enemy_logic.get_id()}")
 
 
-async def update_fight_battle_view(enemy, users, interaction, turn_index):
+async def update_boss_fight_battle_view(enemy, users, interaction, turn_index):
     # reset enemy dodge state
     enemy.reset_dodge()
 
@@ -91,7 +91,7 @@ async def update_fight_battle_view(enemy, users, interaction, turn_index):
         return
 
     await interaction.message.edit(embed=embed,
-                                   view=FightBattleView(users=users, enemy=enemy, turn_index=turn_index))
+                                   view=BossFightBattleView(users=users, enemy=enemy, turn_index=turn_index))
 
 
 def cycle_turn_index(turn_index, users):
@@ -161,15 +161,21 @@ class StartButton(discord.ui.Button):
 
         self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
 
-        await update_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
-                                       turn_index=0)  # turn_index = 0 because the first player should start the turn
+        await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
+                                            turn_index=0)  # turn_index = 0 because the first player should start the turn
 
 
-class FightSelectView(discord.ui.View):
-    def __init__(self, users, visibility):
+class BossFightLobbyView(discord.ui.View):
+    def __init__(self, users, enemy, solo):
         super().__init__()
 
-        self.add_item(FightEnemySelect(users=users, visibility=visibility))
+        disable = False
+        if len(users) == MAX_USERS:
+            disable = True
+
+        self.add_item(StartButton(users=users, enemy=enemy))
+        if not solo:
+            self.add_item(JoinButton(users=users, disabled=disable))
 
 
 class BattleButton(discord.ui.Button):
@@ -191,8 +197,8 @@ class BattleButton(discord.ui.Button):
         if self.current_user.get_health() > 0 and self.enemy.get_health() > 0:
             self.execute_action()
 
-            await update_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
-                                           turn_index=self.turn_index)
+            await update_boss_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
+                                                turn_index=self.turn_index)
 
     def execute_action(self):
         pass
@@ -238,7 +244,7 @@ class DodgeButton(BattleButton):
         self.current_user.dodge(STAMINA_COST)
 
 
-class FightBattleView(discord.ui.View):
+class BossFightBattleView(discord.ui.View):
     def __init__(self, users, enemy, turn_index):
         super().__init__()
         self.users = users
@@ -247,69 +253,51 @@ class FightBattleView(discord.ui.View):
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(DodgeButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        #TODO: REMOVE DEBUG BUTTON
+        self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
-class FightLobbyView(discord.ui.View):
-    def __init__(self, users, enemy, visibility):
-        super().__init__()
 
-        # disable join button if reached max users
-        disable = False
-        if len(users) == MAX_USERS:
-            disable = True
-
-        self.add_item(StartButton(users=users, enemy=enemy))
-        if visibility == 'public':
-            self.add_item(JoinButton(users=users, disabled=disable))
-
-class FightEnemySelect(discord.ui.Select):
-    def __init__(self, users, visibility):
-        super().__init__(placeholder="Choose an enemy")
-        self.users = users
-        self.visibility = visibility
-
-        for enemy in db.get_all_enemies_from_location(idLocation=users[0].get_current_location().get_id()):
-            self.add_option(label=f"{enemy.get_name()}", value=f"{enemy.get_id()}")
-
-    async def callback(self, interaction: discord.Interaction):
-
-        await interaction.response.defer()
-
-        selected_enemy = Enemy(self.values[0])
-
-        embed = discord.Embed(title=f" {self.users[0].get_userName()} has started a {self.visibility} lobby",
-                              description="",
-                              colour=discord.Color.orange())
-
-        embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value="")
-        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
-
-        if self.visibility == 'public':
-            embed.set_footer(text="Click the button below in order to join!")
-
-        await interaction.message.edit(embed=embed, view=FightLobbyView(users=self.users, enemy=selected_enemy, visibility=self.visibility))
-
-class Fight(commands.Cog):
+class StartBoss(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @app_commands.command(name="fight", description="Choose an enemy to fight in your current location")
-    @app_commands.choices(visibility=[
+    @app_commands.command(name="startboss", description="Choose an enemy to fight in your current location")
+    @app_commands.choices(choices=[
         app_commands.Choice(name="Solo", value="solo"),
         app_commands.Choice(name="Public", value="public"),
     ])
-    async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str]):
+    async def startboss(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         if db.validate_user(interaction.user.id):
             user = User(interaction.user.id)
-            selected_visibility = visibility.value
+            selected_visibility = choices.value
 
-            embed = discord.Embed(title=f" {user.get_userName()} is choosing an enemy to fight..",
-                                  description=f"The enemies below are all from `{user.get_current_location().get_name()}`\n"
-                                              f"*You can fight different enemies if you change your location with* `/travel`",
-                                  colour=discord.Color.orange())
+            enemy = Enemy(idEnemy=1)
 
-            await interaction.response.send_message(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
+            if selected_visibility == 'public':
+                embed = discord.Embed(title=f" {user.get_userName()} is starting a **public** boss fight!",
+                                      description="",
+                                      colour=discord.Color.orange())
+
+                embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
+                embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
+                embed.set_footer(text="Click the button below in order to join!")
+
+                await interaction.response.send_message(embed=embed,
+                                                        view=BossFightLobbyView(users=[user], enemy=enemy, solo=False))
+            elif selected_visibility == 'solo':
+                embed = discord.Embed(title=f" {user.get_userName()} is starting a **solo** boss fight!",
+                                      description="",
+                                      colour=discord.Color.orange())
+
+                embed.add_field(name=f"Enemy: **{enemy.get_name()}**", value="")
+                embed.set_footer(text="Click the button below in order to start the fight!")
+
+                await interaction.response.send_message(embed=embed,
+                                                        view=BossFightLobbyView(users=[user], enemy=enemy, solo=True))
+            else:
+                pass
         else:
             await class_selection(interaction=interaction)
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(Fight(client), guild=discord.Object(id=763425801391308901))
+    await client.add_cog(StartBoss(client), guild=discord.Object(id=763425801391308901))
