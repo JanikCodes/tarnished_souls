@@ -10,7 +10,7 @@ import db
 from Classes.user import User
 from Utils.classes import class_selection
 
-EXPLORE_TIME = 60 * 20
+EXPLORE_TIME = 30
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 
@@ -103,7 +103,7 @@ class Explore(commands.Cog):
             db.increase_runes_from_user_with_id(idUser=user.get_userId(), amount=rune_amount)
 
             # update quest progress for host
-            db.check_for_quest_update(idUser=user.get_userId(), runes=rune_amount)
+            db.check_for_quest_update(idUser=user.get_userId(), runes=rune_amount, explore_location_id=user.get_current_location().get_id())
 
             embed.set_footer(text=f"You've received {rune_amount} runes!")
 

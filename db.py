@@ -249,12 +249,12 @@ def add_item_to_user(idUser, item):
     res = cursor.fetchone()
     if res:
         # update count
-        sql = f"UPDATE user_has_item r SET r.count = r.count + 1 WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
+        sql = f"UPDATE user_has_item r SET r.count = r.count + {item.get_count()} WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
         cursor.execute(sql)
         mydb.commit()
     else:
         # add new item to table
-        sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, 1, {item.get_extra_value()});"
+        sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
         cursor.execute(sql)
         mydb.commit()
 
@@ -482,33 +482,35 @@ def check_if_add_all_items():
 
 
 def get_location_from_id(idLocation):
-    sql = f"SELECT idLocation, name, description FROM location WHERE idLocation = {idLocation};"
-    cursor.execute(sql)
-    res = cursor.fetchone()
-    if res:
-        location = Location(res[0], res[1], res[2])
-        return location
-    else:
-        return None
+    if idLocation:
+        sql = f"SELECT idLocation, name, description FROM location WHERE idLocation = {idLocation};"
+        cursor.execute(sql)
+        res = cursor.fetchone()
+        if res:
+            location = Location(res[0], res[1], res[2])
+            return location
+        else:
+            return None
+    return None
 
 
 def get_user_quest_with_user_id(idUser):
-    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes FROM user_has_quest WHERE idUser = {idUser};"
+    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5])
+        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5], res[6])
         return quest_progress
     else:
         return None
 
 
 def get_quest_with_id(idQuest):
-    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward FROM quest WHERE idQuest = {idQuest};"
+    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId FROM quest WHERE idQuest = {idQuest};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9])
+        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11])
         return quest
     else:
         return None
@@ -516,7 +518,7 @@ def get_quest_with_id(idQuest):
 
 def add_init_quest_to_user(idUser):
     first_quest = get_quest_with_id(1)
-    sql = f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()});"
+    sql = f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()});"
     cursor.execute(sql)
     mydb.commit()
 
@@ -529,13 +531,14 @@ def remove_quest_from_user_with_quest_id(idUser, idQuest):
     mydb.commit()
 
 def add_quest_to_user(idUser, idQuest):
-    first_quest = get_quest_with_id(idQuest)
-    sql = f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()});"
+    quest = get_quest_with_id(idQuest)
+    sql = f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()});"
     cursor.execute(sql)
     mydb.commit()
 
-def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0):
-    sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
+def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_location_id = None):
+    print("Checking for quest update..")
+    sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -543,20 +546,31 @@ def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0):
 
         if quest.get_item():
             if quest.get_item().get_idItem() == int(idItem):
+                print("Quest: Updated item count")
                 sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - 1, 0) WHERE r.idUser = {idUser};"
                 cursor.execute(sql)
                 mydb.commit()
 
         if quest.get_enemy():
             if quest.get_enemy().get_id() == int(idEnemy):
+                print("Quest: Updated enemy count")
                 sql = f"UPDATE user_has_quest r SET r.remaining_kills = GREATEST(remaining_kills - 1, 0) WHERE r.idUser = {idUser};"
                 cursor.execute(sql)
                 mydb.commit()
 
         if runes > 0:
+            print("Quest: Updated runes count")
             sql = f"UPDATE user_has_quest r SET r.remaining_runes = GREATEST(remaining_runes - {runes}, 0) WHERE r.idUser = {idUser};"
             cursor.execute(sql)
             mydb.commit()
+
+        if explore_location_id:
+            if quest.get_explore_location():
+                if quest.get_explore_location().get_id() == int(explore_location_id):
+                    print("Quest: Updated explore count")
+                    sql = f"UPDATE user_has_quest r SET r.remaining_explores = GREATEST(remaining_explores - 1, 0) WHERE r.idUser = {idUser};"
+                    cursor.execute(sql)
+                    mydb.commit()
 
 
 def get_all_locations_from_user(user):
@@ -595,3 +609,19 @@ def get_all_enemies_from_location(idLocation):
             enemies.append(Enemy(row[0]))
 
     return enemies
+
+
+def get_quest_item_reward(idQuest):
+    items = []
+
+    sql = f"SELECT idItem, count FROM quest_has_item WHERE idQuest = {idQuest};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            new_item = get_item_from_item_id(row[0])
+            if new_item:
+                new_item.set_count(row[1])
+                items.append(new_item)
+
+    return items

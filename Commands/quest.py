@@ -21,11 +21,18 @@ class FinishQuest(discord.ui.Button):
 
         await interaction.response.defer()
 
-        # Grant rewards to user
+        # Give out quest rewards to user
+        # Add runes
         if self.current_quest.get_quest().get_rune_reward() > 0:
             db.increase_runes_from_user_with_id(idUser=self.user.get_userId(), amount=self.current_quest.get_quest().get_rune_reward())
+        # Add new Location
         if self.current_quest.get_quest().get_location_reward():
             db.update_max_location_from_user(idUser=self.user.get_userId(), idLocation=self.current_quest.get_quest().get_location_reward().get_id())
+        # Add Item
+        if len(self.current_quest.get_quest().get_item_reward()) > 0:
+            for item in self.current_quest.get_quest().get_item_reward():
+                print(item.get_count())
+                db.add_item_to_user(idUser=self.user.get_userId(), item=item)
 
         # Edit quest message
         message = interaction.message
@@ -64,7 +71,7 @@ class Quest(commands.Cog):
             embed.add_field(name="Progress:", value=current_quest.get_quest_progress_text(), inline=False)
 
             if current_quest.has_rewards():
-                embed.add_field(name="Rewards:", value=current_quest.get_quest_reward_text(), inline=False)
+                embed.add_field(name="Rewards:", value=current_quest.get_quest_reward_text(interaction=interaction), inline=False)
 
             if current_quest.is_finished():
                 await interaction.response.send_message(embed=embed, view=QuestView(user=user, current_quest=current_quest))

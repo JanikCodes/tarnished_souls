@@ -247,7 +247,7 @@ class FightBattleView(discord.ui.View):
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(DodgeButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
-        #self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 class FightLobbyView(discord.ui.View):
     def __init__(self, users, enemy, visibility):

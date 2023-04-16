@@ -45,7 +45,7 @@ class Item:
 
         self.level = 0
         self.extra_value = 0
-        self.count = 0
+        self.count = 1
         self.idRel = 0
 
     # Getter methods
