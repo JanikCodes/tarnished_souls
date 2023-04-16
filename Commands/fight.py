@@ -111,7 +111,7 @@ def cycle_turn_index(turn_index, users):
 
 class JoinButton(discord.ui.Button):
     def __init__(self, users, disabled=False):
-        super().__init__(label='Join Fight', style=discord.ButtonStyle.secondary, disabled=disabled)
+        super().__init__(label='Join Lobby', style=discord.ButtonStyle.secondary, disabled=disabled)
         self.users = users
 
     async def callback(self, interaction: discord.Interaction):
@@ -247,7 +247,7 @@ class FightBattleView(discord.ui.View):
         self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
         self.add_item(DodgeButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
-        self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        #self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 class FightLobbyView(discord.ui.View):
     def __init__(self, users, enemy, visibility):
@@ -275,6 +275,12 @@ class FightEnemySelect(discord.ui.Select):
                 self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}",value=f"{enemy.get_id()}")
 
     async def callback(self, interaction: discord.Interaction):
+
+        if str(interaction.user.id) != self.users[0].get_userId():
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
         await interaction.response.defer()
 

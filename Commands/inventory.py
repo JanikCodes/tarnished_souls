@@ -58,7 +58,7 @@ class InventoryReturnButton(discord.ui.Button):
         default_embed = discord.Embed(title=f" {self.user.get_userName()}'s Inventory",
                                       description="Please select an inventory category below!")
         default_embed.colour = discord.Color.green()
-        default_embed.set_footer(text="You'll unlock more items & titles while playing!")
+        default_embed.set_footer(text="You'll unlock more items while playing!")
 
         await interaction.message.edit(embed=default_embed, view=DefaultInventoryView(user=self.user))
 
@@ -138,7 +138,7 @@ async def view_inventory_page(interaction, label, user, page):
                         value=f"**Statistics:** \n"
                               f"`Armor:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**\n",
                         inline=False)
-            case "title":
+            case "items":
                 pass
 
     new_embed.set_footer(text=f"Page {page}/{str(total_page_count)}")
@@ -157,7 +157,7 @@ class DefaultInventoryView(discord.ui.View):
         self.add_item(
             InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.secondary, func="armor", user=user))
         self.add_item(
-            InventoryCategoryButton(text="Titles", button_style=discord.ButtonStyle.success, func="title", user=user))
+            InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="items", user=user))
 
 
 class Inventory(commands.Cog):
@@ -172,7 +172,7 @@ class Inventory(commands.Cog):
             embed = discord.Embed(title=f" {user.get_userName()}'s Inventory",
                                   description="Please select an inventory category below!")
             embed.colour = discord.Color.green()
-            embed.set_footer(text="You'll unlock more items & titles while playing!")
+            embed.set_footer(text="You'll unlock more items while playing!")
             await interaction.response.send_message(embed=embed, view=DefaultInventoryView(user=user))
         else:
             await class_selection(interaction=interaction)
