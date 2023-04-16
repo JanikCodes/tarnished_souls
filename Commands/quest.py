@@ -1,10 +1,12 @@
+import datetime
+
 import discord
 from discord import app_commands
 from discord.ext import commands
 import db
 from Classes.user import User
 from Utils.classes import class_selection
-
+import time
 
 class FinishQuest(discord.ui.Button):
     def __init__(self, user, current_quest):
@@ -42,6 +44,10 @@ class FinishQuest(discord.ui.Button):
         db.remove_quest_from_user_with_quest_id(idUser=self.user.get_userId(), idQuest=self.current_quest.get_quest().get_id())
         db.add_quest_to_user(idUser=self.user.get_userId(), idQuest=self.current_quest.get_quest().get_id() + 1)
 
+        # update timer in case cooldown exist
+        current_time = (round(time.time() * 1000)) // 1000
+        db.update_last_quest_timer_from_user_with_id(idUser=self.user.get_userId(), current_time=current_time)
+
         await interaction.message.edit(embed=edited_embed, view=None)
 
 class QuestView(discord.ui.View):
@@ -65,17 +71,27 @@ class Quest(commands.Cog):
                 # create new quest rel
                 current_quest = db.add_init_quest_to_user(idUser=user.get_userId())
 
-            embed = discord.Embed(title=f"{user.get_userName()}'s current quest:",
-                                  description=f"**{current_quest.quest.get_title()}** \n{current_quest.quest.get_description()}")
+            current_time = (round(time.time() * 1000)) // 1000
+            last_time = user.get_last_quest()
 
-            embed.add_field(name="Progress:", value=current_quest.get_quest_progress_text(), inline=False)
+            if float(current_time) - float(last_time) > current_quest.quest.get_cooldown():
+                # finished
+                embed = discord.Embed(title=f"{user.get_userName()}'s current quest:",
+                                      description=f"**{current_quest.quest.get_title()}** \n{current_quest.quest.get_description()}")
 
-            if current_quest.has_rewards():
-                embed.add_field(name="Rewards:", value=current_quest.get_quest_reward_text(interaction=interaction), inline=False)
+                embed.add_field(name="Progress:", value=current_quest.get_quest_progress_text(), inline=False)
 
-            if current_quest.is_finished():
-                await interaction.response.send_message(embed=embed, view=QuestView(user=user, current_quest=current_quest))
+                if current_quest.has_rewards():
+                    embed.add_field(name="Rewards:", value=current_quest.get_quest_reward_text(interaction=interaction), inline=False)
+
+                if current_quest.is_finished():
+                    await interaction.response.send_message(embed=embed, view=QuestView(user=user, current_quest=current_quest))
+                else:
+                    await interaction.response.send_message(embed=embed)
             else:
+                embed = discord.Embed(title=f"Quest on cooldown..",
+                                      description=f"Your next quest will be available in: {str(datetime.timedelta(seconds=current_quest.quest.get_cooldown() - (float(current_time) - float(last_time))))}",
+                                      colour=discord.Color.red())
                 await interaction.response.send_message(embed=embed)
         else:
             await class_selection(interaction=interaction)

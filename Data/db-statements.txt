@@ -54,16 +54,15 @@ INSERT INTO enemy_logic VALUE(NULL, "none");
 INSERT INTO enemy_logic VALUE(NULL, "full");
 INSERT INTO enemy_logic VALUE(NULL, "half");
 
-# idQuest, title, description, requiredKills, requiredItemCount (default 0), requiredRunes, idItem (default 0), idEnemy ( the enemy to defeat ), runeReward, locationIdReward ( unlock new location for player [player starts at 1])
+# idQuest, title, description, requiredKills, requiredItemCount, requiredRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, exploreLocation, cooldown
 
-INSERT INTO quest VALUE(1, "The worthy", "Can you prove that you're worthy to join these lands?", 1, 0, 0, 0, 1, 4500, 2, 2, 1);
-INSERT INTO quest VALUE(2, "One bird at the time", "I.. I didn't expect this from you..", 2, 0, 0, 0, 3, 6000, NULL, 1, 2);
-INSERT INTO quest VALUE(3, "Collectors collecting", "Show that you're worthy and collect the needed resources.", 0, 0, 7500, 0, 0, 0, 3, 0, NULL);
-INSERT INTO quest VALUE(4, "Boaring times", "Interesting.. can you perhaps help me out here?", 5, 0, 20000, 0, 2, 2500, NULL, 0, NULL);
+INSERT INTO quest VALUE(1, "The worthy", "Can you prove that you're worthy to join these lands?", 1, 0, 0, NULL, 1, 4500, 2, 2, 1, 0);
+INSERT INTO quest VALUE(2, "One bird at the time", "I.. I didn't expect this from you..", 2, 0, 0, NULL, 3, 6000, NULL, 1, 2, 600);
+INSERT INTO quest VALUE(3, "Collectors collecting", "Show that you're worthy and collect the needed resources.", 0, 0, 7500, NULL, NULL, 0, 3, 0, NULL, 1200);
+INSERT INTO quest VALUE(4, "Boaring times", "Interesting.. can you perhaps help me out here?", 5, 0, 20000, NULL, 2, 2500, NULL, 0, NULL, 0);
 
 INSERT INTO quest_has_item VALUE(NULL, 1, 9, 1);
 INSERT INTO quest_has_item VALUE(NULL, 2, 6, 2);
-
 
 INSERT INTO enemy VALUE(1, 1, "Margit, the Fell Omen", "Boss", 4574, 4670, 1);
 INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** swings his staff in many directions with wind-ups ranging from fast to slow.', 0, 1, 1, 85, 0, 0, 3);

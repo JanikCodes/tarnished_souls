@@ -43,6 +43,8 @@ class User:
 
             self.current_location = db.get_location_from_id(idLocation=result[19])
             self.max_location = db.get_location_from_id(idLocation=result[20])
+            self.ng = result[21]
+            self.last_quest = result[22]
 
             self.health = self.get_max_health()
             self.stamina = self.get_max_stamina()
@@ -80,6 +82,12 @@ class User:
         self.dodge_next = False
 
         return self
+
+    def get_ng(self):
+        return self.ng
+
+    def get_last_quest(self):
+        return self.last_quest
 
     # getters
     def get_userId(self):
