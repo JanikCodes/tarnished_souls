@@ -4,11 +4,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-import db
-from Classes.user import User
-from Utils.classes import class_selection
-
-
 class Help(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -29,7 +24,7 @@ class Help(commands.Cog):
                                       description=f"Depending on your selected class you'll start with different starting stats.\n"
                                                   f"**Increasing** any stat will provide **bonus effects** depending on the stat. `/upgrade strength`")
                 embed.add_field(name="`Vitality`", value="**Increases** your **max health** in combat", inline=False)
-                embed.add_field(name="`Mind`", value="**Increases** the amount a **flask heals** you in combat", inline=False)
+                embed.add_field(name="`Mind`", value="**No effect**, I appreciate `/feedback` for Mind", inline=False)
                 embed.add_field(name="`Endurance`", value="Grants your extra **stamina** and **reduces weight**", inline=False)
                 embed.add_field(name="`Strength`, `Dexterity`, `Intelligence`, `Faith`, `Arcane`", value="**Provides bonus damage** if your weapon has the correct *scaling*", inline=False)
                 embed.add_field(name="`Weight`", value="Weapons and armor have weight. The more weight you have, the less max stamina you get which is crucial for dodging.", inline=False)
@@ -55,7 +50,7 @@ class Help(commands.Cog):
                                 value="Just like in the original game, you'll enter NG+",
                                 inline=False)
                 embed.add_field(name="Why is there a timer for my quest?",
-                                value="This is a prevention to rush trough the quests quickly, but it only appears after major quests",
+                                value="This is a prevention to rush trough the quests quickly, but it only appears after some major quests",
                                 inline=False)
 
                 embed.colour = discord.Color.light_embed()
@@ -65,6 +60,10 @@ class Help(commands.Cog):
                                       description=f"You can get new items by doing `/explore`\n"
                                                   f"While exploring your character will encounter unique and random events that can result in item drops.")
                 embed.add_field(name="Item requirements", value="Most weapons have certain requirements that need to be met in order to equip that weapon. You can increase certain stats by typing `/upgrade`", inline=False)
+                embed.add_field(name="Item scaling",
+                                value="All weapons scale with some stats, ranging from D to S. The scaling influences how much **bonus damage** you'll deal depending on how high your stat is in that category.\n"
+                                      "Better scaling means higher bonus damage, so finding a weapon with good scaling is crucial.",
+                                inline=False)
                 embed.colour = discord.Color.light_embed()
                 await interaction.response.send_message(embed=embed)
 async def setup(client: commands.Bot) -> None:

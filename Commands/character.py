@@ -18,7 +18,7 @@ class Character(commands.Cog):
             user = User(interaction.user.id)
 
             embed = discord.Embed(title=f"Character Information",
-                                  description=f"Below is <@{user.get_userId()}> character information.\nThis character is universal and the same on every server *unless you do /reset*")
+                                  description=f"Below is <@{user.get_userId()}> character information.\nThis character is universal and the same on every server *unless you do* `/reset`")
 
             stats_text = str()
             stats_text += f"**Vig**: `{user.get_vigor()}` "
