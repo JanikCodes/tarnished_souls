@@ -44,4 +44,4 @@ class Feedback(commands.Cog):
 
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(Feedback(client), guild=discord.Object(id=763425801391308901))
+    await client.add_cog(Feedback(client))

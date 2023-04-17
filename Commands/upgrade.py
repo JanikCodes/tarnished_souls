@@ -98,4 +98,4 @@ class UpgradeStats(commands.Cog):
             await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(UpgradeStats(client), guild=discord.Object(id=763425801391308901))
+    await client.add_cog(UpgradeStats(client))

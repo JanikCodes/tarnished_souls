@@ -17,13 +17,12 @@ MY_GUILD = discord.Object(id=763425801391308901)
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='.', intents=discord.Intents().all())
-
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
             if fileName.endswith('.py'):
-                await client.load_extension(f'Commands.{fileName[:-3]}')
+                await self.load_extension(f'Commands.{fileName[:-3]}')
 
-        await self.tree.sync(guild=MY_GUILD)
+        await self.tree.sync()
 
     async def on_ready(self):
         prfx = (Back.BLACK + Fore.GREEN + time.strftime("%H:%M:%S UTC",
