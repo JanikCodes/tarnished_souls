@@ -13,18 +13,20 @@ class Runes(commands.Cog):
 
     @app_commands.command(name="runes", description="Display your runes amount")
     async def runes(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id):
-            user = User(interaction.user.id)
+        try:
+            if db.validate_user(interaction.user.id):
+                user = User(interaction.user.id)
 
-            embed = discord.Embed(title=f"{user.get_userName()} rune amount",
-                                  description=f"**{user.get_runes()}** runes")
+                embed = discord.Embed(title=f"{user.get_userName()} rune amount",
+                                      description=f"**{user.get_runes()}** runes")
 
-            embed.set_footer(text="You can earn more while defeating enemies or doing /explore")
+                embed.set_footer(text="You can earn more while defeating enemies or doing /explore")
 
-            await interaction.response.send_message(embed=embed)
-        else:
-            await class_selection(interaction=interaction)
-
+                await interaction.response.send_message(embed=embed)
+            else:
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(Runes(client), guild=discord.Object(id=763425801391308901))

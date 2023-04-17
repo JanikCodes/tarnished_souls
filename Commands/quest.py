@@ -62,40 +62,42 @@ class Quest(commands.Cog):
 
     @app_commands.command(name="quest", description="Try completing the quest-line")
     async def quest(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id):
-            user = User(interaction.user.id)
+        try:
+            if db.validate_user(interaction.user.id):
+                user = User(interaction.user.id)
 
-            current_quest = db.get_user_quest_with_user_id(idUser=user.get_userId())
+                current_quest = db.get_user_quest_with_user_id(idUser=user.get_userId())
 
-            if current_quest is None:
-                # create new quest rel
-                current_quest = db.add_init_quest_to_user(idUser=user.get_userId())
+                if current_quest is None:
+                    # create new quest rel
+                    current_quest = db.add_init_quest_to_user(idUser=user.get_userId())
 
-            current_time = (round(time.time() * 1000)) // 1000
-            last_time = user.get_last_quest()
+                current_time = (round(time.time() * 1000)) // 1000
+                last_time = user.get_last_quest()
 
-            if float(current_time) - float(last_time) > current_quest.quest.get_cooldown():
-                # finished
-                embed = discord.Embed(title=f"{user.get_userName()}'s current quest:",
-                                      description=f"**{current_quest.quest.get_title()}** \n{current_quest.quest.get_description()}")
+                if float(current_time) - float(last_time) > current_quest.quest.get_cooldown():
+                    # finished
+                    embed = discord.Embed(title=f"{user.get_userName()}'s current quest:",
+                                          description=f"**{current_quest.quest.get_title()}** \n{current_quest.quest.get_description()}")
 
-                embed.add_field(name="Progress:", value=current_quest.get_quest_progress_text(), inline=False)
+                    embed.add_field(name="Progress:", value=current_quest.get_quest_progress_text(), inline=False)
 
-                if current_quest.has_rewards():
-                    embed.add_field(name="Rewards:", value=current_quest.get_quest_reward_text(interaction=interaction), inline=False)
+                    if current_quest.has_rewards():
+                        embed.add_field(name="Rewards:", value=current_quest.get_quest_reward_text(interaction=interaction), inline=False)
 
-                if current_quest.is_finished():
-                    await interaction.response.send_message(embed=embed, view=QuestView(user=user, current_quest=current_quest))
+                    if current_quest.is_finished():
+                        await interaction.response.send_message(embed=embed, view=QuestView(user=user, current_quest=current_quest))
+                    else:
+                        await interaction.response.send_message(embed=embed)
                 else:
+                    embed = discord.Embed(title=f"Quest on cooldown..",
+                                          description=f"Your next quest will be available in: {str(datetime.timedelta(seconds=current_quest.quest.get_cooldown() - (float(current_time) - float(last_time))))}",
+                                          colour=discord.Color.red())
                     await interaction.response.send_message(embed=embed)
             else:
-                embed = discord.Embed(title=f"Quest on cooldown..",
-                                      description=f"Your next quest will be available in: {str(datetime.timedelta(seconds=current_quest.quest.get_cooldown() - (float(current_time) - float(last_time))))}",
-                                      colour=discord.Color.red())
-                await interaction.response.send_message(embed=embed)
-        else:
-            await class_selection(interaction=interaction)
-
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(Quest(client), guild=discord.Object(id=763425801391308901))

@@ -308,18 +308,21 @@ class Fight(commands.Cog):
         app_commands.Choice(name="Public", value="public"),
     ])
     async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str]):
-        if db.validate_user(interaction.user.id):
-            user = User(interaction.user.id)
-            selected_visibility = visibility.value
+        try:
+            if db.validate_user(interaction.user.id):
+                user = User(interaction.user.id)
+                selected_visibility = visibility.value
 
-            embed = discord.Embed(title=f" {user.get_userName()} is choosing an enemy to fight..",
-                                  description=f"The enemies below are all from `{user.get_current_location().get_name()}`\n"
-                                              f"*You can fight different enemies if you change your location with* `/travel`",
-                                  colour=discord.Color.orange())
+                embed = discord.Embed(title=f" {user.get_userName()} is choosing an enemy to fight..",
+                                      description=f"The enemies below are all from `{user.get_current_location().get_name()}`\n"
+                                                  f"*You can fight different enemies if you change your location with* `/travel`",
+                                      colour=discord.Color.orange())
 
-            await interaction.response.send_message(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
-        else:
-            await class_selection(interaction=interaction)
+                await interaction.response.send_message(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
+            else:
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(Fight(client), guild=discord.Object(id=763425801391308901))

@@ -54,53 +54,55 @@ class UnEquip(commands.Cog):
         app_commands.Choice(name="Legs", value="legs"),
     ])
     async def unequip(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
-        if db.validate_user(interaction.user.id):
-            user = User(interaction.user.id)
-            selected_choice = choices.value
+        try:
+            if db.validate_user(interaction.user.id):
+                user = User(interaction.user.id)
+                selected_choice = choices.value
 
-            selected_item = None
-            match selected_choice:
-                case 'weapon':
-                    selected_item = user.get_weapon()
-                case 'head':
-                    selected_item = user.get_head()
-                case 'chest':
-                    selected_item = user.get_chest()
-                case 'gauntlet':
-                    selected_item = user.get_gauntlet()
-                case 'legs':
-                    selected_item = user.get_legs()
+                selected_item = None
+                match selected_choice:
+                    case 'weapon':
+                        selected_item = user.get_weapon()
+                    case 'head':
+                        selected_item = user.get_head()
+                    case 'chest':
+                        selected_item = user.get_chest()
+                    case 'gauntlet':
+                        selected_item = user.get_gauntlet()
+                    case 'legs':
+                        selected_item = user.get_legs()
 
-            has_equipped = selected_item
+                has_equipped = selected_item
 
-            if has_equipped:
-                embed = discord.Embed(title=f"**{selected_item.get_name()}** `id: {selected_item.get_idRel()}`",
-                                      description=f"Do you want to unequip this item?",
-                                      colour=discord.Color.orange())
+                if has_equipped:
+                    embed = discord.Embed(title=f"**{selected_item.get_name()}** `id: {selected_item.get_idRel()}`",
+                                          description=f"Do you want to unequip this item?",
+                                          colour=discord.Color.orange())
 
-                if selected_item.get_icon_url() is not None and selected_item.get_icon_url() != 'None':
-                    embed.set_thumbnail(url=f"{selected_item.get_icon_url()}")
+                    if selected_item.get_icon_url() is not None and selected_item.get_icon_url() != 'None':
+                        embed.set_thumbnail(url=f"{selected_item.get_icon_url()}")
 
-                value_name = str()
+                    value_name = str()
 
-                match selected_item.get_item_type():
-                    case 'Weapon':
-                        value_name = "Damage"
-                    case 'Armor':
-                        value_name = "Armor"
+                    match selected_item.get_item_type():
+                        case 'Weapon':
+                            value_name = "Damage"
+                        case 'Armor':
+                            value_name = "Armor"
 
-                embed.add_field(name='', value=f"**Statistics:** \n"
-                                               f"`{value_name}:` **{selected_item.get_total_value(user=user)}** `Weight:` **{selected_item.get_weight()}**")
+                    embed.add_field(name='', value=f"**Statistics:** \n"
+                                                   f"`{value_name}:` **{selected_item.get_total_value(user=user)}** `Weight:` **{selected_item.get_weight()}**")
 
-                await interaction.response.send_message(embed=embed, view=UnEquipView(user=user, item=selected_item))
+                    await interaction.response.send_message(embed=embed, view=UnEquipView(user=user, item=selected_item))
+                else:
+                    embed = discord.Embed(title=f"You don't have an item equipped in that category right now.",
+                                          description="",
+                                          colour=discord.Color.red())
+                    return await interaction.response.send_message(embed=embed, ephemeral=True)
             else:
-                embed = discord.Embed(title=f"You don't have an item equipped in that category right now.",
-                                      description="",
-                                      colour=discord.Color.red())
-                return await interaction.response.send_message(embed=embed, ephemeral=True)
-        else:
-            await class_selection(interaction=interaction)
-
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(UnEquip(client), guild=discord.Object(id=763425801391308901))

@@ -51,18 +51,20 @@ class Travel(commands.Cog):
 
     @app_commands.command(name="travel", description="Travel to to various places in order to earn different loot or encounter new enemies.")
     async def travel(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id):
-            user = User(interaction.user.id)
+        try:
+            if db.validate_user(interaction.user.id):
+                user = User(interaction.user.id)
 
-            embed = discord.Embed(title=f"{user.get_userName()} is resting at a grace..",
-                                  description=f"You're currently at **{user.get_current_location().get_name()}**. Please choose your next destination.")
+                embed = discord.Embed(title=f"{user.get_userName()} is resting at a grace..",
+                                      description=f"You're currently at **{user.get_current_location().get_name()}**. Please choose your next destination.")
 
-            embed.set_footer(text="You'll unlock more locations by simply playing the bot & completing quests")
+                embed.set_footer(text="You'll unlock more locations by simply playing the bot & completing quests")
 
-            await interaction.response.send_message(embed=embed, view=TravelView(user=user))
-        else:
-            await class_selection(interaction=interaction)
-
+                await interaction.response.send_message(embed=embed, view=TravelView(user=user))
+            else:
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(Travel(client), guild=discord.Object(id=763425801391308901))

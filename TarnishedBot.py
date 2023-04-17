@@ -2,6 +2,7 @@ import logging
 import os
 import platform
 import time
+import traceback
 
 import discord
 from colorama import Back, Fore, Style
@@ -40,6 +41,12 @@ class Client(commands.Bot):
             db.fill_db_weapons()
             db.fill_db_armor()
 
+    async def send_error_message(self, error):
+        channel = client.get_channel(1097570542728523836)
+        error_message = f"An error occurred:\n```{traceback.format_exc()}```"
+        await channel.send(error_message)
+    async def on_error(self, event, *args, **kwargs):
+        await self.send_error_message(traceback.format_exc())
 
 client = Client()
 client.run(config.botConfig["token"])

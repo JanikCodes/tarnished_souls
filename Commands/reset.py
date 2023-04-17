@@ -57,20 +57,22 @@ class Reset(commands.Cog):
 
     @app_commands.command(name="reset", description="You can decide if you want to reset your whole character!")
     async def reset(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id):
-            user = User(interaction.user.id)
+        try:
+            if db.validate_user(interaction.user.id):
+                user = User(interaction.user.id)
 
-            embed = discord.Embed(title=f"Account deletion",
-                                  description=f"<@{user.get_userId()}> are you sure that you want to **reset** your **whole character**?")
-            embed.add_field(name="What will be lost:", value="- stats\n"
-                                                             "- items\n"
-                                                             "- progress\n"
-                                                             "- **everything**", inline=False)
+                embed = discord.Embed(title=f"Account deletion",
+                                      description=f"<@{user.get_userId()}> are you sure that you want to **reset** your **whole character**?")
+                embed.add_field(name="What will be lost:", value="- stats\n"
+                                                                 "- items\n"
+                                                                 "- progress\n"
+                                                                 "- **everything**", inline=False)
 
-            await interaction.response.send_message(embed=embed, view=ResetView(user=user))
-        else:
-            await class_selection(interaction=interaction)
-
+                await interaction.response.send_message(embed=embed, view=ResetView(user=user))
+            else:
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(Reset(client), guild=discord.Object(id=763425801391308901))

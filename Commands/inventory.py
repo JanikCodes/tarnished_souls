@@ -166,16 +166,19 @@ class Inventory(commands.Cog):
 
     @app_commands.command(name="inventory", description="Display your inventory")
     async def inventory(self, interaction: discord.Interaction):
-        if db.validate_user(interaction.user.id):
-            user = User(interaction.user.id)
+        try:
+            if db.validate_user(interaction.user.id):
+                user = User(interaction.user.id)
 
-            embed = discord.Embed(title=f" {user.get_userName()}'s Inventory",
-                                  description="Please select an inventory category below!")
-            embed.colour = discord.Color.green()
-            embed.set_footer(text="You'll unlock more items while playing!")
-            await interaction.response.send_message(embed=embed, view=DefaultInventoryView(user=user))
-        else:
-            await class_selection(interaction=interaction)
+                embed = discord.Embed(title=f" {user.get_userName()}'s Inventory",
+                                      description="Please select an inventory category below!")
+                embed.colour = discord.Color.green()
+                embed.set_footer(text="You'll unlock more items while playing!")
+                await interaction.response.send_message(embed=embed, view=DefaultInventoryView(user=user))
+            else:
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 
 async def setup(client: commands.Bot) -> None:
