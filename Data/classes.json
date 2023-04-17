@@ -228,5 +228,28 @@
          "legs": "Land of Reeds Greaves",
          "gauntlet": "Land of Reeds Gauntlets"
       }
+   },
+      {
+      "id":"17f699f7f4cl0i32huaj53vkdxeh7b",
+      "name":"God",
+      "image":"https://eldenring.fanapis.com/images/classes/17f699f7f4cl0i32huaj53vkdxeh7b.png",
+      "description":"The god",
+      "stats":{
+         "vigor":"99",
+         "mind":"99",
+         "endurance":"99",
+         "strength":"99",
+         "dexterity":"99",
+         "intelligence":"99",
+         "faith":"99",
+         "arcane":"99"
+      },
+      "equip": {
+         "weapon": "Jar Cannon",
+         "head":  "Fire Prelate Helm",
+         "chest":  "Fire Prelate Armor",
+         "legs": "Fire Prelate Greaves",
+         "gauntlet": "Fire Prelate Gauntlets"
+      }
    }
 ]
