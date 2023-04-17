@@ -10,7 +10,7 @@ import db
 from Classes.user import User
 from Utils.classes import class_selection
 
-EXPLORE_TIME = 30
+EXPLORE_TIME = 60 * 10
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 
