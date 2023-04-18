@@ -34,18 +34,22 @@ class QuestProgress:
     def get_quest_progress_text(self):
         text = str()
 
-        if self.quest.req_item_count > 0:
-            remaining = self.quest.get_req_item_count() - self.remaining_item_count
-            text += f"**Collect** `{self.quest.req_item.get_name()}` **{remaining}/{self.quest.get_req_item_count()}** \n"
-        if self.quest.req_kills > 0:
-            remaining = self.quest.get_req_kills() - self.remaining_kills
-            text += f"**Defeat** `{self.quest.req_enemy.get_name()}` in `{self.quest.req_enemy.get_location().get_name()}` **{remaining}/{self.quest.get_req_kills()}** \n"
-        if self.quest.req_runes > 0:
-            remaining = self.quest.get_req_runes() - self.remaining_runes
-            text += f"**Earn** `runes` **{remaining}/{self.quest.get_req_runes()}**"
-        if self.quest.req_explore_count > 0:
-            remaining = self.quest.get_req_explore_count() - self.remaining_explore_count
-            text += f"**Explore** `{self.quest.get_explore_location().get_name()}` **{remaining}/{self.quest.get_req_explore_count()}**"
+        if self.quest.req_item_count:
+            if self.quest.req_item_count > 0:
+                remaining = self.quest.get_req_item_count() - self.remaining_item_count
+                text += f"**Collect** `{self.quest.req_item.get_name()}` **{remaining}/{self.quest.get_req_item_count()}** \n"
+        if self.quest.req_kills:
+            if self.quest.req_kills > 0:
+                remaining = self.quest.get_req_kills() - self.remaining_kills
+                text += f"**Defeat** `{self.quest.req_enemy.get_name()}` in `{self.quest.req_enemy.get_location().get_name()}` **{remaining}/{self.quest.get_req_kills()}** \n"
+        if self.quest.req_runes:
+            if self.quest.req_runes > 0:
+                remaining = self.quest.get_req_runes() - self.remaining_runes
+                text += f"**Earn** `runes` **{remaining}/{self.quest.get_req_runes()}**"
+        if self.quest.req_explore_count:
+            if self.quest.req_explore_count > 0:
+                remaining = self.quest.get_req_explore_count() - self.remaining_explore_count
+                text += f"**Explore** `{self.quest.get_explore_location().get_name()}` **{remaining}/{self.quest.get_req_explore_count()}**"
 
         return text
 

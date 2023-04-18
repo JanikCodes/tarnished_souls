@@ -518,7 +518,7 @@ def get_quest_with_id(idQuest):
 
 def add_init_quest_to_user(idUser):
     first_quest = get_quest_with_id(1)
-    sql = f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()});"
+    sql = convert_python_none_to_null(f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()});")
     cursor.execute(sql)
     mydb.commit()
 
@@ -532,7 +532,7 @@ def remove_quest_from_user_with_quest_id(idUser, idQuest):
 
 def add_quest_to_user(idUser, idQuest):
     quest = get_quest_with_id(idQuest)
-    sql = f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()});"
+    sql = convert_python_none_to_null(f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()});")
     cursor.execute(sql)
     mydb.commit()
 
@@ -629,5 +629,25 @@ def get_quest_item_reward(idQuest):
 
 def update_last_quest_timer_from_user_with_id(idUser, current_time):
     sql = f"UPDATE user u SET last_quest = {current_time} WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+def convert_python_none_to_null(sql):
+    return sql.replace("None", "Null")
+
+def complete_quest(user):
+    sql = f"UPDATE user_has_quest u SET remaining_kills = 0 WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"UPDATE user_has_quest u SET remaining_items = 0 WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"UPDATE user_has_quest u SET remaining_runes = 0 WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"UPDATE user_has_quest u SET remaining_explores = 0 WHERE u.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
