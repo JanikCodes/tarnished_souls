@@ -23,6 +23,7 @@ class CompleteQuestButton(discord.ui.Button):
         await interaction.response.defer()
 
         db.complete_quest(user=self.user)
+
 class DeveloperView(discord.ui.View):
 
     def __init__(self, user):
@@ -40,12 +41,12 @@ class Developer(commands.Cog):
             if db.validate_user(interaction.user.id):
                 user = User(interaction.user.id)
 
-                if int(user.get_userId()) == 321649314382348288:
+                if interaction.user.id == 321649314382348288:
 
                     embed = discord.Embed(title=f"Developer options",
                                           description="What do you want to do next?")
 
-                    await interaction.response.send_message(embed=embed, view=DeveloperView())
+                    await interaction.response.send_message(embed=embed, view=DeveloperView(user=user))
                 else:
                     await interaction.response.send_message("You're not a developer!", ephemeral=True)
             else:
