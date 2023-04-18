@@ -40,7 +40,7 @@ class Developer(commands.Cog):
             if db.validate_user(interaction.user.id):
                 user = User(interaction.user.id)
 
-                if user.get_userId() == 321649314382348288:
+                if int(user.get_userId()) == 321649314382348288:
 
                     embed = discord.Embed(title=f"Developer options",
                                           description="What do you want to do next?")
