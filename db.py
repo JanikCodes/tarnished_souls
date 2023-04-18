@@ -636,18 +636,18 @@ def convert_python_none_to_null(sql):
     return sql.replace("None", "Null")
 
 def complete_quest(user):
-    sql = f"UPDATE user_has_quest u SET remaining_kills = 0 WHERE u.idUser = {idUser};"
+    sql = f"UPDATE user_has_quest u SET remaining_kills = 0 WHERE u.idUser = {user.get_userId()};"
     cursor.execute(sql)
     mydb.commit()
 
-    sql = f"UPDATE user_has_quest u SET remaining_items = 0 WHERE u.idUser = {idUser};"
+    sql = f"UPDATE user_has_quest u SET remaining_items = 0 WHERE u.idUser = {user.get_userId()};"
     cursor.execute(sql)
     mydb.commit()
 
-    sql = f"UPDATE user_has_quest u SET remaining_runes = 0 WHERE u.idUser = {idUser};"
+    sql = f"UPDATE user_has_quest u SET remaining_runes = 0 WHERE u.idUser = {user.get_userId()};"
     cursor.execute(sql)
     mydb.commit()
 
-    sql = f"UPDATE user_has_quest u SET remaining_explores = 0 WHERE u.idUser = {idUser};"
+    sql = f"UPDATE user_has_quest u SET remaining_explores = 0 WHERE u.idUser = {user.get_userId()};"
     cursor.execute(sql)
     mydb.commit()
