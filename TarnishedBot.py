@@ -48,4 +48,4 @@ class Client(commands.Bot):
         await self.send_error_message(traceback.format_exc())
 
 client = Client()
-client.run(config.botConfig["token"])
+client.run(config.botConfig)
