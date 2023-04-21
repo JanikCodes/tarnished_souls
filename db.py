@@ -52,6 +52,18 @@ def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id)
     mydb.commit()
 
 
+def get_enemy_and_desc():
+    sql = "SELECT name, description FROM enemy;"
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
+def get_enemy_id_with_name(name):
+    sql = f"SELECT idenemy FROM enemy WHERE name='{name}'"
+    cursor.execute(sql)
+    return cursor.fetchone()
+
+
 # data insertion
 def get_enemy_count():
     sql = "SELECT COUNT(*) FROM enemy"
@@ -60,27 +72,32 @@ def get_enemy_count():
 
 
 # data insertion
-def get_enemy_logic():
+def get_all_enemy_logic():
     sql = "SELECT name FROM enemy_logic"
     cursor.execute(sql)
     return cursor.fetchall()
 
 
-def get_enemy_logic_id(name):
+def get_enemy_logic_id_with_name(name):
     sql = "SELECT idLogic FROM enemy_logic WHERE name=%s"
     val = name
     cursor.execute(sql, (val,))
     return cursor.fetchone()
 
 
+def get_all_move_types():
+    sql = "SELECT name FROM move_type"
+    cursor.execute(sql)
+    return cursor.fetchall()
+
 # data insertion
-def get_location():
+def get_all_locations():
     sql = "SELECT name, description FROM location"
     cursor.execute(sql)
     return cursor.fetchall()
 
 
-def get_location_id(name):
+def get_location_id_with_name(name):
     sql = "SELECT idLocation FROM location WHERE name=%s"
     val = name
     cursor.execute(sql, (val,))
