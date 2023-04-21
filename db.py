@@ -43,6 +43,28 @@ def add_user(userId, userName):
     print("Added new user with userName: " + userName)
 
 
+def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id):
+    sql = ""
+
+
+def get_enemy_count():
+    sql = "SELECT COUNT(*) FROM enemy"
+    cursor.execute(sql)
+    return cursor.fetchone()
+
+
+def get_enemy_logic():
+    sql = "SELECT name FROM enemy_logic"
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
+def get_location():
+    sql = "SELECT name, description FROM location"
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
           f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest FROM user u WHERE u.idUser = {userId};"
@@ -157,6 +179,7 @@ def get_json_req_attribute(item, attribute_name):
         req_value = 0
     return req_value
 
+
 def get_json_scale_attribute(item, attribute_name):
     req_value = "-"
     for attribute in item['scalesWith']:
@@ -164,6 +187,7 @@ def get_json_scale_attribute(item, attribute_name):
             req_value = attribute['scaling']
             break
     return req_value
+
 
 def get_encounters_from_user(user):
     encounters = []

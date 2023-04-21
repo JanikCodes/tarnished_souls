@@ -38,7 +38,88 @@ class InsertEnemyButton(discord.ui.Button):
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
+        await interaction.response.send_message(view=SelectELView())
+
+
+class SelectEnemyLogic(discord.ui.Select):
+    def __init__(self):
+        super().__init__(placeholder="Select the corresponding logic", max_values=1, min_values=1)
+
+        for logic_name in db.get_enemy_logic():
+            self.add_option(label=str(logic_name).strip("'[('',)]'"))
+
+    async def callback(self, interaction: discord.Interaction):
+
+        await interaction.response.send_modal(AddEnemyModal(str(self.values[0]), str(interaction.message.id)))
+
+
+class SelectLocation(discord.ui.Select):
+    def __init__(self, enemy: list(), message_id: str, logic: str, embed: discord.Embed):
+        super().__init__(placeholder="Select the corresponding location", max_values=1, min_values=1)
+        self.enemy = enemy
+        self.message_id = message_id
+        self.logic = logic
+        self.embed = embed
+
+        for location_name, location_description in db.get_location():
+            self.add_option(label=str(location_name), description=str(location_description))
+
+    async def callback(self, interaction: discord.Interaction):
+
+        guild = interaction.guild
+        channel = guild.get_channel(interaction.channel_id)
+        message = await channel.fetch_message(self.message_id)
+        self.embed.set_field_at(index=4, name="Location:", value=str(self.values[0]))
+        await message.edit(view=None, embed=self.embed)
+
+
+class AddEnemyModal(discord.ui.Modal):
+    def __init__(self, logic, message_id):
+        super().__init__(title=f"Add Enemy with [{logic}]-logic")
+        self.logic = logic
+        self.message_id = message_id
+
+    enemy_name = discord.ui.TextInput(label="Name", style=discord.TextStyle.short,
+                                      placeholder="Enter a valid enemy name..", required=True)
+    enemy_description = discord.ui.TextInput(label="Description", style=discord.TextStyle.long,
+                                             placeholder="Enter a valid enemy description..", required=True)
+    enemy_health = discord.ui.TextInput(label="Health", style=discord.TextStyle.short,
+                                        placeholder="Enter a valid health amount..", required=True)
+    enemy_runes = discord.ui.TextInput(label="Runes", style=discord.TextStyle.short,
+                                       placeholder="Enter a valid rune amount..", required=True)
+
+    async def on_submit(self, interaction: discord.Interaction):
+
+        guild = interaction.guild
+        channel = guild.get_channel(interaction.channel_id)
+        enemy = list()
+        enemy.append(self.enemy_name)
+        enemy.append(self.enemy_description)
+        enemy.append(self.enemy_health)
+        enemy.append(self.enemy_runes)
+        message = await channel.fetch_message(self.message_id)
+
+        preview_embed = discord.Embed(title="Adding Enemy")
+        preview_embed.add_field(name="Enemy name:", value=self.enemy_name)
+        preview_embed.add_field(name="Enemy description:", value=self.enemy_description)
+        preview_embed.add_field(name="Enemy health:", value=self.enemy_health)
+        preview_embed.add_field(name="Enemy runes reward:", value=self.enemy_runes)
+        preview_embed.add_field(name="Location:", value="Please select below..")
+
+        await message.edit(embed=preview_embed, view=SelectLocationView(enemy, self.message_id, self.logic, embed=preview_embed))
         await interaction.response.defer()
+
+
+class SelectELView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_item(SelectEnemyLogic())
+
+
+class SelectLocationView(discord.ui.View):
+    def __init__(self, enemy: list(), message_id: str, logic: str, embed: discord.Embed):
+        super().__init__(timeout=None)
+        self.add_item(SelectLocation(enemy, message_id, logic, embed))
 
 
 class DeveloperView(discord.ui.View):
