@@ -43,26 +43,48 @@ def add_user(userId, userName):
     print("Added new user with userName: " + userName)
 
 
+# data insertion
 def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id):
-    sql = ""
+    loc_id = str(location_id).strip("'(,)'")
+    log_id = str(logic_id).strip("'(,)'")
+    sql = f"INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, '{name}', '{description}', {int(health)}, {int(runes)}, {int(loc_id)});"
+    cursor.execute(sql)
+    mydb.commit()
 
 
+# data insertion
 def get_enemy_count():
     sql = "SELECT COUNT(*) FROM enemy"
     cursor.execute(sql)
     return cursor.fetchone()
 
 
+# data insertion
 def get_enemy_logic():
     sql = "SELECT name FROM enemy_logic"
     cursor.execute(sql)
     return cursor.fetchall()
 
 
+def get_enemy_logic_id(name):
+    sql = "SELECT idLogic FROM enemy_logic WHERE name=%s"
+    val = name
+    cursor.execute(sql, (val,))
+    return cursor.fetchone()
+
+
+# data insertion
 def get_location():
     sql = "SELECT name, description FROM location"
     cursor.execute(sql)
     return cursor.fetchall()
+
+
+def get_location_id(name):
+    sql = "SELECT idLocation FROM location WHERE name=%s"
+    val = name
+    cursor.execute(sql, (val,))
+    return cursor.fetchone()
 
 
 def get_user_with_id(userId):

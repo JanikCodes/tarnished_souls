@@ -41,6 +41,29 @@ class InsertEnemyButton(discord.ui.Button):
         await interaction.response.send_message(view=SelectELView())
 
 
+class ConfirmInsertEnemyButton(discord.ui.Button):
+    def __init__(self, enemy: list(), message_id: str, logic: str, location: str):
+        super().__init__(label="Confirm", style=discord.ButtonStyle.success)
+        self.enemy = enemy
+        self.message_id = message_id
+        self.logic = logic
+        self.location = location
+
+    async def callback(self, interaction: discord.Interaction):
+        enemy_name = self.enemy[0]
+        enemy_description = self.enemy[1]
+        enemy_health = self.enemy[2]
+        enemy_runes = self.enemy[3]
+
+        enemy_id = int(str(db.get_enemy_count()).strip("[('',)]"))+1
+        db.add_enemy(enemy_id, db.get_enemy_logic_id(str(self.logic)), str(enemy_name), str(enemy_description), str(enemy_health), str(enemy_runes), str(db.get_location_id(self.location)))
+
+        guild = interaction.guild
+        channel = guild.get_channel(interaction.channel_id)
+        message = await channel.fetch_message(self.message_id)
+        await message.edit(embed=discord.Embed(title="Database Insertion successful!", colour=discord.Color.green()), view=None)
+
+
 class SelectEnemyLogic(discord.ui.Select):
     def __init__(self):
         super().__init__(placeholder="Select the corresponding logic", max_values=1, min_values=1)
@@ -70,7 +93,8 @@ class SelectLocation(discord.ui.Select):
         channel = guild.get_channel(interaction.channel_id)
         message = await channel.fetch_message(self.message_id)
         self.embed.set_field_at(index=4, name="Location:", value=str(self.values[0]))
-        await message.edit(view=None, embed=self.embed)
+        await interaction.response.defer()
+        await message.edit(view=ConfirmButtonView(self.enemy, self.message_id, self.logic, self.values[0]), embed=self.embed)
 
 
 class AddEnemyModal(discord.ui.Modal):
@@ -121,6 +145,11 @@ class SelectLocationView(discord.ui.View):
         super().__init__(timeout=None)
         self.add_item(SelectLocation(enemy, message_id, logic, embed))
 
+
+class ConfirmButtonView(discord.ui.View):
+    def __init__(self, enemy: list(), message_id: str, logic: str, location: str):
+        super().__init__(timeout=None)
+        self.add_item(ConfirmInsertEnemyButton(enemy, message_id, logic, location))
 
 class DeveloperView(discord.ui.View):
 
