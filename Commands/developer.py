@@ -54,6 +54,21 @@ class InsertEnemyMoveButton(discord.ui.Button):
         await interaction.response.send_message(view=SelectEnemyView())
 
 
+class InsertEncounterButton(discord.ui.Button):
+    def __init__(self, user):
+        super().__init__(label="Insert Encounter", style=discord.ButtonStyle.success)
+        self.user = user
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != int(self.user.get_userId()):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        await interaction.response.send_modal(AddEncounterModal())
+
+
 class ConfirmInsertEnemyButton(discord.ui.Button):
     def __init__(self, enemy: list(), message_id: str, logic: str, location: str):
         super().__init__(label="Confirm", style=discord.ButtonStyle.success)
@@ -135,12 +150,13 @@ class SelectMoveType(discord.ui.Select):
 
 
 class SelectLocation(discord.ui.Select):
-    def __init__(self, enemy: list(), message_id: str, logic: str, embed: discord.Embed):
+    def __init__(self, message_id: str, embed: discord.Embed, logic: str = None, enemy: list() = None, index: int = None):
         super().__init__(placeholder="Select the corresponding location", max_values=1, min_values=1)
         self.enemy = enemy
         self.message_id = message_id
         self.logic = logic
         self.embed = embed
+        self.index = index
 
         for location_name, location_description in db.get_all_locations():
             self.add_option(label=str(location_name), description=str(location_description))
@@ -148,11 +164,19 @@ class SelectLocation(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         guild = interaction.guild
         channel = guild.get_channel(interaction.channel_id)
-        message = await channel.fetch_message(self.message_id)
-        self.embed.set_field_at(index=4, name="Location:", value=str(self.values[0]))
-        await interaction.response.defer()
-        await message.edit(view=ConfirmButtonView(self.enemy, self.message_id, self.logic, self.values[0]),
-                           embed=self.embed)
+
+        if self.index:
+            self.embed.set_field_at(index=self.index, name="Location:", value=str(self.values[0]))
+            message = await channel.fetch_message(interaction.message.id)
+            await interaction.response.defer()
+            await message.edit(view=None, embed=self.embed)
+
+        else:
+            message = await channel.fetch_message(self.message_id)
+            self.embed.set_field_at(index=4, name="Location:", value=str(self.values[0]))
+            await interaction.response.defer()
+            await message.edit(view=ConfirmEnemyButtonView(self.enemy, self.message_id, self.logic, self.values[0]),
+                               embed=self.embed)
 
 
 class AddEnemyModal(discord.ui.Modal):
@@ -188,7 +212,7 @@ class AddEnemyModal(discord.ui.Modal):
         preview_embed.add_field(name="Location:", value="Please select below..")
 
         await message.edit(embed=preview_embed,
-                           view=SelectLocationView(enemy, self.message_id, self.logic, embed=preview_embed))
+                           view=SelectLocationView(self.message_id, preview_embed, self.logic, enemy))
         await interaction.response.defer()
 
 
@@ -200,7 +224,7 @@ class AddEnemyMoveModal(discord.ui.Modal):
         self.move_type = move_type
         self.embed = embed
 
-    move_description = discord.ui.TextInput(label="Description", style=discord.TextStyle.short,
+    move_description = discord.ui.TextInput(label="Description", style=discord.TextStyle.long,
                                             placeholder="Enter a valid description..", required=True)
     move_phase = discord.ui.TextInput(label="Phase", style=discord.TextStyle.short,
                                       placeholder="Enter a valid phase number..", required=True)
@@ -226,17 +250,35 @@ class AddEnemyMoveModal(discord.ui.Modal):
         move.append(self.move_duration)
         message = await channel.fetch_message(self.message_id)
 
-        self.embed.add_field(name="Move_description", value=self.move_description)
-        self.embed.add_field(name="Move_phase", value=self.move_phase)
+        self.embed.add_field(name="Move_description:", value=self.move_description)
+        self.embed.add_field(name="Move_phase:", value=self.move_phase)
         if not self.move_damage:
-            self.embed.add_field(name="Move_damage", value=self.move_damage)
+            self.embed.add_field(name="Move_damage:", value=self.move_damage)
         if not self.move_healing:
-            self.embed.add_field(name="Move_healing", value=self.move_healing)
+            self.embed.add_field(name="Move_healing:", value=self.move_healing)
         if not self.move_duration:
-            self.embed.add_field(name="Move_duration", value=self.move_duration)
+            self.embed.add_field(name="Move_duration:", value=self.move_duration)
 
         await message.edit(embed=self.embed, view=None)
         await interaction.response.defer()
+
+
+class AddEncounterModal(discord.ui.Modal):
+    def __init__(self):
+        super().__init__(title="Add Encounter")
+
+    encounter_description = discord.ui.TextInput(label="Description", style=discord.TextStyle.long,
+                                                 placeholder="Enter a valid description..", required=True)
+    encounter_dropRate = discord.ui.TextInput(label="Drop_rate", style=discord.TextStyle.short,
+                                              placeholder="Enter a valid drop_rate amount..", required=True)
+
+    async def on_submit(self, interaction: discord.Interaction):
+
+        preview_embed = discord.Embed(title="Add Encounter")
+        preview_embed.add_field(name="Description:", value=self.encounter_description)
+        preview_embed.add_field(name="Drop_rate", value=self.encounter_dropRate)
+        preview_embed.add_field(name="Location:", value="Please select a location below")
+        await interaction.response.send_message(embed=preview_embed, view=SelectLocationView(interaction.message.id, embed=preview_embed, index=2))
 
 
 class SelectEnemyView(discord.ui.View):
@@ -258,12 +300,12 @@ class SelectMoveTypeView(discord.ui.View):
 
 
 class SelectLocationView(discord.ui.View):
-    def __init__(self, enemy: list(), message_id: str, logic: str, embed: discord.Embed):
+    def __init__(self, message_id: str, embed: discord.Embed, logic: str = None, enemy: list() = None, index: int = None):
         super().__init__(timeout=None)
-        self.add_item(SelectLocation(enemy, message_id, logic, embed))
+        self.add_item(SelectLocation(message_id, embed, logic, enemy, index))
 
 
-class ConfirmButtonView(discord.ui.View):
+class ConfirmEnemyButtonView(discord.ui.View):
     def __init__(self, enemy: list(), message_id: str, logic: str, location: str):
         super().__init__(timeout=None)
         self.add_item(ConfirmInsertEnemyButton(enemy, message_id, logic, location))
@@ -277,6 +319,7 @@ class DeveloperView(discord.ui.View):
         self.add_item(CompleteQuestButton(user=user))
         self.add_item(InsertEnemyButton(user=user))
         self.add_item(InsertEnemyMoveButton(user=user))
+        self.add_item(InsertEncounterButton(user=user))
 
 
 class Developer(commands.Cog):
