@@ -537,7 +537,6 @@ def add_quest_to_user(idUser, idQuest):
     mydb.commit()
 
 def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_location_id = None):
-    print("Checking for quest update..")
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -546,20 +545,17 @@ def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_l
 
         if quest.get_item():
             if quest.get_item().get_idItem() == int(idItem):
-                print("Quest: Updated item count")
                 sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - 1, 0) WHERE r.idUser = {idUser};"
                 cursor.execute(sql)
                 mydb.commit()
 
         if quest.get_enemy():
             if quest.get_enemy().get_id() == int(idEnemy):
-                print("Quest: Updated enemy count")
                 sql = f"UPDATE user_has_quest r SET r.remaining_kills = GREATEST(remaining_kills - 1, 0) WHERE r.idUser = {idUser};"
                 cursor.execute(sql)
                 mydb.commit()
 
         if runes > 0:
-            print("Quest: Updated runes count")
             sql = f"UPDATE user_has_quest r SET r.remaining_runes = GREATEST(remaining_runes - {runes}, 0) WHERE r.idUser = {idUser};"
             cursor.execute(sql)
             mydb.commit()
@@ -567,7 +563,6 @@ def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_l
         if explore_location_id:
             if quest.get_explore_location():
                 if quest.get_explore_location().get_id() == int(explore_location_id):
-                    print("Quest: Updated explore count")
                     sql = f"UPDATE user_has_quest r SET r.remaining_explores = GREATEST(remaining_explores - 1, 0) WHERE r.idUser = {idUser};"
                     cursor.execute(sql)
                     mydb.commit()

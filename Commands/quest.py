@@ -33,7 +33,6 @@ class FinishQuest(discord.ui.Button):
         # Add Item
         if len(self.current_quest.get_quest().get_item_reward()) > 0:
             for item in self.current_quest.get_quest().get_item_reward():
-                print(item.get_count())
                 db.add_item_to_user(idUser=self.user.get_userId(), item=item)
 
         # Edit quest message
