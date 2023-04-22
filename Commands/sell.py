@@ -7,11 +7,12 @@ from Classes.user import User
 from Utils.classes import class_selection
 
 
-class EquipButton(discord.ui.Button):
-    def __init__(self, user, item, disabled=False):
-        super().__init__(label='Equip', style=discord.ButtonStyle.success, disabled=disabled)
+class SellButton(discord.ui.Button):
+    def __init__(self, user, item, amount, disabled = False):
+        super().__init__(label=f"Sell {amount}x ({item.get_price() * amount} runes)", style=discord.ButtonStyle.danger, disabled=disabled)
         self.user = user
         self.item = item
+        self.amount = amount
 
     async def callback(self, interaction: discord.Interaction):
 
@@ -23,28 +24,47 @@ class EquipButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        suc = db.equip_item(idUser=self.user.get_userId(), item=self.item)
-        if suc:
-            message = interaction.message
-            edited_embed = message.embeds[0]
-            edited_embed.colour = discord.Color.green()
-            edited_embed.set_footer(text="Successfully equipped!")
+        sell_item = db.get_item_from_user_with_id_rel(idUser=self.user.get_userId(), idRel=self.item.get_idRel())
+        if sell_item:
+            if sell_item.get_count() >= self.amount:
+                db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(), amount=self.amount)
+                db.increase_runes_from_user_with_id(self.user.get_userId(), self.item.get_price() * self.amount)
+                message = interaction.message
+                edited_embed = message.embeds[0]
+                edited_embed.colour = discord.Color.green()
 
-            await interaction.message.edit(embed=edited_embed, view=None, delete_after=2)
+                if sell_item.get_count() - self.amount > 0:
+                    edited_embed.title = f"**{sell_item.get_name()}** {sell_item.get_count() - self.amount}x `id: {sell_item.get_idRel()}`"
+                    await interaction.message.edit(embed=edited_embed, view=SellView(user=self.user, item=self.item))
+                else:
+                    # completely sold
+                    edited_embed.title = f"**{sell_item.get_name()}**"
+                    edited_embed.description = "Completely sold this item!"
+                    await interaction.message.edit(embed=edited_embed, view=None)
+            else:
+                message = interaction.message
+                edited_embed = message.embeds[0]
+                edited_embed.colour = discord.Color.red()
+                edited_embed.set_footer(text="This item no longer exists with that item quantity..")
+
+                await interaction.message.edit(embed=edited_embed, view=None)
         else:
             message = interaction.message
             edited_embed = message.embeds[0]
             edited_embed.colour = discord.Color.red()
+            edited_embed.set_footer(text="This item no longer exists..")
 
-            await interaction.message.edit(embed=edited_embed, view=EquipView(user=self.user, item=self.item))
+            await interaction.message.edit(embed=edited_embed, view=None)
 
 
-class EquipView(discord.ui.View):
+class SellView(discord.ui.View):
 
     def __init__(self, user, item):
         super().__init__()
         self.user = user.update_user()
-        self.add_item(EquipButton(user=user, item=item, disabled=not user.get_is_required_for_item(item)))
+        item = db.get_item_from_user_with_id_rel(user.get_userId(), item.get_idRel())
+        self.add_item(SellButton(user=user, item=item, amount=1, disabled=False if item.get_count() >= 1 else True))
+        self.add_item(SellButton(user=user, item=item, amount=5, disabled=False if item.get_count() >= 5 else True))
 
 
 class Sell(commands.Cog):
@@ -67,8 +87,8 @@ class Sell(commands.Cog):
                                           colour=discord.Color.red())
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                 else:
-                    embed = discord.Embed(title=f"**{item.get_name()}** `id: {item.get_idRel()}`",
-                                          description=f"Do you want to equip this item?")
+                    embed = discord.Embed(title=f"**{item.get_name()}** {item.get_count()}x `id: {item.get_idRel()}`",
+                                          description=f"Do you want to sell this item?")
 
                     if item.get_icon_url() is not None and item.get_icon_url() != 'None':
                         embed.set_thumbnail(url=f"{item.get_icon_url()}")
@@ -83,17 +103,10 @@ class Sell(commands.Cog):
 
                     embed.add_field(name="", value=f"**Statistics:** \n"
                                                    f"`{value_name}:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**", inline=False)
-                    embed.add_field(name="", value=f"**Requirements** \n"
-                                                   f"{item.get_requirement_text()}", inline=False)
 
                     embed.colour = discord.Color.orange()
 
-                    # user doesnt met requirements
-                    if not user.get_is_required_for_item(item):
-                        embed.colour = discord.Color.red()
-                        embed.set_footer(text=f"You don't meet the requirements!")
-
-                    await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
+                    await interaction.response.send_message(embed=embed, view=SellView(user=user, item=item))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

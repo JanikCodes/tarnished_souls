@@ -651,3 +651,36 @@ def complete_quest(user):
     sql = f"UPDATE user_has_quest u SET remaining_explores = 0 WHERE u.idUser = {user.get_userId()};"
     cursor.execute(sql)
     mydb.commit()
+
+
+def decrease_item_from_user(idUser, relId, amount):
+    sql = f"UPDATE user_has_item r SET count = count - {amount} WHERE r.idUser = {idUser} AND r.idRel = {relId};"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"SELECT count FROM user_has_item WHERE idRel = {relId};"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        if int(res) <= 0:
+            if has_equipped_item(idUser=idUser, relId=relId):
+                sql = f"UPDATE user SET e_weapon = IF(e_weapon = {relId}, NULL, e_weapon), e_head = IF(e_head = {relId}, NULL, e_head), e_chest = IF(e_chest = {relId}, NULL, e_chest), e_legs = IF(e_legs = {relId}, NULL, e_legs), e_gauntlet = IF(e_gauntlet = {relId}, NULL, e_gauntlet)" \
+                      f"WHERE {relId} IN (e_weapon, e_head, e_chest, e_legs, e_gauntlet);"
+                cursor.execute(sql)
+                mydb.commit()
+
+            # remove item from table
+            sql = f"DELETE FROM user_has_item WHERE idUser = {idUser} AND idRel = {relId};"
+            cursor.execute(sql)
+            mydb.commit()
+
+
+def has_equipped_item(idUser, relId):
+    sql = f"SELECT Count(*) FROM user WHERE idUser = {idUser} AND {relId} IN(e_weapon, e_head, e_chest, e_legs, e_gauntlet)"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        if int(res) == 0:
+            return False
+        else:
+            return True
