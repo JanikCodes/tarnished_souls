@@ -71,28 +71,41 @@ class InsertEncounterButton(discord.ui.Button):
         await interaction.response.send_modal(AddEncounterModal())
 
 
-class ConfirmInsertEnemyButton(discord.ui.Button):
-    def __init__(self, enemy: Enemy(), message_id: str, logic: str, location: str):
+class ConfirmInsertButton(discord.ui.Button):
+    def __init__(self, enemy: Enemy(), message_id: str, logic: str = None, location: str = None, mode = None, enemy_move: EnemyMove() = None):
         super().__init__(label="Confirm", style=discord.ButtonStyle.success)
         self.enemy = enemy
         self.message_id = message_id
         self.logic = logic
         self.location = location
+        self.mode = mode
+        self.enemy_move = enemy_move
 
     async def callback(self, interaction: discord.Interaction):
-        enemy_id = int(str(db.get_enemy_count()).strip("[('',)]")) + 1
-        db.add_enemy(enemy_id, db.get_enemy_logic_id_with_name(str(self.logic)), str(self.enemy.get_name()),
-                     str(self.enemy.get_description()), str(self.enemy.get_health()), str(self.enemy.get_runes()),
-                     str(db.get_location_id_with_name(self.location)))
 
-        self.enemy.set_location(db.get_enemy_logic_id_with_name(self.location))
-        self.enemy.set_id(str(db.get_enemy_id_from_name(self.enemy.get_name())).strip("(,)"))
         guild = interaction.guild
         channel = guild.get_channel(interaction.channel_id)
         message = await channel.fetch_message(self.message_id)
-        await message.edit(embed=discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}",
-                                               colour=discord.Color.green()),
-                           view=None)
+
+        if self.mode == "enemy":
+            enemy_id = int(str(db.get_enemy_count()).strip("[('',)]")) + 1
+            db.add_enemy(enemy_id, db.get_enemy_logic_id_with_name(str(self.logic)), str(self.enemy.get_name()),
+                         str(self.enemy.get_description()), str(self.enemy.get_health()), str(self.enemy.get_runes()),
+                         str(db.get_location_id_with_name(self.location)))
+
+            self.enemy.set_location(db.get_enemy_logic_id_with_name(self.location))
+            self.enemy.set_id(str(db.get_enemy_id_from_name(self.enemy.get_name())).strip("(,)"))
+            await message.edit(embed=discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}",
+                                                   colour=discord.Color.green()),
+                               view=None)
+
+        if self.mode == "enemy_move":
+            db.add_enemy_move(self.enemy_move.get_description(), str(self.enemy_move.get_phase()), str(self.enemy_move.get_type()),
+                              str(self.enemy.get_id()) \
+                              , str(self.enemy_move.get_damage()), str(self.enemy_move.get_healing()), str(self.enemy_move.get_duration()),
+                              str(self.enemy_move.get_max_targets()))
+            await message.edit(
+                embed=discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green()), view=None)
 
 
 class SelectEnemy(discord.ui.Select):
@@ -102,10 +115,12 @@ class SelectEnemy(discord.ui.Select):
         self.enemy = None
 
         for enemy, desc in db.get_enemy_and_desc():
-            self.add_option(label=str(enemy).strip("'[('',)]'"), description=str(desc).strip("'[('',)]'"))
-
-            # for enemy_id in db.get_enemy_id_from_name(str(enemy).strip("'[('',)]'")):
-            #    self.enemy_id.append(enemy_id)
+            description = str(desc).strip("'[('',)]'")
+            if description == "Boss":
+                self.add_option(label=str(enemy).strip("'[('',)]'"), description=description,
+                                emoji="💀")
+            else:
+                self.add_option(label=str(enemy).strip("'[('',)]'"), description=description)
 
     async def callback(self, interaction: discord.Interaction):
         preview_embed = discord.Embed(title="Adding Enemy_move",
@@ -176,7 +191,7 @@ class SelectLocation(discord.ui.Select):
             message = await channel.fetch_message(self.message_id)
             self.embed.set_field_at(index=4, name="Location:", value=str(self.values[0]))
             await interaction.response.defer()
-            await message.edit(view=ConfirmEnemyButtonView(self.enemy, self.message_id, self.logic, self.values[0]),
+            await message.edit(view=ConfirmInsertButtonView(self.enemy, self.message_id, self.logic, self.values[0], "enemy"),
                                embed=self.embed)
 
 
@@ -258,8 +273,8 @@ class AddEnemyMoveModal(discord.ui.Modal):
         move = EnemyMove()
         self.embed.add_field(name="Move_description:", value=self.move_description)
         move.set_description(self.move_description)
-        move.set_type(db.get_move_type_id_from_name(self.move_type))
-
+        move.set_type(str(db.get_move_type_id_from_name(self.move_type)).strip("(,)"))
+        
         if self.move_max_targets is None:
             move.set_max_targets(1)
         else:
@@ -274,15 +289,20 @@ class AddEnemyMoveModal(discord.ui.Modal):
         if self.move_damage is not None:
             self.embed.add_field(name="Move_damage:", value=self.move_damage)
             move.set_damage(self.move_damage)
+        else:
+            move.set_damage(0)
 
         if self.move_healing is not None:
             self.embed.add_field(name="Move_healing:", value=self.move_healing)
             move.set_healing(self.move_healing)
+        else:
+            move.set_healing(0)
+
+        move.set_duration(0)
 
         message = await channel.fetch_message(self.message_id)
 
-
-        await message.edit(embed=self.embed, view=None)
+        await message.edit(embed=self.embed, view=ConfirmInsertButtonView(self.enemy, self.message_id, None, None, "enemy_move", move))
         await interaction.response.defer()
 
 
@@ -330,10 +350,10 @@ class SelectLocationView(discord.ui.View):
         self.add_item(SelectLocation(message_id, embed, logic, enemy, index))
 
 
-class ConfirmEnemyButtonView(discord.ui.View):
-    def __init__(self, enemy: Enemy(), message_id: str, logic: str, location: str):
+class ConfirmInsertButtonView(discord.ui.View):
+    def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None, mode = None, enemy_move: EnemyMove() = None):
         super().__init__(timeout=None)
-        self.add_item(ConfirmInsertEnemyButton(enemy, message_id, logic, location))
+        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move))
 
 
 class DeveloperView(discord.ui.View):
