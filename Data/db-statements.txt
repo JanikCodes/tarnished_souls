@@ -233,18 +233,73 @@ INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** summons a bolt of lighting
 INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** uses a feather to **heal itself** for a small amount of health", 0, 3, 3, 0, 150, 0, 1);
 INSERT INTO enemy_moves VALUES(NULL, "**The Warhawk** flies to a nearby perch, gaining a defensive advantage and **dodging** the **next incoming attack!**", 0, 2, 3, 0, 0, 0, 0);
 
+INSERT INTO enemy VALUE(9, 1, "Sheep", "", 2400, 50, 2);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määhh", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määhh määhh", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määhhhh..", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määh", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does nothing? ", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määhhhh", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määh.. määhh", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does mäh?", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määhh määhh määhh", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** does määhh mäh", 0, 5, 9, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Sheep** rams at you with full force!", 0, 1, 9, 150, 0, 0, 0);
+
+INSERT INTO enemy VALUE(10, 1, "The Misbegotten", "", 4600, 50, 2);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** raises the cleaver high above its head before bringing it down with tremendous force", 0, 1, 10, 110, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** swings the cleaver in a wide arc to the side", 0, 1, 10, 80, 0, 0, 3);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** makes a quick, precise slash with the cleaver", 0, 1, 10, 95, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** spins around, cleaver extended, attempting to hit any players in range with a deadly attack.", 0, 1, 10, 120, 0, 0, 2);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** charges up its swing, putting all of its strength into a single, powerful strike!", 0, 1, 10, 250, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** jumps into the air before bringing the cleaver down with all of its weight behind it!", 0, 1, 10, 100, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** swings the cleaver twice in rapid succession", 0, 1, 10, 90, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** delivers a powerful strike with the cleaver!", 0, 1, 10, 65, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** charges towards its opponent with the cleaver raised high, delivering a devastating strike upon impact.", 0, 1, 10, 125, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** swings the cleaver in a cross pattern, dealing damage to all nearby opponents.", 0, 1, 10, 80, 0, 0, 2);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** lunges forward and stabs its opponent with the sharp end of the cleaver.", 0, 1, 10, 65, 0, 0, 1);
+
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** stays put, watching its surroundings warily.", 0, 5, 10, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** stands tall, keeping a watchful eye on its surroundings for any signs of danger..", 0, 5, 10, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** takes a moment to groom itself, cleaning its wings..", 0, 5, 10, 0, 0, 0, 0);
+
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** rolls out of harm's way to **avoid incoming attacks.**", 0, 2, 10, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**The Misbegotten** moves quickly and unexpectedly, **dodging incoming attacks..**", 0, 2, 10, 0, 0, 0, 0);
+
+INSERT INTO enemy VALUE(11, 1, "Rotten Stray", "", 4150, 1450, 2);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** charges forward and lunges at the player with its jaws.", 0, 1, 11, 90, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** sidesteps and attempts to bite the player", 0, 1, 11, 75, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** quickly dashes and bites the player's leg.", 0, 1, 11, 66, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** jumps and slams down on the player, trying to bite their face.", 0, 1, 11, 125, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray**  runs in a circle and then charges at the player.", 0, 1, 11, 105, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** suddenly sprints forward and bites the player's arm!", 0, 1, 11, 115, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** crouches down and then suddenly jumps and bites the player.", 0, 1, 11, 95, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** quickly bites twice in a row.", 0, 1, 11, 145, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** lunges and bites while in mid-air!", 0, 1, 11, 80, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** bites and then quickly jumps backwards.", 0, 1, 11, 45, 0, 0, 1);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** bites the player and then quickly moves to the side..", 0, 1, 11, 45, 0, 0, 1);
+
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** snarls and then viciously bites the player's weapon.. this has no effect?", 0, 5, 11, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** circles around the player, looking for an opening to strike..", 0, 5, 11, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** jumps back and howls at the player..", 0, 5, 11, 0, 0, 0, 0);
+
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** jumps back to **dodge** the next attack..", 0, 2, 11, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** crouches low and rolls to the side, **evading attacks** with surprising agility.", 0, 2, 11, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "With a burst of speed, **Rotten Stray** sprints a short distance away, **dodging incoming attacks.**", 0, 2, 11, 0, 0, 0, 0);
+
+
 #                       idQuest, title,                     description,                                                                            requiredKills,  requiredItemCount, requiredRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, exploreLocation, cooldown
 INSERT INTO quest VALUE(1, "The worthy",                    "Can you prove that you're worthy to join these lands?",                                0,              0,                 0,             NULL,   NULL,    4500,       NULL,             3,               1,               0);
 INSERT INTO quest VALUE(2, "The battle",                    "Good.. you've seen enough for now.. but can you finish this next task?",               2,              0,                 0,             NULL,   2,       0,          NULL,             1,               1,               0);
 INSERT INTO quest VALUE(3, "Collectors collecting",         "Hmm.. show that you're worthy by collecting those resources..",                        0,              0,                 12000,         NULL,   NULL,    0,          NULL,             0,               NULL,            0);
 INSERT INTO quest VALUE(4, "Demi-Human problem",            "Wow.. can you perhaps take care of this?",                                             5,              0,                 0,             NULL,   4,       9500,       NULL,             2,               1,               0);
-INSERT INTO quest VALUE(5, "Bones for bones",               "Varre told us about an annoying skeleton issue in the catacombs.. \nTake care of it!", 3,              0,                 6000,          NULL,   7,       6000,       NULL,             0,               NULL,            0);
+INSERT INTO quest VALUE(5, "Bones for bones",               "Varre told us about an annoying skeleton issue in the catacombs.. \nTake care of it!", 3,              0,                 12000,          NULL,   7,       6000,       NULL,             0,               NULL,            0);
 INSERT INTO quest VALUE(6, "Keep exploring",                "We need to find out more about this location.. do your best!",                         0,              0,                 0,             NULL,   NULL,    5000,       NULL,             5,               1,               0);
 INSERT INTO quest VALUE(7, "The soldiers..",                "It seems like we have some problems with the foot soldiers of Godrik..",               3,              0,                 0,             NULL,   5,       0,          NULL,             1,               1,               0);
 INSERT INTO quest VALUE(8, "The knights..",                 "Now we need to take care of the knights.. ugh..",                                      2,              0,                 0,             NULL,   6,       0,          NULL,             1,               1,               0);
-INSERT INTO quest VALUE(9, "Something big is waiting..",    "You know what you have to do.. be prepared.. *And don't die. . .*",                    1,              0,                 25000,         NULL,   1,       15000,      2,                0,               NULL,            0);
+INSERT INTO quest VALUE(9, "Something big is waiting..",    "You know what you have to do.. be prepared.. *And don't die. . .*",                    1,              0,                 32000,         NULL,   1,       15000,      2,                0,               NULL,            0);
 INSERT INTO quest VALUE(10, "Just to be sure..",            "For some reason it keeps reappearing.. deal with it!",                                 2,              0,                 0,             NULL,   1,       15000,      NULL,             1,               2,               43200);
-INSERT INTO quest VALUE(11, "New visuals",                  "We've reached a new area.. find out more about it!",                                   0,              0,                 27000,         NULL,   NULL,    5000,       NULL,             5,               2,               0);
+INSERT INTO quest VALUE(11, "New visuals",                  "We've reached a new area.. find out more about it!",                                   0,              0,                 40000,         NULL,   NULL,    5000,       NULL,             5,               2,               0);
 INSERT INTO quest VALUE(12, "Impossible?",                  "I know.. I know.. we need to dig deeper.. *just wait a bit longer*",                   0,              0,                 0,             NULL,   NULL,    0,          NULL,             1,               3,               0);
 
 # INSERT INTO quest VALUE(2, "Title", "DESC", reqKills, reqItems, reqRunes, idItem, idEnemy, runeReward, locationReward, reqExplore, idLocation, cooldown);

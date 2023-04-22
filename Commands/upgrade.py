@@ -28,6 +28,9 @@ class UpgradeStatsButton(discord.ui.Button):
         if self.func == "upgrade":
             runes_cost = utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=True)
 
+            # update user to fix glitch where he can go into negative runes
+            self.user.update_user()
+
             if self.user.get_runes() >= runes_cost:
                 db.increase_stat_from_user_with_id(userId=self.user.get_userId(), stat_name=self.selected_choice)
                 db.decrease_runes_from_user_with_id(userId=self.user.get_userId(), amount=runes_cost)
