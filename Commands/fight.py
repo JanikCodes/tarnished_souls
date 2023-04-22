@@ -156,7 +156,7 @@ class StartButton(discord.ui.Button):
         health_increase = 0
 
         if len(self.users) > 1:
-            health_increase = self.enemy.get_max_health() * (len(self.users) * 0.5)
+            health_increase = self.enemy.get_max_health() * ((len(self.users) - 1) * 0.5)
 
         self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
 
