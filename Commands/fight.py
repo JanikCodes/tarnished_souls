@@ -153,11 +153,10 @@ class StartButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         await interaction.response.defer()
 
-        health_multip = 1 if len(self.users) == 1 else ((len(self.users) - 1) * 0.5)
         health_increase = 0
 
-        if health_multip != 1:
-            health_increase = self.enemy.get_max_health() * health_multip
+        if len(self.users > 1):
+            health_increase = self.enemy.get_max_health() * (len(self.users) * 0.5)
 
         self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
 
