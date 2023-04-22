@@ -6304,7 +6304,7 @@
          },
          {
             "name":"Fire",
-            "amount":-2
+            "amount":2
          },
          {
             "name":"Ligt",
@@ -19020,35 +19020,35 @@
       "dmgNegation":[
          {
             "name":"Phy",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Strike",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Slash",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Pierce",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Magic",
-            "amount":-4
+            "amount":5
          },
          {
             "name":"Fire",
-            "amount":-4
+            "amount":5
          },
          {
             "name":"Light",
-            "amount":-4
+            "amount":5
          },
          {
             "name":"Holy",
-            "amount":-5
+            "amount":5
          }
       ],
       "resistance":[
@@ -20172,35 +20172,35 @@
       "dmgNegation":[
          {
             "name":"Phy",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Strike",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Slash",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Pierce",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Magic",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Fire",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Ligt",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Holy",
-            "amount":-5
+            "amount":5
          }
       ],
       "resistance":[
@@ -20940,35 +20940,35 @@
       "dmgNegation":[
          {
             "name":"Phy",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Strike",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Slash",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Pierce",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Magic",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Fire",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Ligt",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Holy",
-            "amount":-5
+            "amount":5
          }
       ],
       "resistance":[
@@ -22476,35 +22476,35 @@
       "dmgNegation":[
          {
             "name":"Phy",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Strike",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Slash",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Pierce",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Magic",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Fire",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Ligt",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Holy",
-            "amount":-5
+            "amount":5
          }
       ],
       "resistance":[
@@ -23960,35 +23960,35 @@
       "dmgNegation":[
          {
             "name":"Phy",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Strike",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Slash",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Pierce",
-            "amount":-5
+            "amount":5
          },
          {
             "name":"Magic",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Fire",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Light",
-            "amount":-4
+            "amount":4
          },
          {
             "name":"Holy",
-            "amount":-5
+            "amount":5
          }
       ],
       "resistance":[
