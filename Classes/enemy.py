@@ -5,21 +5,26 @@ from Classes.enemy_logic import EnemyLogic
 
 
 class Enemy:
-    def __init__(self, idEnemy):
-        result = db.get_enemy_with_id(idEnemy)
-        self.id = idEnemy
-        self.name = result[0]
-        self.logic = EnemyLogic(result[1])
-        self.description = result[2]
-        self.max_health = result[3]
-        self.runes = result[4]
-        self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
-        self.location = db.get_location_from_id(result[5])
+    def __init__(self, idEnemy=None):
+        if idEnemy is not None:
 
-        self.health = self.get_max_health()
-        self.phase = 0
-        self.last_move = None
-        self.dodge_next = False
+            result = db.get_enemy_with_id(idEnemy)
+            self.id = idEnemy
+            self.name = result[0]
+            self.logic = EnemyLogic(result[1])
+            self.description = result[2]
+            self.max_health = result[3]
+            self.runes = result[4]
+            self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
+            self.location = db.get_location_from_id(result[5])
+
+            self.health = self.get_max_health()
+            self.phase = 0
+            self.last_move = None
+            self.dodge_next = False
+        else:
+            # empty constructor
+            pass
 
     def get_id(self):
         return self.id
@@ -83,3 +88,27 @@ class Enemy:
 
     def get_location(self):
         return self.location
+
+    def set_id (self, id):
+        self.id = id
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_logic(self, logic):
+        self.logic = EnemyLogic(logic)
+
+    def set_description(self, description):
+        self.description = description
+
+    def set_runes(self, runes):
+        self.runes = runes
+
+    def set_moves(self, enemy_id):
+        self.moves = db.get_enemy_moves_with_enemy_id(enemy_id)
+
+    def set_location(self, location_id):
+        self.location = db.get_location_from_id(location_id)
+
+    def set_phase(self, phase):
+        self.phase = phase

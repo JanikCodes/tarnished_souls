@@ -58,7 +58,7 @@ def get_enemy_and_desc():
     return cursor.fetchall()
 
 
-def get_enemy_id_with_name(name):
+def get_enemy_id_from_name(name):
     sql = f"SELECT idenemy FROM enemy WHERE name='{name}'"
     cursor.execute(sql)
     return cursor.fetchone()
@@ -89,6 +89,13 @@ def get_all_move_types():
     sql = "SELECT name FROM move_type"
     cursor.execute(sql)
     return cursor.fetchall()
+
+
+def get_move_type_id_from_name(name):
+    sql = f"SELECT idType FROM move_type WHERE name='{name}'"
+    cursor.execute(sql)
+    return cursor.fetchone()
+
 
 # data insertion
 def get_all_locations():
