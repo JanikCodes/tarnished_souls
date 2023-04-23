@@ -309,6 +309,9 @@ class Fight(commands.Cog):
     async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str]):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
                 selected_visibility = visibility.value
 
@@ -317,7 +320,7 @@ class Fight(commands.Cog):
                                                   f"*You can fight different enemies if you change your location with* `/travel`",
                                       colour=discord.Color.orange())
 
-                await interaction.response.send_message(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
+                await interaction.followup.send(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

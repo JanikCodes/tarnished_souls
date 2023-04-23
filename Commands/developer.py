@@ -39,6 +39,9 @@ class Developer(commands.Cog):
     async def developer(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 if interaction.user.id == 321649314382348288:
@@ -46,9 +49,9 @@ class Developer(commands.Cog):
                     embed = discord.Embed(title=f"Developer options",
                                           description="What do you want to do next?")
 
-                    await interaction.response.send_message(embed=embed, view=DeveloperView(user=user))
+                    await interaction.followup.send(embed=embed, view=DeveloperView(user=user))
                 else:
-                    await interaction.response.send_message("You're not a developer!", ephemeral=True)
+                    await interaction.followup.send("You're not a developer!", ephemeral=True)
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

@@ -19,6 +19,8 @@ class Help(commands.Cog):
         try:
             selected_choice = choices.value
 
+            await interaction.response.defer()
+
             match selected_choice:
                 case 'stats':
                     embed = discord.Embed(title=f"Information about `Character Statistics`",
@@ -30,7 +32,7 @@ class Help(commands.Cog):
                     embed.add_field(name="`Strength`, `Dexterity`, `Intelligence`, `Faith`, `Arcane`", value="**Provides bonus damage** if your weapon has the correct *scaling*", inline=False)
                     embed.add_field(name="`Weight`", value="Weapons and armor have weight. The more weight you have, the less max stamina you get which is crucial for dodging.", inline=False)
                     embed.colour = discord.Color.light_embed()
-                    await interaction.response.send_message(embed=embed)
+                    await interaction.followup.send(embed=embed)
                 case 'cmds':
                     all_cmds = str()
                     for fileName in os.listdir('./Commands'):
@@ -40,7 +42,7 @@ class Help(commands.Cog):
                     embed = discord.Embed(title=f"Information about `Commands`",
                                           description=all_cmds)
                     embed.colour = discord.Color.light_embed()
-                    await interaction.response.send_message(embed=embed)
+                    await interaction.followup.send(embed=embed)
                 case 'quests':
                     embed = discord.Embed(title=f"Information about `Quests`",
                                           description=f"In order to progress through the game you'll need to complete the **main quest**. `/quest`\n"
@@ -55,7 +57,7 @@ class Help(commands.Cog):
                                     inline=False)
 
                     embed.colour = discord.Color.light_embed()
-                    await interaction.response.send_message(embed=embed)
+                    await interaction.followup.send(embed=embed)
                 case 'items':
                     embed = discord.Embed(title=f"Information about `Items`",
                                           description=f"You can get new items by doing `/explore`\n"
@@ -66,7 +68,7 @@ class Help(commands.Cog):
                                           "Better scaling means higher bonus damage, so finding a weapon with good scaling is crucial.",
                                     inline=False)
                     embed.colour = discord.Color.light_embed()
-                    await interaction.response.send_message(embed=embed)
+                    await interaction.followup.send(embed=embed)
         except Exception as e:
             await self.client.send_error_message(e)
 async def setup(client: commands.Bot) -> None:

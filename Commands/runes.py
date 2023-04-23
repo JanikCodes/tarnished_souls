@@ -15,6 +15,9 @@ class Runes(commands.Cog):
     async def runes(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 embed = discord.Embed(title=f"{user.get_userName()} rune amount",
@@ -22,7 +25,7 @@ class Runes(commands.Cog):
 
                 embed.set_footer(text="You can earn more while defeating enemies or doing /explore")
 
-                await interaction.response.send_message(embed=embed)
+                await interaction.followup.send(embed=embed)
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

@@ -63,6 +63,9 @@ class Quest(commands.Cog):
     async def quest(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 current_quest = db.get_user_quest_with_user_id(idUser=user.get_userId())
@@ -85,14 +88,14 @@ class Quest(commands.Cog):
                         embed.add_field(name="Rewards:", value=current_quest.get_quest_reward_text(interaction=interaction), inline=False)
 
                     if current_quest.is_finished():
-                        await interaction.response.send_message(embed=embed, view=QuestView(user=user, current_quest=current_quest))
+                        await interaction.followup.send(embed=embed, view=QuestView(user=user, current_quest=current_quest))
                     else:
-                        await interaction.response.send_message(embed=embed)
+                        await interaction.followup.send(embed=embed)
                 else:
                     embed = discord.Embed(title=f"Quest on cooldown..",
                                           description=f"Your next quest will be available in: {str(datetime.timedelta(seconds=current_quest.quest.get_cooldown() - (float(current_time) - float(last_time))))}",
                                           colour=discord.Color.red())
-                    await interaction.response.send_message(embed=embed)
+                    await interaction.followup.send(embed=embed)
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

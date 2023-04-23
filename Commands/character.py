@@ -16,6 +16,9 @@ class Character(commands.Cog):
     async def character(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 embed = discord.Embed(title=f"Character Information",
@@ -64,7 +67,7 @@ class Character(commands.Cog):
 
                 embed.add_field(name="Equipment:", value=eq_text, inline=False)
 
-                await interaction.response.send_message(embed=embed)
+                await interaction.followup.send(embed=embed)
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

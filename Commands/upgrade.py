@@ -81,6 +81,9 @@ class UpgradeStats(commands.Cog):
     async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
                 selected_choice = choices.value
                 current_level = db.get_stat_level_from_user_with_id(user.get_userId(), selected_choice)
@@ -91,7 +94,7 @@ class UpgradeStats(commands.Cog):
                 embed.add_field(name=f"**{selected_choice}**",
                                 value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(
                                     current_level) + "/100", inline=False)
-                await interaction.response.send_message(embed=embed,
+                await interaction.followup.send(embed=embed,
                                                         view=UpgradeStatsView(user=user, current_level=current_level,
                                                                               selected_choice=selected_choice,
                                                                               next_upgrade_cost=True))

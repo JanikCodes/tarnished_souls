@@ -168,13 +168,16 @@ class Inventory(commands.Cog):
     async def inventory(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 embed = discord.Embed(title=f" {user.get_userName()}'s Inventory",
                                       description="Please select an inventory category below!")
                 embed.colour = discord.Color.green()
                 embed.set_footer(text="You'll unlock more items while playing!")
-                await interaction.response.send_message(embed=embed, view=DefaultInventoryView(user=user))
+                await interaction.followup.send(embed=embed, view=DefaultInventoryView(user=user))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

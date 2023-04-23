@@ -23,6 +23,9 @@ class Explore(commands.Cog):
     async def explore(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 current_time = (round(time.time() * 1000)) // 1000
@@ -42,9 +45,6 @@ class Explore(commands.Cog):
             await self.client.send_error_message(e)
 
     async def explore_status(self, interaction, percentage, user, finished):
-
-        await interaction.response.defer()
-
         embed = discord.Embed(title=f"**Exploring: {percentage:.1f}%**")
         embed.description = "You can find items, encounter events and explore the world."
         embed.colour = discord.Color.green() if finished else discord.Color.orange()
