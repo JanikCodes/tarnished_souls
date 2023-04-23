@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 
 import db
+from Classes.encounter import Encounter
 from Classes.enemy import Enemy
 from Classes.enemy_move import EnemyMove
 from Classes.user import User
@@ -68,11 +69,18 @@ class InsertEncounterButton(discord.ui.Button):
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
-        await interaction.response.send_modal(AddEncounterModal())
+        encounter = Encounter()
+        preview_embed = discord.Embed(title="Add Encounter")
+        preview_embed.add_field(name="Description:", value="Please enter a description..")
+        preview_embed.add_field(name="Drop_rate:", value="Please enter a drop_rate..")
+        preview_embed.add_field(name="Location:", value="Please select a location below")
+        await interaction.response.send_message(view=SelectLocationView(embed=preview_embed, encounter=encounter), embed=preview_embed)
+
 
 
 class ConfirmInsertButton(discord.ui.Button):
-    def __init__(self, enemy: Enemy(), message_id: str, logic: str = None, location: str = None, mode = None, enemy_move: EnemyMove() = None):
+    def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None, mode = None, enemy_move: EnemyMove() = None,
+                 encounter: Encounter() = None):
         super().__init__(label="Confirm", style=discord.ButtonStyle.success)
         self.enemy = enemy
         self.message_id = message_id
@@ -80,6 +88,7 @@ class ConfirmInsertButton(discord.ui.Button):
         self.location = location
         self.mode = mode
         self.enemy_move = enemy_move
+        self.encounter = encounter
 
     async def callback(self, interaction: discord.Interaction):
 
@@ -89,11 +98,11 @@ class ConfirmInsertButton(discord.ui.Button):
 
         if self.mode == "enemy":
             enemy_id = int(str(db.get_enemy_count()).strip("[('',)]")) + 1
-            db.add_enemy(enemy_id, db.get_enemy_logic_id_with_name(str(self.logic)), str(self.enemy.get_name()),
+            db.add_enemy(enemy_id, db.get_enemy_logic_id_from_name(str(self.logic)), str(self.enemy.get_name()),
                          str(self.enemy.get_description()), str(self.enemy.get_health()), str(self.enemy.get_runes()),
-                         str(db.get_location_id_with_name(self.location)))
+                         str(db.get_location_id_from_name(self.location)))
 
-            self.enemy.set_location(db.get_enemy_logic_id_with_name(self.location))
+            self.enemy.set_location(db.get_enemy_logic_id_from_name(self.location))
             self.enemy.set_id(str(db.get_enemy_id_from_name(self.enemy.get_name())).strip("(,)"))
             await message.edit(embed=discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}",
                                                    colour=discord.Color.green()),
@@ -104,6 +113,13 @@ class ConfirmInsertButton(discord.ui.Button):
                               str(self.enemy.get_id()) \
                               , str(self.enemy_move.get_damage()), str(self.enemy_move.get_healing()), str(self.enemy_move.get_duration()),
                               str(self.enemy_move.get_max_targets()))
+            await message.edit(
+                embed=discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green()), view=None)
+
+        if self.mode == "encounter":
+            location = self.encounter.get_location()
+            db.add_encounter(self.encounter.get_description(), str(self.encounter.get_drop_rate()), str(db.get_location_id_from_name(location.get_name())).strip("(,)"))
+            self.encounter.set_id(db.get_encounter_id_from_description(self.encounter.get_description()))
             await message.edit(
                 embed=discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green()), view=None)
 
@@ -165,14 +181,14 @@ class SelectMoveType(discord.ui.Select):
 
 
 class SelectLocation(discord.ui.Select):
-    def __init__(self, message_id: str, embed: discord.Embed, logic: str = None, enemy: Enemy() = None,
-                 index: int = None):
+    def __init__(self, message_id: str = None, embed: discord.Embed = None, logic: str = None, enemy: Enemy() = None,
+                encounter: Encounter() = None):
         super().__init__(placeholder="Select the corresponding location", max_values=1, min_values=1)
         self.enemy = enemy
         self.message_id = message_id
         self.logic = logic
         self.embed = embed
-        self.index = index
+        self.encounter = encounter
 
         for location_name, location_description in db.get_all_locations():
             self.add_option(label=str(location_name), description=str(location_description))
@@ -181,18 +197,18 @@ class SelectLocation(discord.ui.Select):
         guild = interaction.guild
         channel = guild.get_channel(interaction.channel_id)
 
-        if self.index:
-            self.embed.set_field_at(index=self.index, name="Location:", value=str(self.values[0]))
-            message = await channel.fetch_message(interaction.message.id)
-            await interaction.response.defer()
-            await message.edit(view=None, embed=self.embed)
-
-        else:
+        if self.enemy:
             message = await channel.fetch_message(self.message_id)
             self.embed.set_field_at(index=4, name="Location:", value=str(self.values[0]))
             await interaction.response.defer()
             await message.edit(view=ConfirmInsertButtonView(self.enemy, self.message_id, self.logic, self.values[0], "enemy"),
                                embed=self.embed)
+
+        elif self.encounter:
+            self.encounter.set_location(int(str(db.get_location_id_from_name(str(self.values[0]))).strip("(,)")))
+            self.embed.set_field_at(index=2, name="Location:", value=str(self.values[0]))
+            await interaction.message.edit(embed=self.embed, view=None)
+            await interaction.response.send_modal(AddEncounterModal(interaction.message.id, self.values[0], self.embed, encounter=self.encounter))
 
 
 class AddEnemyModal(discord.ui.Modal):
@@ -274,7 +290,7 @@ class AddEnemyMoveModal(discord.ui.Modal):
         self.embed.add_field(name="Move_description:", value=self.move_description)
         move.set_description(self.move_description)
         move.set_type(str(db.get_move_type_id_from_name(self.move_type)).strip("(,)"))
-        
+
         if self.move_max_targets is None:
             move.set_max_targets(1)
         else:
@@ -307,8 +323,12 @@ class AddEnemyMoveModal(discord.ui.Modal):
 
 
 class AddEncounterModal(discord.ui.Modal):
-    def __init__(self):
+    def __init__(self, message_id: str = None, location: str = None, embed: discord.Embed = None, encounter: Encounter() = None):
         super().__init__(title="Add Encounter")
+        self.message_id = message_id
+        self.location = location
+        self.embed = embed
+        self.encounter = encounter
 
     encounter_description = discord.ui.TextInput(label="Description", style=discord.TextStyle.long,
                                                  placeholder="Enter a valid description..", required=True)
@@ -316,14 +336,15 @@ class AddEncounterModal(discord.ui.Modal):
                                               placeholder="Enter a valid drop_rate amount..", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
-        preview_embed = discord.Embed(title="Add Encounter")
-        preview_embed.add_field(name="Description:", value=self.encounter_description)
-        preview_embed.add_field(name="Drop_rate", value=self.encounter_dropRate)
-        preview_embed.add_field(name="Location:", value="Please select a location below")
-        await interaction.response.send_message(embed=preview_embed,
-                                                view=SelectLocationView(interaction.message.id, embed=preview_embed,
-                                                                        index=2))
+        self.embed.set_field_at(index=0, name="Description:", value=self.encounter_description)
+        self.embed.set_field_at(index=1, name="Drop_rate:", value=self.encounter_dropRate)
 
+
+        self.encounter.set_description(self.encounter_description)
+        self.encounter.set_drop_rate(self.encounter_dropRate)
+
+        await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(message_id=interaction.message.id, location=self.location, mode="encounter", encounter=self.encounter))
+        await interaction.response.defer()
 
 class SelectEnemyView(discord.ui.View):
     def __init__(self):
@@ -344,16 +365,17 @@ class SelectMoveTypeView(discord.ui.View):
 
 
 class SelectLocationView(discord.ui.View):
-    def __init__(self, message_id: str, embed: discord.Embed, logic: str = None, enemy: Enemy() = None,
-                 index: int = None):
+    def __init__(self, message_id: str = None, embed: discord.Embed = None, logic: str = None, enemy: Enemy() = None,
+                 encounter: Encounter() = None):
         super().__init__(timeout=None)
-        self.add_item(SelectLocation(message_id, embed, logic, enemy, index))
+        self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter))
 
 
 class ConfirmInsertButtonView(discord.ui.View):
-    def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None, mode = None, enemy_move: EnemyMove() = None):
+    def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None, mode = None,
+                 enemy_move: EnemyMove() = None, encounter: Encounter() = None):
         super().__init__(timeout=None)
-        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move))
+        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move, encounter))
 
 
 class DeveloperView(discord.ui.View):
