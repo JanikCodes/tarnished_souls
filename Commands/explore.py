@@ -42,6 +42,9 @@ class Explore(commands.Cog):
             await self.client.send_error_message(e)
 
     async def explore_status(self, interaction, percentage, user, finished):
+
+        await interaction.response.defer()
+
         embed = discord.Embed(title=f"**Exploring: {percentage:.1f}%**")
         embed.description = "You can find items, encounter events and explore the world."
         embed.colour = discord.Color.green() if finished else discord.Color.orange()
@@ -110,7 +113,7 @@ class Explore(commands.Cog):
 
             embed.set_footer(text=f"You've received {rune_amount} runes!")
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
     def calculate_random_stats(self):
         # 25% chance of triggering random stats
