@@ -77,6 +77,17 @@ class InsertEncounterButton(discord.ui.Button):
         await interaction.response.send_message(view=SelectLocationView(embed=preview_embed, encounter=encounter), embed=preview_embed)
 
 
+class InsertQuestButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="Insert Quest", style=discord.ButtonStyle.success)
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != int(self.user.get_userId()):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
 
 class ConfirmInsertButton(discord.ui.Button):
     def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None, mode = None, enemy_move: EnemyMove() = None,
@@ -98,30 +109,42 @@ class ConfirmInsertButton(discord.ui.Button):
 
         if self.mode == "enemy":
             enemy_id = int(str(db.get_enemy_count()).strip("[('',)]")) + 1
-            db.add_enemy(enemy_id, db.get_enemy_logic_id_from_name(str(self.logic)), str(self.enemy.get_name()),
+            sql = db.add_enemy(enemy_id, db.get_enemy_logic_id_from_name(str(self.logic)), str(self.enemy.get_name()),
                          str(self.enemy.get_description()), str(self.enemy.get_health()), str(self.enemy.get_runes()),
                          str(db.get_location_id_from_name(self.location)))
-
+            with open('Data/sql-statements.txt', 'a') as f:
+                f.write(f"{sql}\n")
             self.enemy.set_location(db.get_enemy_logic_id_from_name(self.location))
             self.enemy.set_id(str(db.get_enemy_id_from_name(self.enemy.get_name())).strip("(,)"))
-            await message.edit(embed=discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}",
-                                                   colour=discord.Color.green()),
-                               view=None)
+            embed = discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}",
+                                  colour=discord.Color.green())
+            embed.set_footer(text=sql)
+            await message.edit(embed=embed, view=None)
 
         if self.mode == "enemy_move":
-            db.add_enemy_move(self.enemy_move.get_description(), str(self.enemy_move.get_phase()), str(self.enemy_move.get_type()),
+            sql = db.add_enemy_move(self.enemy_move.get_description(), str(self.enemy_move.get_phase()), str(self.enemy_move.get_type()),
                               str(self.enemy.get_id()) \
                               , str(self.enemy_move.get_damage()), str(self.enemy_move.get_healing()), str(self.enemy_move.get_duration()),
                               str(self.enemy_move.get_max_targets()))
-            await message.edit(
-                embed=discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green()), view=None)
+            with open('Data/sql-statements.txt', 'a') as f:
+                f.write(f"{sql}\n")
+            self.enemy.set_location(db.get_enemy_logic_id_from_name(self.location))
+            self.enemy.set_id(str(db.get_enemy_id_from_name(self.enemy.get_name())).strip("(,)"))
+            embed = discord.Embed(title=f"Database Insertion successful!",
+                                  colour=discord.Color.green())
+            embed.set_footer(text=  sql)
+            await message.edit(embed=embed, view=None)
 
         if self.mode == "encounter":
             location = self.encounter.get_location()
-            db.add_encounter(self.encounter.get_description(), str(self.encounter.get_drop_rate()), str(db.get_location_id_from_name(location.get_name())).strip("(,)"))
+            sql = db.add_encounter(self.encounter.get_description(), str(self.encounter.get_drop_rate()), str(db.get_location_id_from_name(location.get_name())).strip("(,)"))
+            with open('Data/sql-statements.txt', 'a') as f:
+                f.write(f"{sql}\n")
             self.encounter.set_id(db.get_encounter_id_from_description(self.encounter.get_description()))
-            await message.edit(
-                embed=discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green()), view=None)
+            embed = discord.Embed(title=f"Database Insertion successful!",
+                                  colour=discord.Color.green())
+            embed.set_footer(text=sql)
+            await message.edit(embed=embed, view=None)
 
 
 class SelectEnemy(discord.ui.Select):
@@ -345,6 +368,7 @@ class AddEncounterModal(discord.ui.Modal):
 
         await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(message_id=interaction.message.id, location=self.location, mode="encounter", encounter=self.encounter))
         await interaction.response.defer()
+
 
 class SelectEnemyView(discord.ui.View):
     def __init__(self):
