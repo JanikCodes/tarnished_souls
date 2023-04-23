@@ -6,6 +6,7 @@ import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
 from Classes.enemy_move import EnemyMove
+from Classes.quest import Quest
 from Classes.user import User
 from Utils.classes import class_selection
 
@@ -87,6 +88,22 @@ class InsertQuestButton(discord.ui.Button):
                                   description="",
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        quest = Quest()
+        preview_embed = discord.Embed(title="Add Quest")
+        preview_embed.add_field(name="Title:", value="Please enter a title..")
+        preview_embed.add_field(name="Description:", value="Please enter a description..")
+        preview_embed.add_field(name="Req_kills:", value="Please enter a req. kills amount..")
+        preview_embed.add_field(name="Req_item_count:", value="Please enter a req. item count..")
+        preview_embed.add_field(name="Req_runes:", value="Please enter a req. runes amount..")
+        preview_embed.add_field(name="Item_id:", value="Please enter a valid item_id..")
+        preview_embed.add_field(name="Enemy_id:", value="Please enter a valid enemy..")
+        preview_embed.add_field(name="Rune_reward:", value="Please enter a valid rune reward amount..")
+        preview_embed.add_field(name="Location_id_reward:", value="Please enter a valid location_id_reward..")
+        preview_embed.add_field(name="Req_explore_count:", value="Please enter a valid req. explore_count amount..")
+        preview_embed.add_field(name="Location_id:", value="Please enter a valid location_id..")
+        preview_embed.add_field(name="Cooldown:", value="Please enter a valid cooldown amount..")
+        await interaction.response.send_message(embed=preview_embed)
 
 
 class ConfirmInsertButton(discord.ui.Button):
