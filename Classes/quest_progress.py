@@ -45,11 +45,11 @@ class QuestProgress:
         if self.quest.req_runes:
             if self.quest.req_runes > 0:
                 remaining = self.quest.get_req_runes() - self.remaining_runes
-                text += f"**Earn** `runes` **{remaining}/{self.quest.get_req_runes()}**"
+                text += f"**Earn** `runes` **{remaining}/{self.quest.get_req_runes()}** \n"
         if self.quest.req_explore_count:
             if self.quest.req_explore_count > 0:
                 remaining = self.quest.get_req_explore_count() - self.remaining_explore_count
-                text += f"**Explore** `{self.quest.get_explore_location().get_name()}` **{remaining}/{self.quest.get_req_explore_count()}**"
+                text += f"**Explore** `{self.quest.get_explore_location().get_name()}` **{remaining}/{self.quest.get_req_explore_count()}** \n"
 
         return text
 
