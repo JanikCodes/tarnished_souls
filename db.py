@@ -52,6 +52,17 @@ def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id)
     mydb.commit()
 
 
+def add_enemy_move(description, phase, type_id, enemy_id, damage, healing, duration, max_targets):
+    sql = f"INSERT INTO enemy_moves VALUES(null, '{description}', {int(phase)}, {int(type_id)}, {int(enemy_id)}, {damage}, {healing}, {duration}, {int(max_targets)})"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def add_encounter(description, dropRate, location_id):
+    sql = f"INSERT INTO encounter VALUES(null, '{description}', {int(dropRate)}, {int(location_id)})"
+    cursor.execute(sql)
+    mydb.commit()
+
 def get_enemy_and_desc():
     sql = "SELECT name, description FROM enemy;"
     cursor.execute(sql)
@@ -78,7 +89,7 @@ def get_all_enemy_logic():
     return cursor.fetchall()
 
 
-def get_enemy_logic_id_with_name(name):
+def get_enemy_logic_id_from_name(name):
     sql = "SELECT idLogic FROM enemy_logic WHERE name=%s"
     val = name
     cursor.execute(sql, (val,))
@@ -97,6 +108,12 @@ def get_move_type_id_from_name(name):
     return cursor.fetchone()
 
 
+def get_encounter_id_from_description(description):
+    sql = f"SELECT idencounter FROM encounter WHERE description='{description}'"
+    cursor.execute(sql)
+    return cursor.fetchone()
+
+
 # data insertion
 def get_all_locations():
     sql = "SELECT name, description FROM location"
@@ -104,7 +121,7 @@ def get_all_locations():
     return cursor.fetchall()
 
 
-def get_location_id_with_name(name):
+def get_location_id_from_name(name):
     sql = "SELECT idLocation FROM location WHERE name=%s"
     val = name
     cursor.execute(sql, (val,))
