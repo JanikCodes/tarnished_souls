@@ -79,8 +79,9 @@ class InsertEncounterButton(discord.ui.Button):
 
 
 class InsertQuestButton(discord.ui.Button):
-    def __init__(self):
+    def __init__(self, user):
         super().__init__(label="Insert Quest", style=discord.ButtonStyle.success)
+        self.user = user
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != int(self.user.get_userId()):
@@ -90,6 +91,8 @@ class InsertQuestButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
         quest = Quest()
+        quest.set_explore_location(None)
+        quest.set_location_reward(None)
         preview_embed = discord.Embed(title="Add Quest")
         preview_embed.add_field(name="Title:", value="Please enter a title..")
         preview_embed.add_field(name="Description:", value="Please enter a description..")
@@ -103,7 +106,7 @@ class InsertQuestButton(discord.ui.Button):
         preview_embed.add_field(name="Req_explore_count:", value="Please enter a valid req. explore_count amount..")
         preview_embed.add_field(name="Location_id:", value="Please enter a valid location_id..")
         preview_embed.add_field(name="Cooldown:", value="Please enter a valid cooldown amount..")
-        await interaction.response.send_message(embed=preview_embed)
+        await interaction.response.send_message(embed=preview_embed, view=SelectLocationView(quest=quest, embed=preview_embed))
 
 
 class ConfirmInsertButton(discord.ui.Button):
@@ -149,7 +152,7 @@ class ConfirmInsertButton(discord.ui.Button):
             self.enemy.set_id(str(db.get_enemy_id_from_name(self.enemy.get_name())).strip("(,)"))
             embed = discord.Embed(title=f"Database Insertion successful!",
                                   colour=discord.Color.green())
-            embed.set_footer(text=  sql)
+            embed.set_footer(text=sql)
             await message.edit(embed=embed, view=None)
 
         if self.mode == "encounter":
@@ -222,13 +225,21 @@ class SelectMoveType(discord.ui.Select):
 
 class SelectLocation(discord.ui.Select):
     def __init__(self, message_id: str = None, embed: discord.Embed = None, logic: str = None, enemy: Enemy() = None,
-                encounter: Encounter() = None):
-        super().__init__(placeholder="Select the corresponding location", max_values=1, min_values=1)
+                encounter: Encounter() = None, quest: Quest() = None, index: int = None):
+        if index==2:
+            super().__init__(placeholder="Select the corresponding reward_location", max_values=1, min_values=1)
+        else:
+            super().__init__(placeholder="Select the corresponding location", max_values=1, min_values=1)
         self.enemy = enemy
         self.message_id = message_id
         self.logic = logic
         self.embed = embed
         self.encounter = encounter
+        self.quest = quest
+        self.index = index
+
+        if self.quest:
+            self.add_option(label="None", description="Select for no location", value="no_location")
 
         for location_name, location_description in db.get_all_locations():
             self.add_option(label=str(location_name), description=str(location_description))
@@ -249,6 +260,30 @@ class SelectLocation(discord.ui.Select):
             self.embed.set_field_at(index=2, name="Location:", value=str(self.values[0]))
             await interaction.message.edit(embed=self.embed, view=None)
             await interaction.response.send_modal(AddEncounterModal(interaction.message.id, self.values[0], self.embed, encounter=self.encounter))
+
+        elif self.quest and self.index==1:
+            self.quest.set_explore_location(str(self.values[0]))
+            self.embed.set_field_at(index=10, name=f"Location_id: {str(db.get_location_id_from_name(self.values[0])).strip('(,)')}", value=str(self.values[0]))
+            if self.quest.get_location_reward() is None:
+                await interaction.message.edit(embed=self.embed,
+                                               view=SelectLocationView(embed=self.embed, quest=self.quest))
+            else:
+                await interaction.message.edit(embed=self.embed, view=None)
+                await interaction.response.send_modal(AddQuestModal(message_id=str(interaction.message.id), modal_page="1", embed=self.embed))
+                return
+            await interaction.response.defer()
+
+        elif self.quest and self.index==2:
+            self.quest.set_location_reward(str(self.values[0]))
+            self.embed.set_field_at(index=8, name=f"Location_id_reward: {str(db.get_location_id_from_name(self.values[0])).strip('(,)')}", value=str(self.values[0]))
+            if self.quest.get_explore_location() is None:
+                await interaction.message.edit(embed=self.embed,
+                                               view=SelectLocationView(embed=self.embed, quest=self.quest))
+            else:
+                await interaction.message.edit(embed=self.embed, view=None)
+                await interaction.response.send_modal(AddQuestModal(message_id=str(interaction.message.id), modal_page="1", embed=self.embed))
+                return
+            await interaction.response.defer()
 
 
 class AddEnemyModal(discord.ui.Modal):
@@ -387,6 +422,37 @@ class AddEncounterModal(discord.ui.Modal):
         await interaction.response.defer()
 
 
+# Quests
+class AddQuestModal(discord.ui.Modal):
+    # discord.ui.TextInput(label="", style=discord.TextStyle.short, placeholder="", required=True)
+    quest_title = None
+    quest_description = None
+    quest_req_kills = None
+    quest_req_item_count = None
+    quest_req_runes = None
+    quest_item_id = None
+    quest_enemy_id = None
+    quest_rune_reward = None
+    quest_location_id_reward = None
+    quest_cooldown = None
+
+    def __init__(self, message_id: str, modal_page: str = None, embed: discord.Embed = None):
+        super().__init__(title="Add Quest")
+        self.message_id = message_id
+        self.modal_page = modal_page
+        self.embed = embed
+
+        match modal_page:
+            case "1":
+                self.quest_title = discord.ui.TextInput(label="Title:", style=discord.TextStyle.short, placeholder="", required=True)
+                self.quest_description = discord.ui.TextInput(label="Description:", style=discord.TextStyle.short, placeholder="", required=True)
+                self.quest_cooldown = discord.ui.TextInput(label="Cooldown:", style=discord.TextStyle.short, placeholder="", required=True)
+
+                self.add_item(self.quest_title)
+                self.add_item(self.quest_description)
+                self.add_item(self.quest_cooldown)
+
+
 class SelectEnemyView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -407,9 +473,20 @@ class SelectMoveTypeView(discord.ui.View):
 
 class SelectLocationView(discord.ui.View):
     def __init__(self, message_id: str = None, embed: discord.Embed = None, logic: str = None, enemy: Enemy() = None,
-                 encounter: Encounter() = None):
+                 encounter: Encounter() = None, quest: Quest() = None, index: int = None):
         super().__init__(timeout=None)
-        self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter))
+
+        if quest:
+            if quest.get_explore_location() is None and quest.get_location_reward() is None:
+                self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter, quest, index=1))
+                self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter, quest, index=2))
+            elif quest.get_explore_location() is None:
+                self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter, quest, index=1))
+            elif quest.get_location_reward() is None:
+                self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter, quest, index=2))
+
+        else:
+            self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter, quest))
 
 
 class ConfirmInsertButtonView(discord.ui.View):
@@ -428,6 +505,7 @@ class DeveloperView(discord.ui.View):
         self.add_item(InsertEnemyButton(user=user))
         self.add_item(InsertEnemyMoveButton(user=user))
         self.add_item(InsertEncounterButton(user=user))
+        self.add_item(InsertQuestButton(user=user))
 
 
 class Developer(commands.Cog):

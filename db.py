@@ -573,14 +573,18 @@ def check_if_add_all_items():
 
 def get_location_from_id(idLocation):
     if idLocation:
-        sql = f"SELECT idLocation, name, description FROM location WHERE idLocation = {idLocation};"
-        cursor.execute(sql)
-        res = cursor.fetchone()
-        if res:
-            location = Location(res[0], res[1], res[2])
-            return location
-        else:
-            return None
+        try:
+            sql = f"SELECT idLocation, name, description FROM location WHERE idLocation = {idLocation};"
+            cursor.execute(sql)
+            res = cursor.fetchone()
+            if res:
+                location = Location(res[0], res[1], res[2])
+                return location
+            else:
+                return None
+        except mysql.connector.Error as err:
+            # used for quest insertion when None
+            return 0
     return None
 
 
