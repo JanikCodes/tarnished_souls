@@ -76,7 +76,7 @@ class Quest:
     def set_description(self, description):
         self.description = description
 
-    def set_req_kils(self, req_kills):
+    def set_req_kills(self, req_kills):
         self.req_kills = req_kills
 
     def set_req_item_count(self, req_item_count):
@@ -89,7 +89,7 @@ class Quest:
         self.req_item = req_item
 
     def set_req_enemy(self, req_enemy_id):
-        self.req_enemy = Enemy(req_enemy_id) if req_enemy_id is not None else None
+        self.req_enemy = Enemy(idEnemy=req_enemy_id) if req_enemy_id is not None else None
 
     def set_rune_reward(self, rune_reward):
         self.rune_reward = rune_reward
