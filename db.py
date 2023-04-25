@@ -44,10 +44,12 @@ def add_user(userId, userName):
 
 
 def get_item_name_from_id(item_id):
-    sql = f"SELECT name FROM item WHERE iditem = {item_id};"
-    cursor.execute(sql)
-    return cursor.fetchone()
-
+    if item_id != "":
+        sql = f"SELECT name FROM item WHERE iditem = {item_id};"
+        cursor.execute(sql)
+        return cursor.fetchone()
+    else:
+        return None
 
 # data insertion
 def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id):
@@ -75,20 +77,31 @@ def add_encounter(description, dropRate, location_id):
 
 def add_quest(quest: Quest()):
     Enemy = quest.get_enemy()
-    enemy_id = str(Enemy.get_id())
+    enemy_id = None
+    if Enemy is not None:
+        enemy_id = Enemy.get_id()
+    else:
+        enemy_id = "null"
 
     exploration_location = quest.get_explore_location()
-    exploration_location_id = str(exploration_location.get_id())
+    exploration_location_id = int(str(exploration_location.get_id())) if exploration_location != 0 else "null"
 
     location_reward = quest.get_location_reward()
-    location_reward_id = str(location_reward.get_id())
-    sql = f"INSERT INTO quest VALUES(null, '{quest.get_title()}', '{quest.get_description()}', {int(str(quest.get_req_kills()))}, {int(str(quest.get_req_item_count()))},\
-            {int(str(quest.get_req_runes()))}, {int(str(quest.get_item()))}, {int(enemy_id)}, {int(str(quest.get_rune_reward()))}, {int(exploration_location_id)},\
-                {int(str(quest.get_req_explore_count()))}, {int(location_reward_id)}, {int(str(quest.get_cooldown()))});"
+    location_reward_id = int(str(location_reward.get_id())) if location_reward != 0 else "null"
+    sql = f"INSERT INTO quest VALUES(null, '{quest.get_title()}', '{quest.get_description()}', {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_item()}, {enemy_id}, {quest.get_rune_reward()}, {location_reward_id}, {quest.get_req_explore_count()}, {exploration_location_id}, {quest.get_cooldown()});"
     cursor.execute(sql)
     mydb.commit()
     return sql
 
+
+def add_quest_has_item(quest: Quest()):
+    sql = f"INSERT INTO quest VALUES(null, {quest.get}"
+
+
+def get_quest_id_from_title_and_desc(title, desc):
+    sql = f"SELECT idquest FROM quest WHERE title='{title}' AND description='{desc}'"
+    cursor.execute(sql)
+    return cursor.fetchone()
 
 def get_enemy_and_desc():
     sql = "SELECT name, description FROM enemy;"
@@ -338,7 +351,7 @@ def create_new_encounter_from_location(idUser, idLocation):
 
 
 def remove_user_encounters(idUser):
-    sql = f"DELETE FROM user_encounter r WHERE r.idUser = {idUser};"
+    sql = f"DELETE FROM user_encounter WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
 

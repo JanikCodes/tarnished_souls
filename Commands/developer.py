@@ -114,7 +114,7 @@ class InsertQuestButton(discord.ui.Button):
 class ConfirmInsertButton(discord.ui.Button):
     def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None,
                  mode=None, enemy_move: EnemyMove() = None,
-                 encounter: Encounter() = None, quest: Quest() = None):
+                 encounter: Encounter() = None, quest: Quest() = None, modal_page: str = None, embed: discord.Embed() = None):
         super().__init__(label="Confirm", style=discord.ButtonStyle.success)
         self.enemy = enemy
         self.message_id = message_id
@@ -124,6 +124,8 @@ class ConfirmInsertButton(discord.ui.Button):
         self.enemy_move = enemy_move
         self.encounter = encounter
         self.quest = quest
+        self.modal_page = modal_page
+        self.embed = embed
 
     async def callback(self, interaction: discord.Interaction):
 
@@ -145,7 +147,7 @@ class ConfirmInsertButton(discord.ui.Button):
             embed = discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}",
                                   colour=discord.Color.green())
             embed.set_footer(text=sql)
-            await message.edit(embed=embed, view=None)
+            await message.edit(embed=embed, view=None, delete_after=5)
 
         if self.mode == "enemy_move":
             sql = db.add_enemy_move(self.enemy_move.get_description(), str(self.enemy_move.get_phase()),
@@ -161,7 +163,7 @@ class ConfirmInsertButton(discord.ui.Button):
             embed = discord.Embed(title=f"Database Insertion successful!",
                                   colour=discord.Color.green())
             embed.set_footer(text=sql)
-            await message.edit(embed=embed, view=None)
+            await message.edit(embed=embed, view=None, delete_after=5)
 
         if self.mode == "encounter":
             location = self.encounter.get_location()
@@ -173,17 +175,33 @@ class ConfirmInsertButton(discord.ui.Button):
             embed = discord.Embed(title=f"Database Insertion successful!",
                                   colour=discord.Color.green())
             embed.set_footer(text=sql)
-            await message.edit(embed=embed, view=None)
+            await message.edit(embed=embed, view=None, delete_after=5)
 
         if self.mode == "quest":
             sql = db.add_quest(self.quest)
+            self.quest.set_id(int(str(db.get_quest_id_from_title_and_desc(self.quest.get_title(), self.quest.get_description())).strip("(,)")))
             with open('Data/sql-statements.txt', 'a') as f:
                 f.write(f"{sql}\n")
-            #self.quest.set_id()
             embed = discord.Embed(title=f"Database Insertion successful!",
                                   colour=discord.Color.green())
             embed.set_footer(text=sql)
-            await interaction.message.edit(embed=embed, view=None)
+            await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest, sql_quest=sql))
+
+        if self.mode == "quest_with_item":
+            print("test111")
+
+        await interaction.response.defer()
+
+
+class InsertQuestHasItemButton(discord.ui.Button):
+    def __init__(self, embed: discord.Embed = None, quest: Quest() = None, sql_quest: str = None):
+        super().__init__(label="Insert Quest Reward", style=discord.ButtonStyle.success)
+        self.embed = embed
+        self.quest = quest
+        self.sql_quest = sql_quest
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_modal(AddQuestModal(message_id=str(interaction.message.id), embed=self.embed, modal_page="3", quest=self.quest))
 
 
 class NextQuestModalButton(discord.ui.Button):
@@ -200,12 +218,13 @@ class NextQuestModalButton(discord.ui.Button):
 
 
 class SelectEnemy(discord.ui.Select):
-    def __init__(self, quest: Quest() = None, embed: discord.Embed() = None):
+    def __init__(self, quest: Quest() = None, embed: discord.Embed() = None, modal_page: str = None):
         super().__init__(placeholder="Select the corresponding enemy", max_values=1, min_values=1)
         # self.enemy_id = list()
         self.enemy = None
         self.quest = quest
         self.embed = embed
+        self.modal_page = modal_page
 
         for enemy, desc in db.get_enemy_and_desc():
             description = str(desc).strip("'[('',)]'")
@@ -220,7 +239,7 @@ class SelectEnemy(discord.ui.Select):
         if self.quest:
             self.quest.set_req_enemy((str(db.get_enemy_id_from_name(str(self.values[0]))).strip("(,)")))
             self.embed.set_field_at(index=6, name=f"Enemy_id: {str(db.get_enemy_id_from_name(str(self.values[0]))).strip('(,)')}", value=self.values[0])
-            await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
+            await interaction.message.edit(embed=self.embed, view=InsertQuestHasItemView(quest=self.quest, embed=self.embed))
             await interaction.response.defer()
             return
         else:
@@ -299,14 +318,14 @@ class SelectLocation(discord.ui.Select):
                 embed=self.embed)
 
         elif self.encounter:
-            self.encounter.set_location_reward(int(str(db.get_location_id_from_name(str(self.values[0]))).strip("(,)")))
+            self.encounter.set_location(int(str(db.get_location_id_from_name(str(self.values[0]))).strip("(,)")))
             self.embed.set_field_at(index=2, name="Location:", value=str(self.values[0]))
             await interaction.message.edit(embed=self.embed, view=None)
             await interaction.response.send_modal(
                 AddEncounterModal(interaction.message.id, self.values[0], self.embed, encounter=self.encounter))
 
         elif self.quest and self.index == 1:
-            self.quest.set_explore_location(int(str(db.get_location_id_from_name(str(self.values[0]))).strip("(,)")))
+            self.quest.set_explore_location(str(db.get_location_id_from_name(str(self.values[0]))).strip("(,)"))
             self.embed.set_field_at(index=10,
                                     name=f"Location_id: {str(db.get_location_id_from_name(self.values[0])).strip('(,)')}",
                                     value=str(self.values[0]))
@@ -322,7 +341,7 @@ class SelectLocation(discord.ui.Select):
             await interaction.response.defer()
 
         elif self.quest and self.index == 2:
-            self.quest.set_location_reward(int(str(db.get_location_id_from_name(str(self.values[0]))).strip("(,)")))
+            self.quest.set_location_reward(str(db.get_location_id_from_name(str(self.values[0]))).strip("(,)"))
             self.embed.set_field_at(index=8,
                                     name=f"Location_id_reward: {str(db.get_location_id_from_name(self.values[0])).strip('(,)')}",
                                     value=str(self.values[0]))
@@ -487,11 +506,14 @@ class AddQuestModal(discord.ui.Modal):
     quest_req_item_count = None
     quest_req_runes = None
     quest_item_id = None
-    # quest_enemy_id = None
     quest_rune_reward = None
     quest_location_id_reward = None
     quest_req_explore_count = None
     quest_cooldown = None
+
+    quest_id = None
+    quest_item_reward_id = None
+    quest_item_count = None
 
     def __init__(self, message_id: str, modal_page: str = None, embed: discord.Embed = None, quest: Quest() = None):
         super().__init__(title="Add Quest")
@@ -508,9 +530,9 @@ class AddQuestModal(discord.ui.Modal):
                                                               placeholder="Please enter a valid description..",
                                                               required=True)
                 self.quest_cooldown = discord.ui.TextInput(label="Cooldown:", style=discord.TextStyle.short,
-                                                           placeholder="Please enter a valid cooldown..", required=True)
+                                                           placeholder="Please enter a valid cooldown..", required=False)
 
-                self.quest_rune_reward = discord.ui.TextInput(label="Rune_reward:", style=discord.TextStyle.short, placeholder="Please enter a valid reward", required=True)
+                self.quest_rune_reward = discord.ui.TextInput(label="Rune_reward:", style=discord.TextStyle.short, placeholder="Please enter a valid reward", required=False)
 
                 self.add_item(self.quest_title)
                 self.add_item(self.quest_description)
@@ -520,24 +542,35 @@ class AddQuestModal(discord.ui.Modal):
             case "2":
                 self.quest_req_kills = discord.ui.TextInput(label="Required Kills:", style=discord.TextStyle.short,
                                                             placeholder="Please enter a valid kill amount..",
-                                                            required=True)
+                                                            required=False)
                 self.quest_req_item_count = discord.ui.TextInput(label="Required Item Count:",
                                                                  style=discord.TextStyle.short,
                                                                  placeholder="Please enter a valid item count..",
-                                                                 required=True)
+                                                                 required=False)
                 self.quest_req_runes = discord.ui.TextInput(label="Required Runes:", style=discord.TextStyle.short,
                                                             placeholder="Please enter a valid rune count..",
-                                                            required=True)
+                                                            required=False)
                 self.quest_item_id = discord.ui.TextInput(label="Item_id:", style=discord.TextStyle.short, placeholder="Please enter a valid item_id..",
-                                                          required=True)
-                self.quest_req_explore_count = discord.ui.TextInput(label="Required explore count:", style=discord.TextStyle.short,
-                                                                    placeholder="Please enter a valid count..", required=True)
+                                                          required=False)
+                if str(self.quest.get_explore_location()) != "0":
+                    self.quest_req_explore_count = discord.ui.TextInput(label="Required explore count:", style=discord.TextStyle.short,
+                                                                    placeholder="Please enter a valid count..", required=False)
+                    self.add_item(self.quest_req_explore_count)
 
                 self.add_item(self.quest_req_kills)
                 self.add_item(self.quest_req_item_count)
                 self.add_item(self.quest_req_runes)
                 self.add_item(self.quest_item_id)
-                self.add_item(self.quest_req_explore_count)
+
+            case "3":
+
+                self.quest_id = discord.ui.TextInput(label="Quest_id", style=discord.TextStyle.short, placeholder="Please enter a valid id or leave empty..", required=True)
+                self.quest_item_reward_id = discord.ui.TextInput(label="Item_reward_id", style=discord.TextStyle.short, placeholder="Please enter a valid id or leave empty..", required=True)
+                self.quest_item_count = discord.ui.TextInput(label="Item_reward_count", style=discord.TextStyle.short, placeholder="Please enter a valid amount or leave empty..", required=True)
+
+                self.add_item(self.quest_id)
+                self.add_item(self.quest_item_reward_id)
+                self.add_item(self.quest_item_count)
 
     async def on_submit(self, interaction: discord.Interaction):
         match self.modal_page:
@@ -548,40 +581,93 @@ class AddQuestModal(discord.ui.Modal):
                 self.quest.set_description(self.quest_description)
                 self.embed.set_field_at(index=1, name="Description:", value=self.quest_description)
 
-                self.quest.set_cooldown(self.quest_cooldown)
-                self.embed.set_field_at(index=11, name="Cooldown:", value=self.quest_cooldown)
+                if str(self.quest_cooldown.value) == "":
+                    self.quest.set_cooldown("0")
+                    self.embed.set_field_at(index=11, name="Cooldown:", value="None")
+                else:
+                    self.quest.set_cooldown(int(self.quest_cooldown.value))
+                    self.embed.set_field_at(index=11, name="Cooldown:", value=self.quest.get_cooldown())
 
-                self.quest.set_rune_reward(self.quest_rune_reward)
-                self.embed.set_field_at(index=7, name="Rune_reward:", value=self.quest_rune_reward)
+                if str(self.quest_rune_reward) == "":
+                    self.quest.set_rune_reward("0")
+                    self.embed.set_field_at(index=7, name="Rune_reward:", value="None")
+                else:
+                    self.quest.set_rune_reward(int(self.quest_rune_reward.value))
+                    self.embed.set_field_at(index=7, name="Rune_reward:", value=self.quest.get_rune_reward())
 
             case "2":
-                self.quest.set_req_kills(self.quest_req_kills)
-                self.embed.set_field_at(index=2, name="Req_kills:", value=self.quest_req_kills)
+                if str(self.quest_req_kills.value) == "":
+                    self.quest.set_req_kills("0")
+                    self.embed.set_field_at(index=2, name="Req_kills:", value="None")
+                else:
+                    self.quest.set_req_kills(int(self.quest_req_kills.value))
+                    self.embed.set_field_at(index=2, name="Req_kills:", value=self.quest.get_req_kills())
 
-                self.quest.set_req_item_count(self.quest_req_item_count)
-                self.embed.set_field_at(index=3, name="Req_item_count:", value=self.quest_req_item_count)
+                if str(self.quest_req_item_count.value) == "":
+                    self.quest.set_req_item_count("0")
+                    self.embed.set_field_at(index=3, name="Req_item_count:", value="None")
+                else:
+                    self.quest.set_req_item_count(int(self.quest_req_item_count.value))
+                    self.embed.set_field_at(index=3, name="Req_item_count:", value=self.quest.get_req_item_count())
 
-                self.quest.set_req_runes(self.quest_req_runes)
-                self.embed.set_field_at(index=4, name="Req_runes:", value=self.quest_req_runes)
+                if str(self.quest_req_runes.value) == "":
+                    self.quest.set_req_runes("0")
+                    self.embed.set_field_at(index=4, name="Req_runes:", value="None")
+                else:
+                    self.quest.set_req_runes(int(self.quest_req_runes.value))
+                    self.embed.set_field_at(index=4, name="Req_runes:", value=self.quest.get_req_runes())
 
-                self.quest.set_req_item(self.quest_item_id)
-                self.embed.set_field_at(index=5, name=f"Item_id: {self.quest_item_id}", value=str(db.get_item_name_from_id(self.quest_item_id)).strip("(,)"))
+                if str(self.quest_item_id.value) == "":
+                    self.quest.set_req_item("null")
+                    self.embed.set_field_at(index=5, name=f"Item_id: None", value="None")
+                else:
+                    self.quest.set_req_item(int(self.quest_item_id.value))
+                    self.embed.set_field_at(index=5, name=f"Item_id: {self.quest.get_item()}",
+                                            value=str(db.get_item_name_from_id(str(self.quest_item_id))).strip("(,)"))
 
-                self.quest.set_req_explore_count(self.quest_req_explore_count)
-                self.embed.set_field_at(index=9, name="Req_explore_count:", value=self.quest_req_explore_count)
+                if str(self.quest_req_explore_count.value) == "":
+                    self.quest.set_req_explore_count("0")
+                    self.embed.set_field_at(index=9, name="Req_explore_count:", value="None")
+                else:
+                    self.quest.set_req_explore_count(int(self.quest_req_explore_count.value))
+                    self.embed.set_field_at(index=9, name="Req_explore_count:", value=self.quest.get_req_explore_count())
+
+            case "3":
+                print("test")
 
         match self.modal_page:
             case "1":
                 await interaction.message.edit(embed=self.embed, view=NextQuestModalButtonView(message_id=self.message_id, modal_page=self.modal_page, quest=self.quest, embed=self.embed))
             case "2":
-                await interaction.message.edit(embed=self.embed, view=SelectEnemyView(quest=self.quest, embed=self.embed))
+                if str(self.quest.get_req_kills()) == "0":
+                    self.quest.set_req_enemy(None)
+                    self.embed.set_footer(text="Item Reward is optional!")
+                    await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
+                else:
+                    await interaction.message.edit(embed=self.embed, view=SelectEnemyView(quest=self.quest, embed=self.embed, modal_page=self.modal_page))
+            case "3":
+                # item count in func param
+                self.embed.color = discord.Color.purple()
+                self.embed.title = "Adding item(s) to quest."
+                self.embed.set_footer(text=None)
+                self.embed.add_field(name=f"Quest_id: {str(self.quest_id)}", value="quest_name")
+                self.embed.add_field(name=f"Item_Reward_id: {self.quest_item_reward_id}", value=str(db.get_item_name_from_id(self.quest_item_reward_id)).strip("'(,)'"))
+                self.embed.add_field(name="Reward amount/count:", value=str(self.quest_item_count))
+                items = list()
+                items.append(str(self.quest_item_reward_id), str(self.quest_item_count))
+                print(items)
+
+
+
+                await interaction.message.edit(embed=self.embed, view=InsertQuestHasItemView(embed=self.embed, quest=self.quest, mode="quest_with_item"))
+
         await interaction.response.defer()
 
 
 class SelectEnemyView(discord.ui.View):
-    def __init__(self, quest: Quest() = None, embed: discord.Embed() = None):
+    def __init__(self, quest: Quest() = None, embed: discord.Embed() = None, modal_page: str = None):
         super().__init__(timeout=None)
-        self.add_item(SelectEnemy(quest, embed))
+        self.add_item(SelectEnemy(quest, embed, modal_page))
 
 
 class SelectELView(discord.ui.View):
@@ -614,10 +700,19 @@ class SelectLocationView(discord.ui.View):
             self.add_item(SelectLocation(message_id, embed, logic, enemy, encounter, quest))
 
 
+class InsertQuestHasItemView(discord.ui.View):
+    def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None,
+                 mode=None,
+                 enemy_move: EnemyMove() = None, encounter: Encounter() = None, quest: Quest() = None, embed: discord.Embed = None, modal_page: str = None, sql_quest: str = None):
+        super().__init__(timeout=None)
+        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move, encounter, quest))
+        self.add_item(InsertQuestHasItemButton(embed, quest))
+
+
 class ConfirmInsertButtonView(discord.ui.View):
     def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None,
                  mode=None,
-                 enemy_move: EnemyMove() = None, encounter: Encounter() = None, quest: Quest() = None):
+                 enemy_move: EnemyMove() = None, encounter: Encounter() = None, quest: Quest() = None, modal_page: str = None):
         super().__init__(timeout=None)
         self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move, encounter, quest))
 
