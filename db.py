@@ -679,3 +679,18 @@ def has_equipped_item(idUser, relId):
             return False
         else:
             return True
+
+
+def get_all_user_count():
+    sql = f"SELECT Count(*) FROM user;"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        return res
+
+def get_avg_user_quest():
+    sql = f"select AVG(idQuest) FROM user_has_quest;"
+    cursor.execute(sql)
+    res = int(cursor.fetchone()[0])
+    if res:
+        return res

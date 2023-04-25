@@ -47,7 +47,10 @@ class Developer(commands.Cog):
                 if interaction.user.id == 321649314382348288:
 
                     embed = discord.Embed(title=f"Developer options",
-                                          description="What do you want to do next?")
+                                          description="")
+                    embed.add_field(name="Servers", value=f"{len(self.client.guilds)}")
+                    embed.add_field(name="Users", value=f"{db.get_all_user_count()}")
+                    embed.add_field(name="AVG Quest", value=f"{db.get_avg_user_quest()}")
 
                     await interaction.followup.send(embed=embed, view=DeveloperView(user=user))
                 else:
