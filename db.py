@@ -94,9 +94,11 @@ def add_quest(quest: Quest()):
     return sql
 
 
-def add_quest_has_item(quest: Quest()):
-    sql = f"INSERT INTO quest VALUES(null, {quest.get}"
-
+def add_quest_has_item(quest_id, item_reward_id, count):
+    sql = f"INSERT INTO quest_has_item VALUES(null, {quest_id}, {item_reward_id}, {count})"
+    cursor.execute(sql)
+    mydb.commit()
+    return sql
 
 def get_quest_id_from_title_and_desc(title, desc):
     sql = f"SELECT idquest FROM quest WHERE title='{title}' AND description='{desc}'"

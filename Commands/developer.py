@@ -10,6 +10,7 @@ from Classes.quest import Quest
 from Classes.user import User
 from Utils.classes import class_selection
 
+items = list()
 
 class CompleteQuestButton(discord.ui.Button):
     def __init__(self, user):
@@ -185,10 +186,21 @@ class ConfirmInsertButton(discord.ui.Button):
             embed = discord.Embed(title=f"Database Insertion successful!",
                                   colour=discord.Color.green())
             embed.set_footer(text=sql)
-            await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest, sql_quest=sql))
+            await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest, sql_quest=sql, mode="quest_no_item"))
 
         if self.mode == "quest_with_item":
-            print("test111")
+            with open('Data/sql-statements.txt', 'a') as f:
+                for x, y in items:
+                    sql = db.add_quest_has_item(self.quest.get_id(), x, y)
+                    f.write(f"{sql}\n")
+            self.quest.set_item_reward(self.quest.get_id())
+            embed = discord.Embed(title=f"Database Insertion successful!",
+                                  colour=discord.Color.green())
+            await interaction.message.edit(embed=embed, view=None, delete_after=5)
+            items.clear()
+
+        if self.mode == "quest_no_item" and not items:
+            await interaction.message.delete()
 
         await interaction.response.defer()
 
@@ -625,15 +637,16 @@ class AddQuestModal(discord.ui.Modal):
                     self.embed.set_field_at(index=5, name=f"Item_id: {self.quest.get_item()}",
                                             value=str(db.get_item_name_from_id(str(self.quest_item_id))).strip("(,)"))
 
-                if str(self.quest_req_explore_count.value) == "":
-                    self.quest.set_req_explore_count("0")
-                    self.embed.set_field_at(index=9, name="Req_explore_count:", value="None")
-                else:
-                    self.quest.set_req_explore_count(int(self.quest_req_explore_count.value))
-                    self.embed.set_field_at(index=9, name="Req_explore_count:", value=self.quest.get_req_explore_count())
+                if self.quest_req_explore_count is not None:
+                    if str(self.quest_req_explore_count.value) == "":
+                        self.quest.set_req_explore_count("0")
+                        self.embed.set_field_at(index=9, name="Req_explore_count:", value="None")
+                    else:
+                        self.quest.set_req_explore_count(int(self.quest_req_explore_count.value))
+                        self.embed.set_field_at(index=9, name="Req_explore_count:", value=self.quest.get_req_explore_count())
 
-            case "3":
-                print("test")
+                else:
+                    self.quest.set_req_explore_count("0")
 
         match self.modal_page:
             case "1":
@@ -650,14 +663,11 @@ class AddQuestModal(discord.ui.Modal):
                 self.embed.color = discord.Color.purple()
                 self.embed.title = "Adding item(s) to quest."
                 self.embed.set_footer(text=None)
-                self.embed.add_field(name=f"Quest_id: {str(self.quest_id)}", value="quest_name")
+                self.embed.add_field(name=f"Quest_id: {str(self.quest.get_id())}", value="quest_name")
                 self.embed.add_field(name=f"Item_Reward_id: {self.quest_item_reward_id}", value=str(db.get_item_name_from_id(self.quest_item_reward_id)).strip("'(,)'"))
                 self.embed.add_field(name="Reward amount/count:", value=str(self.quest_item_count))
-                items = list()
-                items.append(str(self.quest_item_reward_id), str(self.quest_item_count))
-                print(items)
 
-
+                items.append((str(self.quest_item_reward_id), str(self.quest_item_count)))
 
                 await interaction.message.edit(embed=self.embed, view=InsertQuestHasItemView(embed=self.embed, quest=self.quest, mode="quest_with_item"))
 
