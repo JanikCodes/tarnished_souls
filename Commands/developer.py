@@ -6,6 +6,7 @@ import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
 from Classes.enemy_move import EnemyMove
+from Classes.item import Item
 from Classes.quest import Quest
 from Classes.user import User
 from Utils.classes import class_selection
@@ -115,7 +116,7 @@ class InsertQuestButton(discord.ui.Button):
 class ConfirmInsertButton(discord.ui.Button):
     def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None,
                  mode=None, enemy_move: EnemyMove() = None,
-                 encounter: Encounter() = None, quest: Quest() = None, modal_page: str = None, embed: discord.Embed() = None):
+                 encounter: Encounter() = None, quest: Quest() = None, modal_page: str = None, embed: discord.Embed() = None, item_count: int = None):
         super().__init__(label="Confirm", style=discord.ButtonStyle.success)
         self.enemy = enemy
         self.message_id = message_id
@@ -127,6 +128,7 @@ class ConfirmInsertButton(discord.ui.Button):
         self.quest = quest
         self.modal_page = modal_page
         self.embed = embed
+        self.item_count = item_count
 
     async def callback(self, interaction: discord.Interaction):
 
@@ -190,10 +192,9 @@ class ConfirmInsertButton(discord.ui.Button):
 
         if self.mode == "quest_with_item":
             with open('Data/sql-statements.txt', 'a') as f:
-                for x, y in items:
-                    sql = db.add_quest_has_item(self.quest.get_id(), x, y)
+                for item in self.quest.get_item_reward():
+                    sql = db.add_quest_has_item(self.quest.get_id(), item.get_idItem(), item.get_count())
                     f.write(f"{sql}\n")
-            self.quest.set_item_reward(self.quest.get_id())
             embed = discord.Embed(title=f"Database Insertion successful!",
                                   colour=discord.Color.green())
             await interaction.message.edit(embed=embed, view=None, delete_after=5)
@@ -206,14 +207,15 @@ class ConfirmInsertButton(discord.ui.Button):
 
 
 class InsertQuestHasItemButton(discord.ui.Button):
-    def __init__(self, embed: discord.Embed = None, quest: Quest() = None, sql_quest: str = None):
+    def __init__(self, embed: discord.Embed = None, quest: Quest() = None, sql_quest: str = None, item_count: int = None):
         super().__init__(label="Insert Quest Reward", style=discord.ButtonStyle.success)
         self.embed = embed
         self.quest = quest
         self.sql_quest = sql_quest
+        self.item_count = item_count
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_modal(AddQuestModal(message_id=str(interaction.message.id), embed=self.embed, modal_page="3", quest=self.quest))
+        await interaction.response.send_modal(AddQuestModal(message_id=str(interaction.message.id), embed=self.embed, modal_page="3", quest=self.quest, item_count=self.item_count))
 
 
 class NextQuestModalButton(discord.ui.Button):
@@ -251,7 +253,7 @@ class SelectEnemy(discord.ui.Select):
         if self.quest:
             self.quest.set_req_enemy((str(db.get_enemy_id_from_name(str(self.values[0]))).strip("(,)")))
             self.embed.set_field_at(index=6, name=f"Enemy_id: {str(db.get_enemy_id_from_name(str(self.values[0]))).strip('(,)')}", value=self.values[0])
-            await interaction.message.edit(embed=self.embed, view=InsertQuestHasItemView(quest=self.quest, embed=self.embed))
+            await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
             await interaction.response.defer()
             return
         else:
@@ -527,12 +529,13 @@ class AddQuestModal(discord.ui.Modal):
     quest_item_reward_id = None
     quest_item_count = None
 
-    def __init__(self, message_id: str, modal_page: str = None, embed: discord.Embed = None, quest: Quest() = None):
+    def __init__(self, message_id: str, modal_page: str = None, embed: discord.Embed = None, quest: Quest() = None, item_count: int = None):
         super().__init__(title="Add Quest")
         self.message_id = message_id
         self.modal_page = modal_page
         self.embed = embed
         self.quest = quest
+        self.item_count = item_count
 
         match modal_page:
             case "1":
@@ -667,8 +670,9 @@ class AddQuestModal(discord.ui.Modal):
                 self.embed.add_field(name=f"Item_Reward_id: {self.quest_item_reward_id}", value=str(db.get_item_name_from_id(self.quest_item_reward_id)).strip("'(,)'"))
                 self.embed.add_field(name="Reward amount/count:", value=str(self.quest_item_count))
 
-                items.append((str(self.quest_item_reward_id), str(self.quest_item_count)))
-
+                self.quest.set_item_reward(db.get_item_from_item_id(self.quest_item_reward_id))
+                item = self.quest.get_item_reward()[0]
+                item.set_count(self.quest_item_count.value)
                 await interaction.message.edit(embed=self.embed, view=InsertQuestHasItemView(embed=self.embed, quest=self.quest, mode="quest_with_item"))
 
         await interaction.response.defer()
@@ -713,18 +717,19 @@ class SelectLocationView(discord.ui.View):
 class InsertQuestHasItemView(discord.ui.View):
     def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None,
                  mode=None,
-                 enemy_move: EnemyMove() = None, encounter: Encounter() = None, quest: Quest() = None, embed: discord.Embed = None, modal_page: str = None, sql_quest: str = None):
+                 enemy_move: EnemyMove() = None, encounter: Encounter() = None, quest: Quest() = None, embed: discord.Embed = None, modal_page: str = None, sql_quest: str = None,
+                 item_count: int = None):
         super().__init__(timeout=None)
-        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move, encounter, quest))
-        self.add_item(InsertQuestHasItemButton(embed, quest))
+        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move, encounter, quest, item_count))
+        self.add_item(InsertQuestHasItemButton(embed, quest, item_count))
 
 
 class ConfirmInsertButtonView(discord.ui.View):
     def __init__(self, enemy: Enemy() = None, message_id: str = None, logic: str = None, location: str = None,
                  mode=None,
-                 enemy_move: EnemyMove() = None, encounter: Encounter() = None, quest: Quest() = None, modal_page: str = None):
+                 enemy_move: EnemyMove() = None, encounter: Encounter() = None, quest: Quest() = None, modal_page: str = None, item_count: int = None):
         super().__init__(timeout=None)
-        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move, encounter, quest))
+        self.add_item(ConfirmInsertButton(enemy, message_id, logic, location, mode, enemy_move, encounter, quest, item_count))
 
 
 class NextQuestModalButtonView(discord.ui.View):

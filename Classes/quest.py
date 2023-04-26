@@ -23,6 +23,7 @@ class Quest:
 
         else:
             # empty constructor
+            self.item_reward = []
             pass
 
     def get_id(self):
@@ -94,8 +95,8 @@ class Quest:
     def set_rune_reward(self, rune_reward):
         self.rune_reward = rune_reward
 
-    def set_item_reward(self, quest_id):
-        self.item_reward = db.get_quest_item_reward(idQuest=quest_id)
+    def set_item_reward(self, item):
+        self.item_reward.append(item)
 
     def set_location_reward(self, location_reward_id):
         self.location_reward = db.get_location_from_id(location_reward_id)
