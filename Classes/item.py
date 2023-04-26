@@ -188,10 +188,10 @@ class Item:
         return text
 
     def get_dropped_from_enemies_text(self):
-        text = str()
+        text = "from "
         for i, enemy_name in enumerate(self.dropped_from_enemy_names, start=1):
             if len(self.dropped_from_enemy_names) == i:
-                text += f"`{enemy_name}`"
+                text += f"`{enemy_name}`\n"
             else:
                 text += f"`{enemy_name}` or "
 
