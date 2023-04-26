@@ -314,3 +314,9 @@ INSERT INTO quest_has_item VALUE(NULL, 3, 800, 1);
 
 INSERT INTO quest_has_item VALUE(NULL, 5, 100, 1);
 INSERT INTO quest_has_item VALUE(NULL, 5, 227, 1);
+
+# Item rewards for enemy
+# idRel, idItem, idEnemy, count, dropChance
+INSERT INTO enemy_has_item VALUE(NULL, 1, 1, 1, 100);
+INSERT INTO enemy_has_item VALUE(NULL, 2, 1, 1, 75);
+INSERT INTO enemy_has_item VALUE(NULL, 3, 1, 1, 25);
