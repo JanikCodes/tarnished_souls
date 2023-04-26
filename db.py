@@ -56,20 +56,22 @@ def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id)
     loc_id = str(location_id).strip("'(,)'")
     log_id = str(logic_id).strip("'(,)'")
     sql = f"INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, '{name}', '{description}', {int(health)}, {int(runes)}, {int(loc_id)});"
+    sql.replace('"','\"')
     cursor.execute(sql)
     mydb.commit()
     return sql
 
 
 def add_enemy_move(description, phase, type_id, enemy_id, damage, healing, duration, max_targets):
-    sql = f"INSERT INTO enemy_moves VALUES(null, '{description}', {int(phase)}, {int(type_id)}, {int(enemy_id)}, {damage}, {healing}, {duration}, {int(max_targets)})"
+    sql = f'INSERT INTO enemy_moves VALUES(null, "{description}", {int(phase)}, {int(type_id)}, {int(enemy_id)}, {damage}, {healing}, {duration}, {int(max_targets)})'
+    sql.replace('"','\"')
     cursor.execute(sql)
     mydb.commit()
     return sql
 
 
 def add_encounter(description, dropRate, location_id):
-    sql = f"INSERT INTO encounter VALUES(null, '{description}', {int(dropRate)}, {int(location_id)})"
+    sql = f'INSERT INTO encounter VALUES(null, "{description}", {int(dropRate)}, {int(location_id)})'
     cursor.execute(sql)
     mydb.commit()
     return sql
