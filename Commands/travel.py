@@ -53,6 +53,9 @@ class Travel(commands.Cog):
     async def travel(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 embed = discord.Embed(title=f"{user.get_userName()} is resting at a grace..",
@@ -60,7 +63,7 @@ class Travel(commands.Cog):
 
                 embed.set_footer(text="You'll unlock more locations by simply playing the bot & completing quests")
 
-                await interaction.response.send_message(embed=embed, view=TravelView(user=user))
+                await interaction.followup.send(embed=embed, view=TravelView(user=user))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

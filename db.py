@@ -418,6 +418,7 @@ def get_item_from_item_id(idItem):
                     reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
                     reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
                     weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19], sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23], sclArcane=res[24])
+
         return item
     else:
         return None
@@ -669,8 +670,7 @@ def add_quest_to_user(idUser, idQuest):
     cursor.execute(sql)
     mydb.commit()
 
-def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_location_id = None):
-    print("Checking for quest update..")
+def check_for_quest_update(idUser, item = None, runes = 0, idEnemy = 0, explore_location_id = None):
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -678,21 +678,19 @@ def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_l
         quest = get_quest_with_id(res[0])
 
         if quest.get_item():
-            if quest.get_item().get_idItem() == int(idItem):
-                print("Quest: Updated item count")
-                sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - 1, 0) WHERE r.idUser = {idUser};"
-                cursor.execute(sql)
-                mydb.commit()
+            if item:
+                if quest.get_item().get_idItem() == item.get_idItem():
+                    sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - {item.get_count()}, 0) WHERE r.idUser = {idUser};"
+                    cursor.execute(sql)
+                    mydb.commit()
 
         if quest.get_enemy():
             if quest.get_enemy().get_id() == int(idEnemy):
-                print("Quest: Updated enemy count")
                 sql = f"UPDATE user_has_quest r SET r.remaining_kills = GREATEST(remaining_kills - 1, 0) WHERE r.idUser = {idUser};"
                 cursor.execute(sql)
                 mydb.commit()
 
         if runes > 0:
-            print("Quest: Updated runes count")
             sql = f"UPDATE user_has_quest r SET r.remaining_runes = GREATEST(remaining_runes - {runes}, 0) WHERE r.idUser = {idUser};"
             cursor.execute(sql)
             mydb.commit()
@@ -700,7 +698,6 @@ def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_l
         if explore_location_id:
             if quest.get_explore_location():
                 if quest.get_explore_location().get_id() == int(explore_location_id):
-                    print("Quest: Updated explore count")
                     sql = f"UPDATE user_has_quest r SET r.remaining_explores = GREATEST(remaining_explores - 1, 0) WHERE r.idUser = {idUser};"
                     cursor.execute(sql)
                     mydb.commit()
@@ -784,3 +781,81 @@ def complete_quest(user):
     sql = f"UPDATE user_has_quest u SET remaining_explores = 0 WHERE u.idUser = {user.get_userId()};"
     cursor.execute(sql)
     mydb.commit()
+
+
+def decrease_item_from_user(idUser, relId, amount):
+    sql = f"UPDATE user_has_item r SET count = count - {amount} WHERE r.idUser = {idUser} AND r.idRel = {relId};"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"SELECT count FROM user_has_item WHERE idRel = {relId};"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        if int(res) <= 0:
+            if has_equipped_item(idUser=idUser, relId=relId):
+                sql = f"UPDATE user SET e_weapon = IF(e_weapon = {relId}, NULL, e_weapon), e_head = IF(e_head = {relId}, NULL, e_head), e_chest = IF(e_chest = {relId}, NULL, e_chest), e_legs = IF(e_legs = {relId}, NULL, e_legs), e_gauntlet = IF(e_gauntlet = {relId}, NULL, e_gauntlet)" \
+                      f"WHERE {relId} IN (e_weapon, e_head, e_chest, e_legs, e_gauntlet);"
+                cursor.execute(sql)
+                mydb.commit()
+
+            # remove item from table
+            sql = f"DELETE FROM user_has_item WHERE idUser = {idUser} AND idRel = {relId};"
+            cursor.execute(sql)
+            mydb.commit()
+
+
+def has_equipped_item(idUser, relId):
+    sql = f"SELECT Count(*) FROM user WHERE idUser = {idUser} AND {relId} IN(e_weapon, e_head, e_chest, e_legs, e_gauntlet)"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        if int(res) == 0:
+            return False
+        else:
+            return True
+
+
+def get_all_user_count():
+    sql = f"SELECT Count(*) FROM user;"
+    cursor.execute(sql)
+    res = str(cursor.fetchone()).strip("(,)")
+    if res:
+        return res
+
+def get_avg_user_quest():
+    sql = f"select AVG(idQuest) FROM user_has_quest;"
+    cursor.execute(sql)
+    res = int(cursor.fetchone()[0])
+    if res:
+        return res
+
+
+def get_items_from_enemy_id(idEnemy):
+    items = []
+
+    sql = f"SELECT idItem, count, dropChance FROM enemy_has_item WHERE idEnemy = {idEnemy};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            item = get_item_from_item_id(row[0])
+            if item:
+                item.set_count(row[1])
+                item.set_drop_rate(row[2])
+                items.append(item)
+
+    return items
+
+
+def get_enemy_names_from_item_id(idItem):
+    names = []
+
+    sql = f"SELECT name FROM enemy e JOIN enemy_has_item r ON r.idEnemy = e.idEnemy WHERE r.idItem = {idItem};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            names.append(row[0])
+
+    return names

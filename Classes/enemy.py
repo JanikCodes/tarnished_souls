@@ -17,6 +17,7 @@ class Enemy:
             self.runes = result[4]
             self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
             self.location = db.get_location_from_id(result[5])
+            self.item_rewards = db.get_items_from_enemy_id(idEnemy=idEnemy)
 
             self.health = self.get_max_health()
             self.phase = 0
@@ -112,3 +113,26 @@ class Enemy:
 
     def set_phase(self, phase):
         self.phase = phase
+        
+    def get_item_rewards(self):
+    items = []
+    for item in self.item_rewards:
+        rand = random.randint(0, 100)
+
+        if item.get_drop_rate() >= rand:
+            # we drop it.
+            items.append(item)
+
+    return items
+
+    def get_item_rewards(self):
+        items = []
+        for item in self.item_rewards:
+            rand = random.randint(0, 100)
+
+            if item.get_drop_rate() >= rand:
+                # we drop it.
+                items.append(item)
+
+        return items
+

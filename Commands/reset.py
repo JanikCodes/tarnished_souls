@@ -59,6 +59,9 @@ class Reset(commands.Cog):
     async def reset(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 embed = discord.Embed(title=f"Account deletion",
@@ -68,7 +71,7 @@ class Reset(commands.Cog):
                                                                  "- progress\n"
                                                                  "- **everything**", inline=False)
 
-                await interaction.response.send_message(embed=embed, view=ResetView(user=user))
+                await interaction.followup.send(embed=embed, view=ResetView(user=user))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

@@ -1,3 +1,4 @@
+import db
 
 SCALING_VALUES = {
     '-': 0,
@@ -47,6 +48,8 @@ class Item:
         self.extra_value = 0
         self.count = 1
         self.idRel = 0
+        self.drop_rate = 100
+        self.dropped_from_enemy_names = db.get_enemy_names_from_item_id(idItem=self.idItem)
 
     # Getter methods
     def get_icon_url(self):
@@ -60,6 +63,9 @@ class Item:
 
     def get_name(self):
         return self.name
+
+    def get_drop_rate(self):
+        return self.drop_rate
 
     def get_scaling_value(self, scaling, attribute):
         val = 0
@@ -145,6 +151,9 @@ class Item:
     def set_level(self, level):
         self.dexterity = level
 
+    def set_drop_rate(self, val):
+        self.drop_rate = val
+
     def set_extra_value(self, extra_value):
         self.extra_value = extra_value
 
@@ -175,5 +184,15 @@ class Item:
         text += f"`Dex:` `{self.sclDexterity}` "
         text += f"`Int:` `{self.sclIntelligence}` "
         text += f"`Fai:` `{self.sclFaith}` "
+
+        return text
+
+    def get_dropped_from_enemies_text(self):
+        text = str()
+        for i, enemy_name in enumerate(self.dropped_from_enemy_names, start=1):
+            if len(self.dropped_from_enemy_names) == i:
+                text += f"`{enemy_name}`"
+            else:
+                text += f"`{enemy_name}` or "
 
         return text

@@ -10,7 +10,7 @@ import db
 from Classes.user import User
 from Utils.classes import class_selection
 
-EXPLORE_TIME = 60 * 10
+EXPLORE_TIME = 60 * 15
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 
@@ -23,6 +23,9 @@ class Explore(commands.Cog):
     async def explore(self, interaction: discord.Interaction):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
 
                 current_time = (round(time.time() * 1000)) // 1000
@@ -110,7 +113,7 @@ class Explore(commands.Cog):
 
             embed.set_footer(text=f"You've received {rune_amount} runes!")
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
     def calculate_random_stats(self):
         # 25% chance of triggering random stats

@@ -69,15 +69,29 @@ async def update_fight_battle_view(enemy, users, interaction, turn_index):
     # Check for fight end
     if enemy.get_health() <= 0:
         # Enemy died
+
+        # get random item drops from enemy
+        item_drops = enemy.get_item_rewards()
+        item_drop_text = str()
+        for item in item_drops:
+            item_drop_text += f"Received **{item.get_name()}** {item.get_count()}x \n"
+
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
         embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
+        embed.set_field_at(1, name="Items:", value=item_drop_text, inline=False)
 
         # grant rune rewards to all players
         for user in users:
             db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
 
-        # update quest progress for host
-        db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes(), idEnemy=enemy.get_id())
+            # give each user the item drops
+            for item in item_drops:
+                db.add_item_to_user(user.get_userId(), item)
+                # update quest progress
+                db.check_for_quest_update(idUser=users[0].get_userId(), item=item, runes=enemy.get_runes())
+
+        # update quest enemy progress for host
+        db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
 
         await interaction.message.edit(embed=embed, view=None)
         return
@@ -153,11 +167,10 @@ class StartButton(discord.ui.Button):
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         await interaction.response.defer()
 
-        health_multip = 1 if len(self.users) == 1 else ((len(self.users) - 1) * 0.5)
         health_increase = 0
 
-        if health_multip != 1:
-            health_increase = self.enemy.get_max_health() * health_multip
+        if len(self.users) > 1:
+            health_increase = self.enemy.get_max_health() * ((len(self.users) - 1) * 0.5)
 
         self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
 
@@ -310,6 +323,9 @@ class Fight(commands.Cog):
     async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str]):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
                 selected_visibility = visibility.value
 
@@ -318,7 +334,7 @@ class Fight(commands.Cog):
                                                   f"*You can fight different enemies if you change your location with* `/travel`",
                                       colour=discord.Color.orange())
 
-                await interaction.response.send_message(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
+                await interaction.followup.send(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

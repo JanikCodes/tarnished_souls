@@ -56,6 +56,9 @@ class UnEquip(commands.Cog):
     async def unequip(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
                 selected_choice = choices.value
 
@@ -93,12 +96,12 @@ class UnEquip(commands.Cog):
                     embed.add_field(name='', value=f"**Statistics:** \n"
                                                    f"`{value_name}:` **{selected_item.get_total_value(user=user)}** `Weight:` **{selected_item.get_weight()}**")
 
-                    await interaction.response.send_message(embed=embed, view=UnEquipView(user=user, item=selected_item))
+                    await interaction.followup.send(embed=embed, view=UnEquipView(user=user, item=selected_item))
                 else:
                     embed = discord.Embed(title=f"You don't have an item equipped in that category right now.",
                                           description="",
                                           colour=discord.Color.red())
-                    return await interaction.response.send_message(embed=embed, ephemeral=True)
+                    return await interaction.followup.send(embed=embed, ephemeral=True)
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:

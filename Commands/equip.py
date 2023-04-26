@@ -59,13 +59,16 @@ class Equip(commands.Cog):
     async def equip(self, interaction: discord.Interaction, item_id: int):
         try:
             if db.validate_user(interaction.user.id):
+
+                await interaction.response.defer()
+
                 user = User(interaction.user.id)
                 item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
                 if item is None:
                     embed = discord.Embed(title=f"I couldn't find the correct Item..",
                                           description=f"You can find your Item Id inside your inventory. Access it with `/inventory`",
                                           colour=discord.Color.red())
-                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                    await interaction.followup.send(embed=embed, ephemeral=True)
                 else:
                     embed = discord.Embed(title=f"**{item.get_name()}** `id: {item.get_idRel()}`",
                                           description=f"Do you want to equip this item?")
@@ -93,7 +96,7 @@ class Equip(commands.Cog):
                         embed.colour = discord.Color.red()
                         embed.set_footer(text=f"You don't meet the requirements!")
 
-                    await interaction.response.send_message(embed=embed, view=EquipView(user=user, item=item))
+                    await interaction.followup.send(embed=embed, view=EquipView(user=user, item=item))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:
