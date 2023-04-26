@@ -16,7 +16,7 @@ MY_GUILD = discord.Object(id=763425801391308901)
 
 class Client(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='.', intents=discord.Intents().all())
+        super().__init__(command_prefix='!-&%', intents=discord.Intents().all())
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
             if fileName.endswith('.py'):
