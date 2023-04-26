@@ -289,6 +289,7 @@ def get_item_from_item_id(idItem):
                     reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
                     reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
                     weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19], sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23], sclArcane=res[24])
+
         return item
     else:
         return None
@@ -536,7 +537,7 @@ def add_quest_to_user(idUser, idQuest):
     cursor.execute(sql)
     mydb.commit()
 
-def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_location_id = None):
+def check_for_quest_update(idUser, item = None, runes = 0, idEnemy = 0, explore_location_id = None):
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -544,10 +545,11 @@ def check_for_quest_update(idUser, idItem = 0, runes = 0, idEnemy = 0, explore_l
         quest = get_quest_with_id(res[0])
 
         if quest.get_item():
-            if quest.get_item().get_idItem() == int(idItem):
-                sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - 1, 0) WHERE r.idUser = {idUser};"
-                cursor.execute(sql)
-                mydb.commit()
+            if item:
+                if quest.get_item().get_idItem() == item.get_idItem():
+                    sql = f"UPDATE user_has_quest r SET r.remaining_items = GREATEST(remaining_items - {item.get_count()}, 0) WHERE r.idUser = {idUser};"
+                    cursor.execute(sql)
+                    mydb.commit()
 
         if quest.get_enemy():
             if quest.get_enemy().get_id() == int(idEnemy):
@@ -711,3 +713,16 @@ def get_items_from_enemy_id(idEnemy):
                 items.append(item)
 
     return items
+
+
+def get_enemy_names_from_item_id(idItem):
+    names = []
+
+    sql = f"SELECT name FROM enemy e JOIN enemy_has_item r ON r.idEnemy = e.idEnemy WHERE r.idItem = {idItem};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            names.append(row[0])
+
+    return names

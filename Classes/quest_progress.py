@@ -37,7 +37,7 @@ class QuestProgress:
         if self.quest.req_item_count:
             if self.quest.req_item_count > 0:
                 remaining = self.quest.get_req_item_count() - self.remaining_item_count
-                text += f"**Collect** `{self.quest.req_item.get_name()}` **{remaining}/{self.quest.get_req_item_count()}** \n"
+                text += f"**Collect** `{self.quest.req_item.get_name()}` **{remaining}/{self.quest.get_req_item_count()}**\nfrom {self.quest.req_item.get_dropped_from_enemies_text()}\n"
         if self.quest.req_kills:
             if self.quest.req_kills > 0:
                 remaining = self.quest.get_req_kills() - self.remaining_kills

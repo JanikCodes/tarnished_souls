@@ -300,7 +300,7 @@ INSERT INTO quest VALUE(8, "The knights..",                 "Now we need to take
 INSERT INTO quest VALUE(9, "Something big is waiting..",    "You know what you have to do.. be prepared.. *And don't die. . .*",                    1,              0,                 32000,         NULL,   1,       15000,      2,                0,               NULL,            0);
 INSERT INTO quest VALUE(10, "Just to be sure..",            "For some reason it keeps reappearing.. deal with it!",                                 2,              0,                 0,             NULL,   1,       15000,      NULL,             1,               2,               43200);
 INSERT INTO quest VALUE(11, "New visuals",                  "We've reached a new area.. find out more about it!",                                   0,              0,                 40000,         NULL,   NULL,    5000,       NULL,             5,               2,               0);
-INSERT INTO quest VALUE(12, "Impossible?",                  "I know.. I know.. we need to dig deeper.. *just wait a bit longer*",                   0,              0,                 0,             NULL,   NULL,    0,          NULL,             1,               3,               0);
+INSERT INTO quest VALUE(12, "Impossible?",                  "I know.. I know.. we need to dig deeper.. *just wait a bit longer*",                   0,              2,                 0,             1,   NULL,    0,          NULL,             0,               NULL,               0);
 
 # INSERT INTO quest VALUE(2, "Title", "DESC", reqKills, reqItems, reqRunes, idItem, idEnemy, runeReward, locationReward, reqExplore, idLocation, cooldown);
 

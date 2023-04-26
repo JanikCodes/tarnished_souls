@@ -87,9 +87,11 @@ async def update_fight_battle_view(enemy, users, interaction, turn_index):
             # give each user the item drops
             for item in item_drops:
                 db.add_item_to_user(user.get_userId(), item)
+                # update quest progress
+                db.check_for_quest_update(idUser=users[0].get_userId(), item=item, runes=enemy.get_runes())
 
-        # update quest progress for host
-        db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes(), idEnemy=enemy.get_id())
+        # update quest enemy progress for host
+        db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
 
         await interaction.message.edit(embed=embed, view=None)
         return
