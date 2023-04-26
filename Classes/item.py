@@ -172,6 +172,7 @@ class Item:
         text += f"`Dex:` `{self.reqDexterity}` "
         text += f"`Int:` `{self.reqIntelligence}` "
         text += f"`Fai:` `{self.reqFaith}` "
+        text += f"`Arc:` `{self.reqArcane}` "
 
         return text
 
@@ -184,6 +185,7 @@ class Item:
         text += f"`Dex:` `{self.sclDexterity}` "
         text += f"`Int:` `{self.sclIntelligence}` "
         text += f"`Fai:` `{self.sclFaith}` "
+        text += f"`Arc:` `{self.sclArcane}` "
 
         return text
 
