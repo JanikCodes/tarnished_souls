@@ -47,6 +47,7 @@ class Item:
         self.extra_value = 0
         self.count = 1
         self.idRel = 0
+        self.drop_rate = 100
 
     # Getter methods
     def get_icon_url(self):
@@ -60,6 +61,9 @@ class Item:
 
     def get_name(self):
         return self.name
+
+    def get_drop_rate(self):
+        return self.drop_rate
 
     def get_scaling_value(self, scaling, attribute):
         val = 0
@@ -144,6 +148,9 @@ class Item:
 
     def set_level(self, level):
         self.dexterity = level
+
+    def set_drop_rate(self, val):
+        self.drop_rate = val
 
     def set_extra_value(self, extra_value):
         self.extra_value = extra_value

@@ -69,12 +69,24 @@ async def update_fight_battle_view(enemy, users, interaction, turn_index):
     # Check for fight end
     if enemy.get_health() <= 0:
         # Enemy died
+
+        # get random item drops from enemy
+        item_drops = enemy.get_item_rewards()
+        item_drop_text = str()
+        for item in item_drops:
+            item_drop_text += f"Received **{item.get_name()}** {item.get_count()}x \n"
+
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
         embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
+        embed.set_field_at(1, name="Items:", value=item_drop_text, inline=False)
 
         # grant rune rewards to all players
         for user in users:
             db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
+
+            # give each user the item drops
+            for item in item_drops:
+                db.add_item_to_user(user.get_userId(), item)
 
         # update quest progress for host
         db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes(), idEnemy=enemy.get_id())

@@ -694,3 +694,20 @@ def get_avg_user_quest():
     res = int(cursor.fetchone()[0])
     if res:
         return res
+
+
+def get_items_from_enemy_id(idEnemy):
+    items = []
+
+    sql = f"SELECT idItem, count, dropChance FROM enemy_has_item WHERE idEnemy = {idEnemy};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            item = get_item_from_item_id(row[0])
+            if item:
+                item.set_count(row[1])
+                item.set_drop_rate(row[2])
+                items.append(item)
+
+    return items
