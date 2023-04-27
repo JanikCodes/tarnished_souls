@@ -207,7 +207,7 @@ INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** slashes simultan
 INSERT INTO enemy_moves VALUES(NULL, '**Margit** leaps towards you, hovers in the air for a moment, then slams his staff down.', 0, 1, 1, 100, 0, 0, 1);
 INSERT INTO enemy_moves VALUES(NULL, '**Margit, the Fell Omen** summons his spectral hammer to his shoulder, swings it in front of him, leaps high into the air, and slams it down to the ground, creating a shockwave.', 0, 1, 1, 140, 0, 0, 3);
 INSERT INTO enemy_moves VALUES(NULL, 'With a quick hop to the side, **Margit** avoids your next strike!', 0, 2, 1, 0, 0, 0, 0);
-INSERT INTO enemy_moves VALUES(NULL, "**Margit's** eyes remain locked on her opponent, ready to evade the next move..", 0, 2, 1, 0, 0, 0, 0);
+INSERT INTO enemy_moves VALUES(NULL, "**Margit's** eyes remain locked on his opponent, ready to evade the next move..", 0, 2, 1, 0, 0, 0, 0);
 INSERT INTO enemy_moves VALUES(NULL, '**Margit** stands tall and still, watching you closely with a piercing gaze', 0, 5, 1, 0, 0, 0, 0);
 INSERT INTO enemy_moves VALUES(NULL, 'Despite your movements, **Margit** remains calm and collected, waiting for the right moment to strike..', 0, 5, 1, 0, 0, 0, 0);
 INSERT INTO enemy_moves VALUES(NULL, '**The Fell Omen** takes a moment to catch his breath', 0, 5, 1, 0, 0, 0, 0);
