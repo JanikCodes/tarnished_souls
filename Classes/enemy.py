@@ -115,17 +115,6 @@ class Enemy:
         self.phase = phase
         
     def get_item_rewards(self):
-    items = []
-    for item in self.item_rewards:
-        rand = random.randint(0, 100)
-
-        if item.get_drop_rate() >= rand:
-            # we drop it.
-            items.append(item)
-
-    return items
-
-    def get_item_rewards(self):
         items = []
         for item in self.item_rewards:
             rand = random.randint(0, 100)
@@ -135,4 +124,3 @@ class Enemy:
                 items.append(item)
 
         return items
-

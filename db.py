@@ -55,7 +55,10 @@ def get_item_name_from_id(item_id):
 def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id):
     loc_id = str(location_id).strip("'(,)'")
     log_id = str(logic_id).strip("'(,)'")
-    sql = f"INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, '{name}', '{description}', {int(health)}, {int(runes)}, {int(loc_id)});"
+    if description == "null":
+        sql = f'INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, "{name}", null, {int(health)}, {int(runes)}, {int(loc_id)});'
+    else:
+        sql = f'INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, "{name}", "{description}", {int(health)}, {int(runes)}, {int(loc_id)});'
     sql.replace('"','\"')
     cursor.execute(sql)
     mydb.commit()
@@ -91,6 +94,7 @@ def add_quest(quest: Quest()):
     location_reward = quest.get_location_reward()
     location_reward_id = int(str(location_reward.get_id())) if location_reward != 0 else "null"
     sql = f"INSERT INTO quest VALUES(null, '{quest.get_title()}', '{quest.get_description()}', {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_item()}, {enemy_id}, {quest.get_rune_reward()}, {location_reward_id}, {quest.get_req_explore_count()}, {exploration_location_id}, {quest.get_cooldown()});"
+    sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
     return sql
