@@ -11,7 +11,7 @@ from discord.ext import commands
 import config
 import db
 
-MY_GUILD = discord.Object(id=763425801391308901)
+MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
 
 
 class Client(commands.Bot):
@@ -41,7 +41,7 @@ class Client(commands.Bot):
             db.fill_db_armor()
 
     async def send_error_message(self, error):
-        channel = client.get_channel(1097570542728523836)
+        channel = client.get_channel(config.botConfig["error-channel-id"])
         error_message = f"An error occurred:\n```{traceback.format_exc()}```"
         await channel.send(error_message)
     async def on_error(self, event, *args, **kwargs):

@@ -229,9 +229,12 @@ def remove_user_encounters(idUser):
     mydb.commit()
 
 
-def get_all_item_ids():
+def get_all_item_ids(obtainable_only):
     item_ids = []
-    sql = f"SELECT i.idItem FROM item i;"
+    if obtainable_only:
+        sql = f"SELECT i.idItem FROM item i WHERE i.obtainable = 1;"
+    else:
+        sql = f"SELECT i.idItem FROM item i;"
 
     cursor.execute(sql)
     res = cursor.fetchall()
