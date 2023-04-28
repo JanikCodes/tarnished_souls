@@ -80,7 +80,7 @@ class Explore(commands.Cog):
             if new_encounter:
                 if new_encounter.get_drop_rate() >= random.randint(0, 100):
                     # we received an item drop!
-                    all_item_ids = db.get_all_item_ids()
+                    all_item_ids = db.get_all_item_ids(obtainable_only=True)
                     random_item_id = random.choice(all_item_ids)
                     item = db.get_item_from_item_id(random_item_id)
                     random_stats = self.calculate_random_stats()

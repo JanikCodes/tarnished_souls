@@ -2,6 +2,7 @@ import json
 
 import discord
 
+import config
 import db
 
 
@@ -94,7 +95,7 @@ async def class_selection(interaction: discord.Interaction):
     with open('Data/classes.json', 'r') as f:
         data = json.load(f)
 
-    if interaction.user.id != 321649314382348288:
+    if not interaction.user.id in config.botConfig["developer-ids"]:
         data.pop(-1)  # remove god class
 
     await view_class_selection_page(interaction=interaction, data=data, index=0)

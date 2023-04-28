@@ -165,33 +165,57 @@ class Item:
 
     def get_requirement_text(self):
         text = str()
-        text += f"`Vig:` `{self.reqVigor}` "
-        text += f"`Str:` `{self.reqMind}` "
-        text += f"`End:` `{self.reqEndurance}` "
-        text += f"`Str:` `{self.reqStrength}` "
-        text += f"`Dex:` `{self.reqDexterity}` "
-        text += f"`Int:` `{self.reqIntelligence}` "
-        text += f"`Fai:` `{self.reqFaith}` "
+        if self.reqVigor > 0:
+            text += f"`Vig:` `{self.reqVigor}` "
+        if self.reqMind > 0:
+            text += f"`Str:` `{self.reqMind}` "
+        if self.reqEndurance > 0:
+            text += f"`End:` `{self.reqEndurance}` "
+        if self.reqStrength > 0:
+            text += f"`Str:` `{self.reqStrength}` "
+        if self.reqDexterity > 0:
+            text += f"`Dex:` `{self.reqDexterity}` "
+        if self.reqIntelligence > 0:
+            text += f"`Int:` `{self.reqIntelligence}` "
+        if self.reqFaith > 0:
+            text += f"`Fai:` `{self.reqFaith}` "
+        if self.reqArcane > 0:
+            text += f"`Arc:` `{self.reqArcane}` "
+
+        if text == str():
+            text = "`None`"
 
         return text
 
     def get_scaling_text(self):
         text = str()
-        text += f"`Vig:` `{self.sclVigor}` "
-        text += f"`Min:` `{self.sclMind}` "
-        text += f"`End:` `{self.sclEndurance}` "
-        text += f"`Str:` `{self.sclStrength}` "
-        text += f"`Dex:` `{self.sclDexterity}` "
-        text += f"`Int:` `{self.sclIntelligence}` "
-        text += f"`Fai:` `{self.sclFaith}` "
+        if self.sclVigor != "-":
+            text += f"`Vig:` `{self.sclVigor}` "
+        if self.sclMind != "-":
+            text += f"`Min:` `{self.sclMind}` "
+        if self.sclEndurance != "-":
+            text += f"`End:` `{self.sclEndurance}` "
+        if self.sclStrength != "-":
+            text += f"`Str:` `{self.sclStrength}` "
+        if self.sclDexterity != "-":
+            text += f"`Dex:` `{self.sclDexterity}` "
+        if self.sclIntelligence != "-":
+            text += f"`Int:` `{self.sclIntelligence}` "
+        if self.sclFaith != "-":
+            text += f"`Fai:` `{self.sclFaith}` "
+        if self.sclArcane != "-":
+            text += f"`Arc:` `{self.sclArcane}` "
+
+        if text == str():
+            text = "`None`"
 
         return text
 
     def get_dropped_from_enemies_text(self):
-        text = str()
+        text = "from "
         for i, enemy_name in enumerate(self.dropped_from_enemy_names, start=1):
             if len(self.dropped_from_enemy_names) == i:
-                text += f"`{enemy_name}`"
+                text += f"`{enemy_name}`\n"
             else:
                 text += f"`{enemy_name}` or "
 
