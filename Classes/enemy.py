@@ -25,6 +25,7 @@ class Enemy:
             self.dodge_next = False
         else:
             # empty constructor
+            self.item_rewards = []
             pass
 
     def get_id(self):
@@ -114,7 +115,7 @@ class Enemy:
     def set_phase(self, phase):
         self.phase = phase
         
-    def get_item_rewards(self):
+    def get_item_rewards_random(self):
         items = []
         for item in self.item_rewards:
             rand = random.randint(0, 100)
@@ -124,3 +125,9 @@ class Enemy:
                 items.append(item)
 
         return items
+
+    def get_item_rewards(self):
+        return self.item_rewards
+
+    def set_item_rewards(self, item_reward):
+        self.item_rewards.append(item_reward)
