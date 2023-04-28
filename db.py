@@ -26,7 +26,7 @@ async def init_database():
     )
 
     global cursor
-    cursor = mydb.cursor()
+    cursor = mydb.cursor(buffered=True)
 
     # Check if the connection is alive
     if mydb.is_connected():
@@ -51,6 +51,7 @@ def get_item_name_from_id(item_id):
     else:
         return None
 
+
 # data insertion
 def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id):
     loc_id = str(location_id).strip("'(,)'")
@@ -60,6 +61,13 @@ def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id)
     else:
         sql = f'INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, "{name}", "{description}", {int(health)}, {int(runes)}, {int(loc_id)});'
     sql.replace('"','\"')
+    cursor.execute(sql)
+    mydb.commit()
+    return sql
+
+
+def add_enemy_has_item(item_id, enemy_id, count, drop_chance):
+    sql = f'INSERT INTO enemy_has_item VALUES(null, {int(item_id)}, {int(enemy_id)}, {int(count)}, {int(drop_chance)});'
     cursor.execute(sql)
     mydb.commit()
     return sql
