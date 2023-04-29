@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.enemy import Enemy
 from Classes.user import User
@@ -78,7 +79,9 @@ async def update_fight_battle_view(enemy, users, interaction, turn_index):
         item_drops = enemy.get_item_rewards()
         item_drop_text = str()
         for item in item_drops:
-            item_drop_text += f"Received **{item.get_name()}** {item.get_count()}x \n"
+            category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                                               name=item.get_iconCategory())
+            item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
 
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
         embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
