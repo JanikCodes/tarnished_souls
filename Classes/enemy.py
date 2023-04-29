@@ -21,9 +21,13 @@ class Enemy:
         self.phase = 0
         self.last_move = None
         self.dodge_next = False
+        self.last_move_text = str()
 
     def get_id(self):
         return self.id
+
+    def get_last_move_text(self):
+        return self.last_move_text
 
     def get_name(self):
         return self.name
@@ -48,9 +52,11 @@ class Enemy:
 
     def reduce_health(self, amount):
         self.health = max(self.health - amount, 0)
+        self.last_move_text = f"`-{amount}`"
 
     def increase_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
+        self.last_move_text = f"`+{amount}`"
 
     def set_health(self, amount):
         self.health = amount
@@ -70,7 +76,12 @@ class Enemy:
         self.dodge_next = True
 
     def get_is_dodging(self):
+        if self.dodge_next:
+            self.last_move_text = f"`dodged!`"
         return self.dodge_next
+
+    def clear_last_move_text(self):
+        self.last_move_text = str()
 
     def reset_dodge(self):
         self.dodge_next = False

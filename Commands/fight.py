@@ -11,7 +11,7 @@ from Utils.classes import class_selection
 MAX_USERS = 3
 STAMINA_REGEN = 7
 STAMINA_COST = 45
-
+HEAL_AMOUNT = 400
 
 def check_phase_change(enemy):
     enemy_logic = enemy.get_logic()
@@ -51,7 +51,7 @@ async def update_fight_battle_view(enemy, users, interaction, turn_index):
 
     embed = discord.Embed(title=f"**Fight against `{enemy.get_name()}`**",
                           description=f"`{enemy.get_name()}`\n"
-                                      f"{utils.create_health_bar(enemy.get_health(), enemy.get_max_health(), interaction)} `{enemy.get_health()}/{enemy.get_max_health()}`")
+                                      f"{utils.create_health_bar(enemy.get_health(), enemy.get_max_health(), interaction)} `{enemy.get_health()}/{enemy.get_max_health()}` {enemy.get_last_move_text()}")
 
     embed.add_field(name="Enemy action:", value=f"{enemy_move.get_description()}", inline=False)
 
@@ -62,9 +62,13 @@ async def update_fight_battle_view(enemy, users, interaction, turn_index):
     # create UI for every user
     for user in users:
         embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
-                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health(), interaction)} `{user.get_health()}/{user.get_max_health()}`\n"
+                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health(), interaction)} `{user.get_health()}/{user.get_max_health()}` {user.get_last_move_text()}\n"
                               f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina(), interaction)} `{user.get_stamina()}/{user.get_max_stamina()}`",
                         inline=False)
+        user.clear_last_move_text()
+
+    enemy.clear_last_move_text()
+
 
     # Check for fight end
     if enemy.get_health() <= 0:
@@ -236,7 +240,7 @@ class HealButton(BattleButton):
         self.disabled = current_user.get_remaining_flasks() == 0
 
     def execute_action(self):
-        self.current_user.increase_health(300)
+        self.current_user.increase_health(HEAL_AMOUNT)
 
 
 class DodgeButton(BattleButton):
