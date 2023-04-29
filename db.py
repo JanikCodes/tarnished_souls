@@ -132,6 +132,8 @@ def fill_db_weapons():
         cursor.execute(sql)
         mydb.commit()
 
+    print("")
+
 
 def fill_db_armor():
     # read the JSON file
@@ -738,5 +740,3 @@ def fill_db_init():
             if sql:
                 cursor.execute(sql)
                 mydb.commit()
-
-    print("Added init data..")
