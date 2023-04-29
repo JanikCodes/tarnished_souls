@@ -36,7 +36,7 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0)"
+    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2)"
     cursor.execute(sql)
     mydb.commit()
 
@@ -48,7 +48,7 @@ def add_user(userId, userName):
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest FROM user u WHERE u.idUser = {userId};"
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount FROM user u WHERE u.idUser = {userId};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -515,11 +515,11 @@ def get_user_quest_with_user_id(idUser):
 
 
 def get_quest_with_id(idQuest):
-    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId, cooldown FROM quest WHERE idQuest = {idQuest};"
+    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId, cooldown, flaskReward FROM quest WHERE idQuest = {idQuest};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12])
+        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12], res[13])
         return quest
     else:
         return None
@@ -743,3 +743,9 @@ def fill_db_init():
             if sql:
                 cursor.execute(sql)
                 mydb.commit()
+
+
+def update_flask_amount_from_user(idUser, amount):
+    sql = f"UPDATE user u SET flaskCount = {amount} WHERE u.idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()

@@ -1,7 +1,6 @@
 import db
 
 BASE_DAMAGE = 25
-BASE_FLASK_AMOUNT = 2
 
 lookup_table = {
     1: 300, 2: 304, 3: 312, 4: 322, 5: 334, 6: 347, 7: 362, 8: 378, 9: 396, 10: 414,
@@ -48,7 +47,7 @@ class User:
 
             self.health = self.get_max_health()
             self.stamina = self.get_max_stamina()
-            self.remaining_flasks = self.get_max_flasks()
+            self.remaining_flasks = result[23]
             self.dodge_next = False
         else:
             # empty constructor
@@ -78,7 +77,7 @@ class User:
 
         self.health = self.get_max_health()
         self.stamina = self.get_max_stamina()
-        self.remaining_flasks = self.get_max_flasks()
+        self.remaining_flasks = result[23]
         self.dodge_next = False
 
         return self
@@ -294,10 +293,6 @@ class User:
 
     def reset_dodge(self):
         self.dodge_next = False
-
-    def get_max_flasks(self):
-        return BASE_FLASK_AMOUNT
-        # TODO: Figure a way out to increase flask amount ( attribute or via items? )
 
     def get_total_armor(self):
         armor = 0

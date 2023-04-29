@@ -52,7 +52,7 @@ class Character(commands.Cog):
                 embed.add_field(name="",value=f"**Total Weight:** `{user.get_total_weight()}`", inline=True)
                 embed.add_field(name="", value=f"**Max Health:** `{user.get_max_health()}`", inline=True)
                 embed.add_field(name="", value=f"**Max Stamina:** `{user.get_max_stamina()}`", inline=True)
-                embed.add_field(name="", value=f"**Max Flasks:** `{user.get_max_flasks()}`", inline=True)
+                embed.add_field(name="", value=f"**Max Flasks:** `{user.get_remaining_flasks()}`", inline=True)
 
                 eq_text = str()
                 eq_text += f"**Weapon:**\n"
