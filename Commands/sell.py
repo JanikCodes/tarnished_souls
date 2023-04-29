@@ -78,7 +78,6 @@ class Sell(commands.Cog):
     @app_commands.rename(item_id='id')
     async def sell(self, interaction: discord.Interaction, item_id: int):
         await interaction.response.defer()
-
         try:
             if db.validate_user(interaction.user.id):
 

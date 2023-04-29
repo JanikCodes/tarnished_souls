@@ -21,10 +21,10 @@ class Explore(commands.Cog):
 
     @app_commands.command(name="explore", description="Explore the world, encounter events & receive items and souls!")
     async def explore(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
 

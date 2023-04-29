@@ -321,10 +321,10 @@ class Fight(commands.Cog):
         app_commands.Choice(name="Public", value="public"),
     ])
     async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str]):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
                 selected_visibility = visibility.value

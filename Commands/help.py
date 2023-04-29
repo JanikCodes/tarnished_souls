@@ -16,10 +16,10 @@ class Help(commands.Cog):
         app_commands.Choice(name="Items", value="items"),
     ])
     async def help(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        await interaction.response.defer()
+
         try:
             selected_choice = choices.value
-
-            await interaction.response.defer()
 
             match selected_choice:
                 case 'stats':

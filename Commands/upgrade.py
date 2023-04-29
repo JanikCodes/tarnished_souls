@@ -79,10 +79,10 @@ class UpgradeStats(commands.Cog):
         app_commands.Choice(name="Arcane", value="arcane"),
     ])
     async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
                 selected_choice = choices.value

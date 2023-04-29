@@ -64,10 +64,10 @@ class Quest(commands.Cog):
 
     @app_commands.command(name="quest", description="Try completing the quest-line")
     async def quest(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
 

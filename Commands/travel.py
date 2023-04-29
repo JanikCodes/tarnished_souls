@@ -51,10 +51,10 @@ class Travel(commands.Cog):
 
     @app_commands.command(name="travel", description="Travel to to various places in order to earn different loot or encounter new enemies.")
     async def travel(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
 
