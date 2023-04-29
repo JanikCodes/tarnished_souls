@@ -6,6 +6,7 @@ import mysql.connector
 import config
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
+from Classes.enemy_logic import EnemyLogic
 from Classes.enemy_move import EnemyMove
 from Classes.item import Item
 from Classes.location import Location
@@ -53,14 +54,13 @@ def get_item_name_from_id(item_id):
 
 
 # data insertion
-def add_enemy(enemy_id, logic_id, name, description, health, runes, location_id):
-    loc_id = str(location_id).strip("'(,)'")
-    log_id = str(logic_id).strip("'(,)'")
-    if description == "null":
-        sql = f'INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, "{name}", null, {int(health)}, {int(runes)}, {int(loc_id)});'
+def add_enemy(enemy, location_id):
+    logic = enemy.get_logic()
+    if enemy.get_description() == "null":
+        sql = f'INSERT INTO enemy VALUES({enemy.get_id()}, {logic.get_id()}, "{enemy.get_name()}", null, {enemy.get_health()}, {enemy.get_runes()}, {location_id});'
     else:
-        sql = f'INSERT INTO enemy VALUES({int(enemy_id)}, {int(log_id)}, "{name}", "{description}", {int(health)}, {int(runes)}, {int(loc_id)});'
-    sql.replace('"','\"')
+        sql = f'INSERT INTO enemy VALUES({enemy.get_id()}, {logic.get_id()}, "{enemy.get_name()}", "{enemy.get_description()}", {enemy.get_health()}, {enemy.get_runes()}, {location_id});'
+    sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
     return sql
@@ -73,16 +73,17 @@ def add_enemy_has_item(item_id, enemy_id, count, drop_chance):
     return sql
 
 
-def add_enemy_move(description, phase, type_id, enemy_id, damage, healing, duration, max_targets):
-    sql = f'INSERT INTO enemy_moves VALUES(null, "{description}", {int(phase)}, {int(type_id)}, {int(enemy_id)}, {damage}, {healing}, {duration}, {int(max_targets)})'
-    sql.replace('"','\"')
+def add_enemy_move(enemy_move, enemy):
+    sql = f'INSERT INTO enemy_moves VALUES(null, "{enemy_move.get_description()}", {enemy_move.get_phase()}, {enemy_move.get_type()}, {enemy.get_id()}, {enemy_move.get_damage()}, {enemy_move.get_healing()}, {enemy_move.get_duration()}, {enemy_move.get_max_targets()})'
+    sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
     return sql
 
 
-def add_encounter(description, dropRate, location_id):
-    sql = f'INSERT INTO encounter VALUES(null, "{description}", {int(dropRate)}, {int(location_id)})'
+def add_encounter(encounter):
+    location = encounter.get_location()[0]
+    sql = f'INSERT INTO encounter VALUES(null, "{encounter.get_description()}", {encounter.get_drop_rate()}, {location.get_id()})'
     cursor.execute(sql)
     mydb.commit()
     return sql
@@ -96,11 +97,18 @@ def add_quest(quest: Quest()):
     else:
         enemy_id = "null"
 
-    exploration_location = quest.get_explore_location()
-    exploration_location_id = int(str(exploration_location.get_id())) if exploration_location != 0 else "null"
+    if quest.get_explore_location()[0] is None:
+        exploration_location_id = "null"
+    else:
+        exploration_location = quest.get_explore_location()[0]
+        exploration_location_id = exploration_location.get_id()
 
-    location_reward = quest.get_location_reward()
-    location_reward_id = int(str(location_reward.get_id())) if location_reward != 0 else "null"
+    if quest.get_location_reward()[0] is None:
+        location_reward_id = "null"
+    else:
+        location_reward = quest.get_location_reward()[0]
+        location_reward_id = location_reward.get_id()
+
     sql = f"INSERT INTO quest VALUES(null, '{quest.get_title()}', '{quest.get_description()}', {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_item()}, {enemy_id}, {quest.get_rune_reward()}, {location_reward_id}, {quest.get_req_explore_count()}, {exploration_location_id}, {quest.get_cooldown()});"
     sql.replace('"', '\"')
     cursor.execute(sql)
@@ -114,15 +122,24 @@ def add_quest_has_item(quest_id, item_reward_id, count):
     mydb.commit()
     return sql
 
+
 def get_quest_id_from_title_and_desc(title, desc):
     sql = f"SELECT idquest FROM quest WHERE title='{title}' AND description='{desc}'"
     cursor.execute(sql)
     return cursor.fetchone()
 
-def get_enemy_and_desc():
-    sql = "SELECT name, description FROM enemy;"
+
+def get_enemy_and_desc(location_id):
+    enemy_desc = []
+    sql = f"SELECT name, description FROM enemy WHERE idLocation = {location_id};"
     cursor.execute(sql)
-    return cursor.fetchall()
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            enemy_desc.append((row[0], row[1]))
+        return enemy_desc
+    else:
+        return None
 
 
 def get_enemy_id_from_name(name):
@@ -140,9 +157,17 @@ def get_enemy_count():
 
 # data insertion
 def get_all_enemy_logic():
-    sql = "SELECT name FROM enemy_logic"
+    logics = []
+    sql = f"SELECT idLogic FROM enemy_logic"
     cursor.execute(sql)
-    return cursor.fetchall()
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            logic = EnemyLogic(idLogic=row[0])
+            logics.append(logic)
+        return logics
+    else:
+        return None
 
 
 def get_enemy_logic_id_from_name(name):
@@ -172,16 +197,19 @@ def get_encounter_id_from_description(description):
 
 # data insertion
 def get_all_locations():
-    sql = "SELECT name, description FROM location"
+    sql = "SELECT name, description, idlocation FROM location"
     cursor.execute(sql)
     return cursor.fetchall()
 
 
 def get_location_id_from_name(name):
-    sql = "SELECT idLocation FROM location WHERE name=%s"
-    val = name
-    cursor.execute(sql, (val,))
-    return cursor.fetchone()
+    sql = f"SELECT idLocation FROM location WHERE name={name}"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return res
+    else:
+        return None
 
 
 def get_user_with_id(userId):
@@ -275,6 +303,7 @@ def fill_db_weapons():
 
     print("Added weapons..")
 
+
 def fill_db_armor():
     # read the JSON file
     with open('Data/armor.json', 'r') as f:
@@ -293,9 +322,11 @@ def fill_db_armor():
 
     print("Added armor..")
 
+
 def get_json_req_attribute(item, attribute_name):
     try:
-        req_value = next(attribute['amount'] for attribute in item['requiredAttributes'] if attribute['name'] == attribute_name)
+        req_value = next(
+            attribute['amount'] for attribute in item['requiredAttributes'] if attribute['name'] == attribute_name)
     except StopIteration:
         req_value = 0
     return req_value
@@ -330,7 +361,8 @@ def get_item_from_user_encounter_with_enc_id(idUser, idEncounter):
         item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
                     reqEndurance=[6], reqStrength=res[7], reqDexterity=[8], reqIntelligence=res[9], reqFaith=res[10],
                     reqArcane=res[11], value=res[12], price=res[13], obtainable=res[15], weight=res[16],
-                    iconUrl=res[17], sclVigor=res[18], sclMind=res[19], sclEndurance=res[20], sclStrength=res[21], sclDexterity=res[22], sclIntelligence=res[23], sclFaith=res[24], sclArcane=res[25])
+                    iconUrl=res[17], sclVigor=res[18], sclMind=res[19], sclEndurance=res[20], sclStrength=res[21],
+                    sclDexterity=res[22], sclIntelligence=res[23], sclFaith=res[24], sclArcane=res[25])
         item.set_extra_value(res[14])
         return item
 
@@ -436,7 +468,9 @@ def get_item_from_item_id(idItem):
         item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
                     reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
                     reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
-                    weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19], sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23], sclArcane=res[24])
+                    weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19],
+                    sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23],
+                    sclArcane=res[24])
 
         return item
     else:
@@ -451,7 +485,9 @@ def get_item_from_item_name(item_name):
         item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
                     reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
                     reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
-                    weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19], sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23], sclArcane=res[24])
+                    weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19],
+                    sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23],
+                    sclArcane=res[24])
         return item
     else:
         return None
@@ -478,7 +514,9 @@ def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page):
             item = Item(idItem=row[0], name=row[1], iconCategory=row[2], item_type=row[3], reqVigor=row[4],
                         reqMind=row[5], reqEndurance=row[6], reqStrength=row[7], reqDexterity=row[8],
                         reqIntelligence=row[9], reqFaith=row[10], reqArcane=row[11], value=row[12], price=row[13],
-                        obtainable=row[14], weight=row[15], iconUrl=row[20], sclVigor=row[21], sclMind=row[22], sclEndurance=row[23], sclStrength=row[24], sclDexterity=row[25], sclIntelligence=row[26], sclFaith=row[27], sclArcane=row[28])
+                        obtainable=row[14], weight=row[15], iconUrl=row[20], sclVigor=row[21], sclMind=row[22],
+                        sclEndurance=row[23], sclStrength=row[24], sclDexterity=row[25], sclIntelligence=row[26],
+                        sclFaith=row[27], sclArcane=row[28])
             item.set_level(row[16])
             item.set_count(row[17])
             item.set_extra_value(row[18])
@@ -497,7 +535,9 @@ def get_item_from_user_with_id_rel(idUser, idRel):
         item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
                     reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
                     reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
-                    weight=res[15], iconUrl=res[20], sclVigor=res[21], sclMind=res[22], sclEndurance=res[23], sclStrength=res[24], sclDexterity=res[25], sclIntelligence=res[26], sclFaith=res[27], sclArcane=res[28])
+                    weight=res[15], iconUrl=res[20], sclVigor=res[21], sclMind=res[22], sclEndurance=res[23],
+                    sclStrength=res[24], sclDexterity=res[25], sclIntelligence=res[26], sclFaith=res[27],
+                    sclArcane=res[28])
         item.set_level(res[16])
         item.set_count(res[17])
         item.set_extra_value(res[18])
@@ -620,6 +660,7 @@ def unequip(idUser, item):
     cursor.execute(sql)
     mydb.commit()
 
+
 def check_if_add_all_items():
     sql = f"SELECT count(*) from item;"
     cursor.execute(sql)
@@ -663,7 +704,8 @@ def get_quest_with_id(idQuest):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12])
+        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11],
+                      res[12])
         return quest
     else:
         return None
@@ -671,7 +713,8 @@ def get_quest_with_id(idQuest):
 
 def add_init_quest_to_user(idUser):
     first_quest = get_quest_with_id(1)
-    sql = convert_python_none_to_null(f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()});")
+    sql = convert_python_none_to_null(
+        f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()});")
     cursor.execute(sql)
     mydb.commit()
 
@@ -683,13 +726,16 @@ def remove_quest_from_user_with_quest_id(idUser, idQuest):
     cursor.execute(sql)
     mydb.commit()
 
+
 def add_quest_to_user(idUser, idQuest):
     quest = get_quest_with_id(idQuest)
-    sql = convert_python_none_to_null(f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()});")
+    sql = convert_python_none_to_null(
+        f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()});")
     cursor.execute(sql)
     mydb.commit()
 
-def check_for_quest_update(idUser, item = None, runes = 0, idEnemy = 0, explore_location_id = None):
+
+def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_location_id=None):
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -781,8 +827,10 @@ def update_last_quest_timer_from_user_with_id(idUser, current_time):
     cursor.execute(sql)
     mydb.commit()
 
+
 def convert_python_none_to_null(sql):
     return sql.replace("None", "Null")
+
 
 def complete_quest(user):
     sql = f"UPDATE user_has_quest u SET remaining_kills = 0 WHERE u.idUser = {user.get_userId()};"
@@ -842,6 +890,7 @@ def get_all_user_count():
     if res:
         return res
 
+
 def get_avg_user_quest():
     sql = f"select AVG(idQuest) FROM user_has_quest;"
     cursor.execute(sql)
@@ -883,7 +932,7 @@ def get_enemy_names_from_item_id(idItem):
 def fill_init_data():
     with open("D:\Work\Projects\Training\Python\Tarnished\Data\init-data.txt", 'r') as f:
         for line in f:
-            sql = line.strip().replace('"','\"')
+            sql = line.strip().replace('"', '\"')
             if sql:
                 cursor.execute(sql)
                 mydb.commit()
