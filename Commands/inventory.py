@@ -115,10 +115,12 @@ async def view_inventory_page(interaction, label, user, page):
 
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()
 
+                    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Damage:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**\n"
+                              f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n"
                               f"**Requirements:** \n"
                               f"{item.get_requirement_text()}\n"
                               f"**Scaling:** \n"
@@ -133,10 +135,12 @@ async def view_inventory_page(interaction, label, user, page):
 
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()
 
+                    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Armor:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**\n",
+                              f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n",
                         inline=False)
             case "items":
                 pass

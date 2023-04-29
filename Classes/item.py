@@ -74,7 +74,10 @@ class Item:
         return val
 
     def get_total_value(self, user):
-        return self.value + self.extra_value + self.get_total_scaling_value(user)
+        return self.get_value_with_scaling(user) + self.extra_value
+
+    def get_value_with_scaling(self, user):
+        return self.value + self.get_total_scaling_value(user)
 
     def get_total_scaling_value(self, user):
         total_value = 0
