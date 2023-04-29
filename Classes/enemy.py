@@ -25,6 +25,7 @@ class Enemy:
             self.dodge_next = False
         else:
             # empty constructor
+            self.location = []
             self.item_rewards = []
             pass
 
@@ -109,8 +110,8 @@ class Enemy:
     def set_moves(self, enemy_id):
         self.moves = db.get_enemy_moves_with_enemy_id(enemy_id)
 
-    def set_location(self, location_id):
-        self.location = db.get_location_from_id(location_id)
+    def set_location(self, location):
+        self.location.append(location)
 
     def set_phase(self, phase):
         self.phase = phase
