@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
@@ -18,7 +19,8 @@ class CompleteQuestButton(discord.ui.Button):
         self.user = user
 
     async def callback(self, interaction: discord.Interaction):
-        if interaction.user.id != int(self.user.get_userId()):
+
+        if not interaction.user.id in config.botConfig["developer-ids"]:
             embed = discord.Embed(title=f"You're not allowed to use this action!",
                                   description="",
                                   colour=discord.Color.red())
@@ -875,7 +877,8 @@ class Developer(commands.Cog):
 
                 user = User(interaction.user.id)
 
-                if interaction.user.id == 321649314382348288 or interaction.user.id == 348781333839085569:
+                if interaction.user.id in config.botConfig["developer-ids"]:
+
 
                     embed = discord.Embed(title=f"Developer options",
                                           description="")

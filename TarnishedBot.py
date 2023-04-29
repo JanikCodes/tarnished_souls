@@ -11,12 +11,12 @@ from discord.ext import commands
 import config
 import db
 
-MY_GUILD = discord.Object(id=763425801391308901)
+MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
 
 
 class Client(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='.', intents=discord.Intents().all())
+        super().__init__(command_prefix='!-&%', intents=discord.Intents().all())
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
             if fileName.endswith('.py'):
@@ -36,12 +36,13 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
+        # check if init data is inside the db
         if int(db.check_if_add_all_items()) == 0:
             db.fill_db_weapons()
             db.fill_db_armor()
-
+            db.fill_init_data()
     async def send_error_message(self, error):
-        channel = client.get_channel(1097570542728523836)
+        channel = client.get_channel(config.botConfig["error-channel-id"])
         error_message = f"An error occurred:\n```{traceback.format_exc()}```"
         await channel.send(error_message)
     async def on_error(self, event, *args, **kwargs):

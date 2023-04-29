@@ -273,6 +273,7 @@ def fill_db_weapons():
         cursor.execute(sql)
         mydb.commit()
 
+    print("Added weapons..")
 
 def fill_db_armor():
     # read the JSON file
@@ -290,6 +291,7 @@ def fill_db_armor():
         cursor.execute(sql)
         mydb.commit()
 
+    print("Added armor..")
 
 def get_json_req_attribute(item, attribute_name):
     try:
@@ -372,9 +374,12 @@ def remove_user_encounters(idUser):
     mydb.commit()
 
 
-def get_all_item_ids():
+def get_all_item_ids(obtainable_only):
     item_ids = []
-    sql = f"SELECT i.idItem FROM item i;"
+    if obtainable_only:
+        sql = f"SELECT i.idItem FROM item i WHERE i.obtainable = 1;"
+    else:
+        sql = f"SELECT i.idItem FROM item i;"
 
     cursor.execute(sql)
     res = cursor.fetchall()
@@ -873,3 +878,14 @@ def get_enemy_names_from_item_id(idItem):
             names.append(row[0])
 
     return names
+
+
+def fill_init_data():
+    with open("D:\Work\Projects\Training\Python\Tarnished\Data\init-data.txt", 'r') as f:
+        for line in f:
+            sql = line.strip().replace('"','\"')
+            if sql:
+                cursor.execute(sql)
+                mydb.commit()
+
+    print("Added init data..")

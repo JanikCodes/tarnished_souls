@@ -288,7 +288,6 @@ INSERT INTO enemy_moves VALUES(NULL, "**Rotten Stray** crouches low and rolls to
 INSERT INTO enemy_moves VALUES(NULL, "With a burst of speed, **Rotten Stray** sprints a short distance away, **dodging incoming attacks.**", 0, 2, 11, 0, 0, 0, 0);
 
 
-#                       idQuest, title,                     description,                                                                            requiredKills,  requiredItemCount, requiredRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, exploreLocation, cooldown
 INSERT INTO quest VALUE(1, "The worthy",                    "Can you prove that you're worthy to join these lands?",                                0,              0,                 0,             NULL,   NULL,    4500,       NULL,             3,               1,               0);
 INSERT INTO quest VALUE(2, "The battle",                    "Good.. you've seen enough for now.. but can you finish this next task?",               2,              0,                 0,             NULL,   2,       0,          NULL,             1,               1,               0);
 INSERT INTO quest VALUE(3, "Collectors collecting",         "Hmm.. show that you're worthy by collecting those resources..",                        0,              0,                 12000,         NULL,   NULL,    0,          NULL,             0,               NULL,            0);
@@ -302,7 +301,6 @@ INSERT INTO quest VALUE(10, "Just to be sure..",            "For some reason it 
 INSERT INTO quest VALUE(11, "New visuals",                  "We've reached a new area.. find out more about it!",                                   0,              0,                 40000,         NULL,   NULL,    5000,       NULL,             5,               2,               0);
 INSERT INTO quest VALUE(12, "Impossible?",                  "I know.. I know.. we need to dig deeper.. *just wait a bit longer*",                   0,              2,                 0,             1,   NULL,    0,          NULL,             0,               NULL,               0);
 
-# INSERT INTO quest VALUE(2, "Title", "DESC", reqKills, reqItems, reqRunes, idItem, idEnemy, runeReward, locationReward, reqExplore, idLocation, cooldown);
 
 INSERT INTO quest_has_item VALUE(NULL, 1, 18, 1);
 INSERT INTO quest_has_item VALUE(NULL, 1, 764, 1);
@@ -315,8 +313,6 @@ INSERT INTO quest_has_item VALUE(NULL, 3, 800, 1);
 INSERT INTO quest_has_item VALUE(NULL, 5, 100, 1);
 INSERT INTO quest_has_item VALUE(NULL, 5, 227, 1);
 
-# Item rewards for enemy
-# idRel, idItem, idEnemy, count, dropChance
 INSERT INTO enemy_has_item VALUE(NULL, 1, 1, 1, 100);
 INSERT INTO enemy_has_item VALUE(NULL, 2, 1, 1, 75);
 INSERT INTO enemy_has_item VALUE(NULL, 3, 1, 1, 25);
