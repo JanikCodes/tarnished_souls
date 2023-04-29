@@ -81,7 +81,6 @@ class Sell(commands.Cog):
         try:
             if db.validate_user(interaction.user.id):
 
-
                 user = User(interaction.user.id)
                 item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
                 if item is None:
