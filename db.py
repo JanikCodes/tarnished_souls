@@ -729,3 +729,14 @@ def get_enemy_names_from_item_id(idItem):
             names.append(row[0])
 
     return names
+
+
+def fill_db_init():
+    with open("Data/init-data.txt", 'r') as f:
+        for line in f:
+            sql = line.strip().replace('"', '\"')
+            if sql:
+                cursor.execute(sql)
+                mydb.commit()
+
+    print("Added init data..")

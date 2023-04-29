@@ -37,8 +37,10 @@ class Client(commands.Bot):
         logging.warning("Now logging..")
 
         if int(db.check_if_add_all_items()) == 0:
+            db.fill_db_init()
             db.fill_db_weapons()
             db.fill_db_armor()
+
 
     async def send_error_message(self, error):
         channel = client.get_channel(config.botConfig["error-channel-id"])
