@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils import utils
@@ -58,22 +59,22 @@ class Character(commands.Cog):
                 eq_text += f"**Weapon:**\n"
 
                 if user.get_weapon():
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=user.get_weapon().get_iconCategory())
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis, name=user.get_weapon().get_iconCategory())
                     eq_text += f"{category_emoji} `{user.get_weapon().get_name()}` **Damage:** `{user.get_weapon().get_total_value(user)}` **Weight:** `{user.get_weapon().get_weight()}` \n"
 
                 eq_text += f"**Armor:**\n"
 
                 if user.get_head():
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=user.get_head().get_iconCategory())
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis, name=user.get_head().get_iconCategory())
                     eq_text += f"{category_emoji} `{user.get_head().get_name()}` **Armor:** `{user.get_head().get_total_value(user)}` **Weight:** `{user.get_head().get_weight()}` \n"
                 if user.get_chest():
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,name=user.get_chest().get_iconCategory())
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,name=user.get_chest().get_iconCategory())
                     eq_text += f"{category_emoji} `{user.get_chest().get_name()}` **Armor:** `{user.get_chest().get_total_value(user)}` **Weight:** `{user.get_chest().get_weight()}` \n"
                 if user.get_legs():
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,name=user.get_legs().get_iconCategory())
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,name=user.get_legs().get_iconCategory())
                     eq_text += f"{category_emoji} `{user.get_legs().get_name()}` **Armor:** `{user.get_legs().get_total_value(user)}` **Weight:** `{user.get_legs().get_weight()}` \n"
                 if user.get_gauntlet():
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,name=user.get_gauntlet().get_iconCategory())
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,name=user.get_gauntlet().get_iconCategory())
                     eq_text += f"{category_emoji} `{user.get_gauntlet().get_name()}` **Armor:** `{user.get_gauntlet().get_total_value(user)}` **Weight:** `{user.get_gauntlet().get_weight()}`"
 
                 embed.add_field(name="Equipment:", value=eq_text, inline=False)
