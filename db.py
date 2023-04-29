@@ -42,6 +42,9 @@ def add_user(userId, userName):
 
     print("Added new user with userName: " + userName)
 
+    # create new quest rel
+    add_init_quest_to_user(idUser=userId)
+
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
