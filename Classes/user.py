@@ -49,6 +49,7 @@ class User:
             self.stamina = self.get_max_stamina()
             self.remaining_flasks = result[23]
             self.dodge_next = False
+            self.last_move_text = str()
         else:
             # empty constructor
             pass
@@ -79,6 +80,7 @@ class User:
         self.stamina = self.get_max_stamina()
         self.remaining_flasks = result[23]
         self.dodge_next = False
+        self.last_move_text = str()
 
         return self
 
@@ -88,7 +90,12 @@ class User:
     def get_last_quest(self):
         return self.last_quest
 
-    # getters
+    def get_last_move_text(self):
+        return self.last_move_text
+
+    def clear_last_move_text(self):
+        self.last_move_text = str()
+
     def get_userId(self):
         return self.userId
 
@@ -234,11 +241,13 @@ class User:
         absorb = min(amount - armor, 15)
 
         self.health = max(self.health - (amount - absorb), 0)
+        self.last_move_text = f"`-{amount - absorb}`"
 
     def increase_health(self, amount):
         if self.remaining_flasks > 0:
             self.health = min(self.health + amount, self.get_max_health())
             self.remaining_flasks = max(self.remaining_flasks - 1, 0)
+            self.last_move_text = f"`+{amount}`"
 
     def get_damage(self):
         if self.weapon is not None:
@@ -289,6 +298,7 @@ class User:
             self.dodge_next = True
 
     def get_is_dodging(self):
+        self.last_move_text = "`dodged!`"
         return self.dodge_next
 
     def reset_dodge(self):

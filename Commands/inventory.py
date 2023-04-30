@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils.classes import class_selection
@@ -108,9 +109,9 @@ async def view_inventory_page(interaction, label, user, page):
         match label:
             case "weapon":
                 for item in items:
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name=item.get_iconCategory())
-                    equipped_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    equipped_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name='equipped')
 
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()
@@ -128,9 +129,9 @@ async def view_inventory_page(interaction, label, user, page):
                         inline=False)
             case "armor":
                 for item in items:
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name=item.get_iconCategory())
-                    equipped_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    equipped_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name='equipped')
 
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()

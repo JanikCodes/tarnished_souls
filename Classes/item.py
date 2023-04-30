@@ -171,7 +171,7 @@ class Item:
         if self.reqVigor > 0:
             text += f"`Vig:` `{self.reqVigor}` "
         if self.reqMind > 0:
-            text += f"`Str:` `{self.reqMind}` "
+            text += f"`Min:` `{self.reqMind}` "
         if self.reqEndurance > 0:
             text += f"`End:` `{self.reqEndurance}` "
         if self.reqStrength > 0:
