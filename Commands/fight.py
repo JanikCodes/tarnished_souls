@@ -12,7 +12,7 @@ from Utils.classes import class_selection
 MAX_USERS = 3
 STAMINA_REGEN = 7
 STAMINA_COST = 45
-HEAL_AMOUNT = 400
+HEAL_AMOUNT = 475
 
 class Fight:
     def __init__(self, enemy, users, interaction, turn_index):
@@ -107,7 +107,12 @@ class Fight:
 
             embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
             embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
-            embed.set_field_at(2, name="Items:", value=item_drop_text, inline=False)
+            if item_drop_text != str():
+                embed.set_field_at(2, name="Items:", value=item_drop_text, inline=False)
+                embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
+                            value=f"{utils.create_health_bar(user.get_health(), user.get_max_health(), self.interaction)} `{user.get_health()}/{user.get_max_health()}` {user.get_last_move_text()}\n"
+                                  f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina(), self.interaction)} `{user.get_stamina()}/{user.get_max_stamina()}`",
+                            inline=False)
 
             # grant rune rewards to all players
             for user in users:
@@ -253,7 +258,7 @@ class AttackButton(BattleButton):
 
 class HealButton(BattleButton):
     def __init__(self, fight):
-        super().__init__(fight, label=f"Heal (+300)",
+        super().__init__(fight, label=f"Heal (+{HEAL_AMOUNT})",
                          style=discord.ButtonStyle.success)
         # Disable button if no flasks remaining
         self.disabled = fight.get_current_user().get_remaining_flasks() == 0
