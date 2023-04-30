@@ -122,7 +122,9 @@ class Fight:
                 for item in item_drops:
                     db.add_item_to_user(user.get_userId(), item)
                     # update quest progress
-                    db.check_for_quest_update(idUser=users[0].get_userId(), item=item, runes=enemy.get_runes())
+                    db.check_for_quest_update(idUser=users[0].get_userId(), item=item)
+
+                db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes())
 
             # update quest enemy progress for host
             db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
