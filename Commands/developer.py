@@ -132,7 +132,6 @@ class ConfirmInsertButton(discord.ui.Button):
             enemy_id = int(str(db.get_enemy_count()).strip("[('',)]")) + 1
             self.enemy.set_id(enemy_id)
             location = self.enemy.get_location()[0]
-            print(location.get_id())
             sql = db.add_enemy(enemy=self.enemy, location_id=location.get_id())
             with open('Data/sql-statements.txt', 'a') as f:
                 f.write(f"{sql}\n")
@@ -191,7 +190,6 @@ class ConfirmInsertButton(discord.ui.Button):
             await interaction.message.delete()
 
         if self.mode == "quest_with_item":
-            print("hallo")
             with open('Data/sql-statements.txt', 'a') as f:
                 for item in self.quest.get_item_reward():
                     sql = db.add_quest_has_item(self.quest.get_id(), item.get_idItem(), item.get_count())
@@ -834,7 +832,6 @@ class InsertQuestHasItemView(discord.ui.View):
                  embed: discord.Embed = None, modal_page: str = None, sql_quest: str = None,
                  item_count: int = None):
         super().__init__(timeout=None)
-        print(mode)
         self.add_item(ConfirmInsertButton(enemy=enemy, message_id=message_id, mode=mode, enemy_move=enemy_move, encounter=encounter, quest=quest, item_count=item_count))
         self.add_item(InsertQuestHasItemButton(embed, quest, item_count))
 

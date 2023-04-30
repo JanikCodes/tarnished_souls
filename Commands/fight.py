@@ -303,8 +303,8 @@ class FightEnemySelect(discord.ui.Select):
         self.visibility = visibility
 
         for enemy in db.get_all_enemies_from_location(idLocation=users[0].get_current_location().get_id()):
-            if enemy.get_description() == "Boss":
-                self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}", value=f"{enemy.get_id()}", emoji="💀")
+            if enemy.get_description() and enemy.get_description().upper() == "BOSS":
+                self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description().capitalize()}", value=f"{enemy.get_id()}", emoji="💀")
             else:
                 self.add_option(label=f"{enemy.get_name()}", description=None, value=f"{enemy.get_id()}")
 
@@ -312,7 +312,7 @@ class FightEnemySelect(discord.ui.Select):
 
         if str(interaction.user.id) != self.users[0].get_userId():
             embed = discord.Embed(title=f"You're not allowed to use this action!",
-                                  description="",
+                                  description=None,
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
@@ -321,11 +321,11 @@ class FightEnemySelect(discord.ui.Select):
         selected_enemy = Enemy(self.values[0])
 
         embed = discord.Embed(title=f" {self.users[0].get_userName()} has started a {self.visibility} lobby",
-                              description="",
+                              description=None,
                               colour=discord.Color.orange())
 
-        embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value="")
-        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
+        embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value=None)
+        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value=None, inline=False)
 
         if self.visibility == 'public':
             embed.set_footer(text="Click the button below in order to join!")
