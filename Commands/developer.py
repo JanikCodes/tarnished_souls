@@ -871,10 +871,10 @@ class Developer(commands.Cog):
 
     @app_commands.command(name="developer", description="Developer only.. sorry")
     async def developer(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
 

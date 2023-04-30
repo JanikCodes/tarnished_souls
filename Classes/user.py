@@ -1,7 +1,6 @@
 import db
 
 BASE_DAMAGE = 25
-BASE_FLASK_AMOUNT = 2
 
 lookup_table = {
     1: 300, 2: 304, 3: 312, 4: 322, 5: 334, 6: 347, 7: 362, 8: 378, 9: 396, 10: 414,
@@ -48,8 +47,9 @@ class User:
 
             self.health = self.get_max_health()
             self.stamina = self.get_max_stamina()
-            self.remaining_flasks = self.get_max_flasks()
+            self.remaining_flasks = result[23]
             self.dodge_next = False
+            self.last_move_text = str()
         else:
             # empty constructor
             pass
@@ -78,8 +78,9 @@ class User:
 
         self.health = self.get_max_health()
         self.stamina = self.get_max_stamina()
-        self.remaining_flasks = self.get_max_flasks()
+        self.remaining_flasks = result[23]
         self.dodge_next = False
+        self.last_move_text = str()
 
         return self
 
@@ -89,7 +90,12 @@ class User:
     def get_last_quest(self):
         return self.last_quest
 
-    # getters
+    def get_last_move_text(self):
+        return self.last_move_text
+
+    def clear_last_move_text(self):
+        self.last_move_text = str()
+
     def get_userId(self):
         return self.userId
 
@@ -235,11 +241,13 @@ class User:
         absorb = min(amount - armor, 15)
 
         self.health = max(self.health - (amount - absorb), 0)
+        self.last_move_text = f"`-{amount - absorb}`"
 
     def increase_health(self, amount):
         if self.remaining_flasks > 0:
             self.health = min(self.health + amount, self.get_max_health())
             self.remaining_flasks = max(self.remaining_flasks - 1, 0)
+            self.last_move_text = f"`+{amount}`"
 
     def get_damage(self):
         if self.weapon is not None:
@@ -290,14 +298,11 @@ class User:
             self.dodge_next = True
 
     def get_is_dodging(self):
+        self.last_move_text = "`dodged!`"
         return self.dodge_next
 
     def reset_dodge(self):
         self.dodge_next = False
-
-    def get_max_flasks(self):
-        return BASE_FLASK_AMOUNT
-        # TODO: Figure a way out to increase flask amount ( attribute or via items? )
 
     def get_total_armor(self):
         armor = 0

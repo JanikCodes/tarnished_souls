@@ -57,10 +57,10 @@ class Reset(commands.Cog):
 
     @app_commands.command(name="reset", description="You can decide if you want to reset your whole character!")
     async def reset(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
 

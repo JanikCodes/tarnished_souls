@@ -2,6 +2,9 @@ import discord
 from discord import app_commands, ui
 from discord.ext import commands
 
+import config
+
+
 class FeedbackModal(discord.ui.Modal, title="Feedback"):
     def __init__(self, bot):
         super().__init__()
@@ -25,7 +28,7 @@ class FeedbackModal(discord.ui.Modal, title="Feedback"):
             embed.add_field(name="What do you like the most? 💕", value=like, inline=False)
             embed.add_field(name="What do you dislike the most? 👎", value=dislike, inline=False)
 
-            channel = self.bot.get_guild(763425801391308901).get_channel(1097240168467017829)
+            channel = self.bot.get_guild(config.botConfig["hub-server-guild-id"]).get_channel(1097240168467017829)
             await channel.send(embed=embed)
 
             # show result to user for feedback

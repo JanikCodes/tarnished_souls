@@ -9046,29 +9046,29 @@
       ],
       "scalesWith":[
          {
-            "name":"STR",
+            "name":"Str",
             "scaling":"E"
          },
          {
-            "name":"DEX",
+            "name":"Dex",
             "scaling":"C"
          },
          {
-            "name":"INT",
+            "name":"Int",
             "scaling":"E"
          }
       ],
       "requiredAttributes":[
          {
-            "name":"STR",
+            "name":"Str",
             "amount":8
          },
          {
-            "name":"DEX",
+            "name":"Dex",
             "amount":18
          },
          {
-            "name":"INT",
+            "name":"Int",
             "amount":16
          }
       ],
@@ -24483,7 +24483,7 @@
             "scaling":"D"
          },
          {
-            "name":"DEX",
+            "name":"Dex",
             "scaling":"D"
          }
       ],
@@ -24493,7 +24493,7 @@
             "amount":22
          },
          {
-            "name":"DEX",
+            "name":"Dex",
             "amount":12
          }
       ],

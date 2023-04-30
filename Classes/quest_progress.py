@@ -54,7 +54,7 @@ class QuestProgress:
         return text
 
     def has_rewards(self):
-        return self.quest.get_rune_reward() > 0 or self.quest.get_location_reward() or len(self.quest.get_item_reward()) > 0
+        return self.quest.get_rune_reward() > 0 or self.quest.get_location_reward() or len(self.quest.get_item_reward()) > 0 or self.quest.get_flask_reward() > 0
 
     def get_quest_reward_text(self, interaction):
         text = str()
@@ -67,6 +67,11 @@ class QuestProgress:
             for item in self.quest.get_item_reward():
                 category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
                 text += f"- {category_emoji} `{item.get_name()}` **{item.get_count()}**x\n"
+        if self.quest.get_flask_reward() > 0:
+            category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                                               name="flask")
+            text += f"- {category_emoji} **+1**\n"
+
 
         return text
 

@@ -135,6 +135,6 @@ async def view_class_selection_page(interaction, data, index):
         await interaction.message.edit(embed=embed,
                                        view=ClassSelectionView(user=interaction.user, current_page=index, data=data))
     else:
-        await interaction.response.send_message(embed=embed,
+        await interaction.followup.send(embed=embed,
                                                 view=ClassSelectionView(user=interaction.user, current_page=index,
                                                                         data=data))

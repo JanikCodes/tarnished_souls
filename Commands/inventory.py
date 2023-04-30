@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils.classes import class_selection
@@ -108,17 +109,19 @@ async def view_inventory_page(interaction, label, user, page):
         match label:
             case "weapon":
                 for item in items:
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name=item.get_iconCategory())
-                    equipped_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    equipped_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name='equipped')
 
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()
 
+                    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Damage:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**\n"
+                              f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n"
                               f"**Requirements:** \n"
                               f"{item.get_requirement_text()}\n"
                               f"**Scaling:** \n"
@@ -126,17 +129,19 @@ async def view_inventory_page(interaction, label, user, page):
                         inline=False)
             case "armor":
                 for item in items:
-                    category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name=item.get_iconCategory())
-                    equipped_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
+                    equipped_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name='equipped')
 
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()
 
+                    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Armor:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**\n",
+                              f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n",
                         inline=False)
             case "items":
                 pass
@@ -166,10 +171,9 @@ class Inventory(commands.Cog):
 
     @app_commands.command(name="inventory", description="Display your inventory")
     async def inventory(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
 
