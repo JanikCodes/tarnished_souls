@@ -14,120 +14,142 @@ STAMINA_REGEN = 7
 STAMINA_COST = 45
 HEAL_AMOUNT = 400
 
-def check_phase_change(enemy):
-    enemy_logic = enemy.get_logic()
+class Fight:
+    def __init__(self, enemy, users, interaction, turn_index):
+        self.enemy = enemy
+        self.users = users
+        self.interaction = interaction
+        self.turn_index = turn_index
 
-    match enemy_logic.get_id():
-        case 1:
-            # none ( do nothing )
-            pass
-        case 2:
-            # full
-            if enemy.get_health() == 0:
-                enemy.set_health(enemy.get_max_health())
-                enemy.increase_phase()
-        case 3:
-            # half
-            if enemy.get_health() <= enemy.get_max_health() / 2:
-                enemy.increase_phase()
-        case _:
-            raise ValueError(f"ERROR: Invalid enemy logic ID: {enemy_logic.get_id()}")
+    def get_enemy(self):
+        return self.enemy
 
+    def get_users(self):
+        return self.users
 
-async def update_fight_battle_view(enemy, users, interaction, turn_index):
-    # reset enemy dodge state
-    enemy.reset_dodge()
+    def get_interaction(self):
+        return self.interaction
 
-    check_phase_change(enemy)
+    def get_turn_index(self):
+        return self.turn_index
 
-    # get move from enemy
-    enemy_phase = enemy.get_phase()
-    enemy_move = enemy.get_move(phase=enemy_phase)
-    enemy, users = enemy_move.execute(enemy=enemy, users=users)
-    turn_index = cycle_turn_index(turn_index=turn_index, users=users)
+    def get_current_user(self):
+        return self.users[self.turn_index]
 
-    for user in users:
-        user.increase_stamina(STAMINA_REGEN)
-        user.reset_dodge()
+    def check_phase_change(self, enemy):
+        enemy_logic = enemy.get_logic()
 
-    embed = discord.Embed(title=f"**Fight against `{enemy.get_name()}`**",
-                          description=f"`{enemy.get_name()}`\n"
-                                      f"{utils.create_health_bar(enemy.get_health(), enemy.get_max_health(), interaction)} `{enemy.get_health()}/{enemy.get_max_health()}` {enemy.get_last_move_text()}")
-
-    embed.add_field(name="Enemy action:", value=f"{enemy_move.get_description()}", inline=False)
-
-    embed.add_field(name="Turn order:", value=f"**<@{users[turn_index].get_userId()}>** please choose an action..",
-                    inline=False)
-
-    flask_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='flask')
-    # create UI for every user
-    for user in users:
-        embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
-                        value=f"{utils.create_health_bar(user.get_health(), user.get_max_health(), interaction)} `{user.get_health()}/{user.get_max_health()}` {user.get_last_move_text()}\n"
-                              f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina(), interaction)} `{user.get_stamina()}/{user.get_max_stamina()}`",
-                        inline=False)
-        user.clear_last_move_text()
-
-    enemy.clear_last_move_text()
+        match enemy_logic.get_id():
+            case 1:
+                # none ( do nothing )
+                pass
+            case 2:
+                # full
+                if enemy.get_health() == 0:
+                    enemy.set_health(enemy.get_max_health())
+                    enemy.increase_phase()
+            case 3:
+                # half
+                if enemy.get_health() <= enemy.get_max_health() / 2:
+                    enemy.increase_phase()
+            case _:
+                raise ValueError(f"ERROR: Invalid enemy logic ID: {enemy_logic.get_id()}")
 
 
-    # Check for fight end
-    if enemy.get_health() <= 0:
-        # Enemy died
+    async def update_fight_battle_view(self):
+        # reset enemy dodge state
+        self.enemy.reset_dodge()
 
-        # get random item drops from enemy
-        item_drops = enemy.get_item_rewards()
-        item_drop_text = str()
-        for item in item_drops:
-            category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
-                                               name=item.get_iconCategory())
-            item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
+        self.check_phase_change(self.enemy)
 
-        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
-        embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
-        embed.set_field_at(1, name="Items:", value=item_drop_text, inline=False)
+        # get move from enemy
+        enemy_phase = self.enemy.get_phase()
+        enemy_move = self.enemy.get_move(phase=enemy_phase)
+        enemy, users = enemy_move.execute(enemy=self.enemy, users=self.users)
+        self.turn_index = turn_index = self.cycle_turn_index(turn_index=self.turn_index, users=users)
 
-        # grant rune rewards to all players
         for user in users:
-            db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
+            user.increase_stamina(STAMINA_REGEN)
+            user.reset_dodge()
 
-            # give each user the item drops
+        embed = discord.Embed(title=f"**Fight against `{enemy.get_name()}`**",
+                              description=f"`{enemy.get_name()}`\n"
+                                          f"{utils.create_health_bar(enemy.get_health(), enemy.get_max_health(), self.interaction)} `{enemy.get_health()}/{enemy.get_max_health()}` {enemy.get_last_move_text()}")
+
+        embed.add_field(name="Enemy action:", value=f"{enemy_move.get_description()}", inline=False)
+
+        embed.add_field(name="Turn order:", value=f"**<@{users[turn_index].get_userId()}>** please choose an action..",
+                        inline=False)
+
+        flask_emoji = discord.utils.get(self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis, name='flask')
+        # create UI for every user
+        for user in users:
+            embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
+                            value=f"{utils.create_health_bar(user.get_health(), user.get_max_health(), self.interaction)} `{user.get_health()}/{user.get_max_health()}` {user.get_last_move_text()}\n"
+                                  f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina(), self.interaction)} `{user.get_stamina()}/{user.get_max_stamina()}`",
+                            inline=False)
+            user.clear_last_move_text()
+
+        enemy.clear_last_move_text()
+
+
+        # Check for fight end
+        if enemy.get_health() <= 0:
+            # Enemy died
+
+            # get random item drops from enemy
+            item_drops = enemy.get_item_rewards()
+            item_drop_text = str()
             for item in item_drops:
-                db.add_item_to_user(user.get_userId(), item)
-                # update quest progress
-                db.check_for_quest_update(idUser=users[0].get_userId(), item=item, runes=enemy.get_runes())
+                category_emoji = discord.utils.get(self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                                                   name=item.get_iconCategory())
+                item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
 
-        # update quest enemy progress for host
-        db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
+            embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
+            embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
+            embed.set_field_at(1, name="Items:", value=item_drop_text, inline=False)
 
-        await interaction.message.edit(embed=embed, view=None)
-        return
-    if len([user for user in users if user.get_health() > 0]) == 0:
-        # All users died
-        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
-                           inline=False)
-        embed.set_field_at(1, name="", value="", inline=False)
+            # grant rune rewards to all players
+            for user in users:
+                db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
 
-        await interaction.message.edit(embed=embed, view=None)
-        return
+                # give each user the item drops
+                for item in item_drops:
+                    db.add_item_to_user(user.get_userId(), item)
+                    # update quest progress
+                    db.check_for_quest_update(idUser=users[0].get_userId(), item=item, runes=enemy.get_runes())
 
-    await interaction.message.edit(embed=embed,
-                                   view=FightBattleView(users=users, enemy=enemy, turn_index=turn_index))
+            # update quest enemy progress for host
+            db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
+
+            await self.interaction.message.edit(embed=embed, view=None)
+            return
+        if len([user for user in users if user.get_health() > 0]) == 0:
+            # All users died
+            embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
+                               inline=False)
+            embed.set_field_at(1, name="", value="", inline=False)
+
+            await self.interaction.message.edit(embed=embed, view=None)
+            return
+
+        await self.interaction.message.edit(embed=embed,
+                                       view=FightBattleView(fight=self))
 
 
-def cycle_turn_index(turn_index, users):
-    party_length = len(users)
+    def cycle_turn_index(self, turn_index, users):
+        party_length = len(users)
 
-    next_index = (turn_index + 1) % party_length
-    while users[next_index].get_health() <= 0:
-        next_index = (next_index + 1) % party_length
-        if next_index == turn_index:
-            # Cycle goes back to the original, everyone else died.
-            return turn_index
+        next_index = (turn_index + 1) % party_length
+        while users[next_index].get_health() <= 0:
+            next_index = (next_index + 1) % party_length
+            if next_index == turn_index:
+                # Cycle goes back to the original, everyone else died.
+                return turn_index
 
-    # Switched turns!
+        # Switched turns!
 
-    return next_index
+        return next_index
 
 
 class JoinButton(discord.ui.Button):
@@ -181,9 +203,8 @@ class StartButton(discord.ui.Button):
 
         self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
 
-        await update_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
-                                       turn_index=0)  # turn_index = 0 because the first player should start the turn
-
+        fight = Fight(enemy=self.enemy, users=self.users, interaction=interaction, turn_index=0)
+        await fight.update_fight_battle_view()
 
 class FightSelectView(discord.ui.View):
     def __init__(self, users, visibility):
@@ -193,80 +214,73 @@ class FightSelectView(discord.ui.View):
 
 
 class BattleButton(discord.ui.Button):
-    def __init__(self, current_user, users, enemy, turn_index, label, style):
+    def __init__(self, fight, label, style):
         super().__init__(label=label, style=style)
-        self.current_user = current_user
-        self.users = users
-        self.enemy = enemy
-        self.turn_index = turn_index
+        self.fight = fight
 
     async def callback(self, interaction: discord.Interaction):
-        if str(interaction.user.id) != self.current_user.get_userId():
+        if str(interaction.user.id) != self.fight.get_current_user().get_userId():
             embed = discord.Embed(title=f"It's not your turn..",
                                   description="",
                                   colour=discord.Color.orange())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         await interaction.response.defer()
 
-        if self.current_user.get_health() > 0 and self.enemy.get_health() > 0:
+        if self.fight.get_current_user().get_health() > 0 and self.fight.get_enemy().get_health() > 0:
             self.execute_action()
 
-            await update_fight_battle_view(enemy=self.enemy, users=self.users, interaction=interaction,
-                                           turn_index=self.turn_index)
+            await self.fight.update_fight_battle_view()
 
     def execute_action(self):
         pass
 
 
 class InstaKillButton(BattleButton):
-    def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Attack (-99999)",
-                         style=discord.ButtonStyle.danger)
+    def __init__(self, fight):
+        super().__init__(fight, label=f"Attack (-99999)", style=discord.ButtonStyle.danger)
     def execute_action(self):
-        self.enemy.reduce_health(99999)
+        self.fight.get_enemy().reduce_health(99999)
 
 class AttackButton(BattleButton):
-    def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Attack (-{current_user.get_damage()})",
+    def __init__(self, fight):
+        super().__init__(fight, label=f"Attack (-{fight.get_current_user().get_damage()})",
                          style=discord.ButtonStyle.danger)
 
     def execute_action(self):
-        if not self.enemy.get_is_dodging():
-            self.enemy.reduce_health(self.current_user.get_damage())
+        if not self.fight.get_enemy().get_is_dodging():
+            self.fight.get_enemy().reduce_health(self.fight.get_current_user().get_damage())
 
 
 class HealButton(BattleButton):
-    def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Heal (+300)",
+    def __init__(self, fight):
+        super().__init__(fight, label=f"Heal (+300)",
                          style=discord.ButtonStyle.success)
         # Disable button if no flasks remaining
-        self.disabled = current_user.get_remaining_flasks() == 0
+        self.disabled = fight.get_current_user().get_remaining_flasks() == 0
 
     def execute_action(self):
-        self.current_user.increase_health(HEAL_AMOUNT)
+        self.fight.get_current_user().increase_health(HEAL_AMOUNT)
 
 
 class DodgeButton(BattleButton):
-    def __init__(self, current_user, users, enemy, turn_index):
-        super().__init__(current_user, users, enemy, turn_index, label=f"Dodge (-{STAMINA_COST})",
+    def __init__(self, fight):
+        super().__init__(fight, label=f"Dodge (-{STAMINA_COST})",
                          style=discord.ButtonStyle.primary)
 
         # Disable button if not enough stamina
-        self.disabled = current_user.get_stamina() < STAMINA_COST
+        self.disabled = fight.get_current_user().get_stamina() < STAMINA_COST
 
     def execute_action(self):
-        self.current_user.dodge(STAMINA_COST)
+        self.fight.get_current_user().dodge(STAMINA_COST)
 
 
 class FightBattleView(discord.ui.View):
-    def __init__(self, users, enemy, turn_index):
+    def __init__(self, fight):
         super().__init__()
-        self.users = users
-        self.enemy = enemy
 
-        self.add_item(AttackButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
-        self.add_item(HealButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
-        self.add_item(DodgeButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
+        self.add_item(AttackButton(fight=fight))
+        self.add_item(HealButton(fight=fight))
+        self.add_item(DodgeButton(fight=fight))
         #self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 class FightLobbyView(discord.ui.View):
@@ -318,7 +332,7 @@ class FightEnemySelect(discord.ui.Select):
 
         await interaction.message.edit(embed=embed, view=FightLobbyView(users=self.users, enemy=selected_enemy, visibility=self.visibility))
 
-class Fight(commands.Cog):
+class FightCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
@@ -348,4 +362,4 @@ class Fight(commands.Cog):
             await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(Fight(client))
+    await client.add_cog(FightCommand(client))
