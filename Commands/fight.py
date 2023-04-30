@@ -14,7 +14,7 @@ from Utils.classes import class_selection
 MAX_USERS = 3
 STAMINA_REGEN = 7
 STAMINA_COST = 45
-HEAL_AMOUNT = 380
+HEAL_AMOUNT = 475
 
 class Fight:
     def __init__(self, enemy, users, interaction, turn_index):
@@ -103,11 +103,9 @@ class Fight:
             item_drops = enemy.get_item_rewards()
             item_drop_text = str()
             for item in item_drops:
-                rand = random.randint(0, 100)
-                if item.get_drop_rate() >= rand:
-                    category_emoji = discord.utils.get(self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
-                                                       name=item.get_iconCategory())
-                    item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
+                category_emoji = discord.utils.get(self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                                                   name=item.get_iconCategory())
+                item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
 
             embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
             embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
@@ -126,12 +124,12 @@ class Fight:
                 for item in item_drops:
                     db.add_item_to_user(user.get_userId(), item)
                     # update quest progress
-                    db.check_for_quest_update(idUser=users[0].get_userId(), item=item, runes=enemy.get_runes())
-                db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id(), runes=enemy.get_runes())
+                    db.check_for_quest_update(idUser=users[0].get_userId(), item=item)
 
+                db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes())
 
             # update quest enemy progress for host
-            db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id(), runes=enemy.get_runes())
+            db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
 
             await self.interaction.message.edit(embed=embed, view=None)
             return
