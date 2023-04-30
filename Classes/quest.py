@@ -3,7 +3,7 @@ from Classes.enemy import Enemy
 
 
 class Quest:
-    def __init__(self, id, title, description, req_kills, req_item_count, req_runes, idItem, idEnemy, runeReward, locationIdReward, req_explore_count, explore_location, cooldown):
+    def __init__(self, id, title, description, req_kills, req_item_count, req_runes, idItem, idEnemy, runeReward, locationIdReward, req_explore_count, explore_location, cooldown, flask_reward):
         self.id = id
         self.title = title
         self.description = description
@@ -18,6 +18,7 @@ class Quest:
         self.req_explore_count = req_explore_count
         self.explore_location = db.get_location_from_id(explore_location)
         self.cooldown = cooldown
+        self.flask_reward = flask_reward
 
     def get_id(self):
         return self.id
@@ -60,3 +61,6 @@ class Quest:
 
     def get_location_reward(self):
         return self.location_reward
+
+    def get_flask_reward(self):
+        return self.flask_reward

@@ -34,6 +34,9 @@ class FinishQuest(discord.ui.Button):
         if len(self.current_quest.get_quest().get_item_reward()) > 0:
             for item in self.current_quest.get_quest().get_item_reward():
                 db.add_item_to_user(idUser=self.user.get_userId(), item=item)
+        # Increase flask amount
+        if self.current_quest.get_quest().get_flask_reward() > 0:
+            db.update_flask_amount_from_user(idUser=self.user.get_userId(), amount=self.current_quest.get_quest().get_flask_reward())
 
         # Edit quest message
         message = interaction.message
@@ -61,10 +64,10 @@ class Quest(commands.Cog):
 
     @app_commands.command(name="quest", description="Try completing the quest-line")
     async def quest(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         try:
             if db.validate_user(interaction.user.id):
-
-                await interaction.response.defer()
 
                 user = User(interaction.user.id)
 
