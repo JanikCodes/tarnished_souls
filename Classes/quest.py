@@ -3,8 +3,10 @@ from Classes.enemy import Enemy
 
 
 class Quest:
-    def __init__(self, id=None, title=None, description=None, req_kills=None, req_item_count=None, req_runes=None, idItem=None, idEnemy=None, runeReward=None,\
-                 locationIdReward=None, req_explore_count=None, explore_location=None, cooldown=None, flask_reward = None):
+    def __init__(self, id=None, title=None, description=None, req_kills=None, req_item_count=None, req_runes=None,
+                 idItem=None, idEnemy=None, runeReward=None, \
+                 locationIdReward=None, req_explore_count=None, explore_location=None, cooldown=None,
+                 flask_reward=None):
         if id is not None:
             self.id = id
             self.title = title
@@ -115,3 +117,6 @@ class Quest:
 
     def get_flask_reward(self):
         return self.flask_reward
+
+    def set_flask_reward(self, flask_reward):
+        self.flask_reward = flask_reward

@@ -112,7 +112,7 @@ def add_quest(quest: Quest()):
         location_reward = quest.get_location_reward()[0]
         location_reward_id = location_reward.get_id()
 
-    sql = f"INSERT INTO quest VALUES(null, '{quest.get_title()}', '{quest.get_description()}', {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_item()}, {enemy_id}, {quest.get_rune_reward()}, {location_reward_id}, {quest.get_req_explore_count()}, {exploration_location_id}, {quest.get_cooldown()});"
+    sql = f"INSERT INTO quest VALUES(null, '{quest.get_title()}', '{quest.get_description()}', {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_item()}, {enemy_id}, {quest.get_rune_reward()}, {location_reward_id}, {quest.get_req_explore_count()}, {exploration_location_id}, {quest.get_cooldown()}, {quest.get_flask_reward()});"
     sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()

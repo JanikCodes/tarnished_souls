@@ -106,6 +106,7 @@ class InsertQuestButton(discord.ui.Button):
         preview_embed.add_field(name="Req_explore_count:", value="Please enter a valid req. explore_count amount..")
         preview_embed.add_field(name="Location_id:", value="Please enter a valid location_id..")
         preview_embed.add_field(name="Cooldown:", value="Please enter a valid cooldown amount..")
+        preview_embed.add_field(name="Flask_reward:", value="Please enter a valid flask_amount..")
         await interaction.response.send_message(embed=preview_embed,
                                                 view=SelectLocationView(quest=quest, embed=preview_embed))
 
@@ -125,12 +126,8 @@ class ConfirmInsertButton(discord.ui.Button):
         self.modal_page = modal_page
         self.embed = embed
         self.item_count = item_count
-        #self.logic = enemy.get_logic()
 
     async def callback(self, interaction: discord.Interaction):
-        print("callback junge")
-        print(self.mode)
-
         if self.mode == "enemy":
             enemy_id = int(str(db.get_enemy_count()).strip("[('',)]")) + 1
             self.enemy.set_id(enemy_id)
@@ -601,6 +598,7 @@ class AddQuestModal(discord.ui.Modal):
     quest_location_id_reward = None
     quest_req_explore_count = None
     quest_cooldown = None
+    quest_flask_reward = None
 
     quest_id = None
     quest_item_reward_id = None
@@ -625,14 +623,16 @@ class AddQuestModal(discord.ui.Modal):
                 self.quest_cooldown = discord.ui.TextInput(label="Cooldown:", style=discord.TextStyle.short,
                                                            placeholder="Please enter a valid cooldown..",
                                                            required=False)
-
                 self.quest_rune_reward = discord.ui.TextInput(label="Rune_reward:", style=discord.TextStyle.short,
                                                               placeholder="Please enter a valid reward", required=False)
+                self.quest_flask_reward = discord.ui.TextInput(label="Flask_reward:", style=discord.TextStyle.short,
+                                                               placeholder="Please enter the new flask_amount", required=False)
 
                 self.add_item(self.quest_title)
                 self.add_item(self.quest_description)
                 self.add_item(self.quest_cooldown)
                 self.add_item(self.quest_rune_reward)
+                self.add_item(self.quest_flask_reward)
 
             case "2":
                 self.quest_req_kills = discord.ui.TextInput(label="Required Kills:", style=discord.TextStyle.short,
@@ -685,52 +685,59 @@ class AddQuestModal(discord.ui.Modal):
                 self.quest.set_description(self.quest_description)
                 self.embed.set_field_at(index=1, name="Description:", value=self.quest_description)
 
-                if str(self.quest_cooldown.value) == "":
+                if self.quest_cooldown.value == "":
                     self.quest.set_cooldown("0")
                     self.embed.set_field_at(index=11, name="Cooldown:", value="None")
                 else:
-                    self.quest.set_cooldown(int(self.quest_cooldown.value))
+                    self.quest.set_cooldown(self.quest_cooldown.value)
                     self.embed.set_field_at(index=11, name="Cooldown:", value=self.quest.get_cooldown())
 
-                if str(self.quest_rune_reward) == "":
+                if self.quest_rune_reward.value == "":
                     self.quest.set_rune_reward("0")
                     self.embed.set_field_at(index=7, name="Rune_reward:", value="None")
                 else:
-                    self.quest.set_rune_reward(int(self.quest_rune_reward.value))
+                    self.quest.set_rune_reward(self.quest_rune_reward.value)
                     self.embed.set_field_at(index=7, name="Rune_reward:", value=self.quest.get_rune_reward())
 
+                if self.quest_flask_reward.value == "":
+                    self.quest.set_flask_reward("0")
+                    self.embed.set_field_at(index=12, name="Flask_reward:", value="None")
+                else:
+                    self.quest.set_flask_reward(self.quest_flask_reward.value)
+                    self.embed.set_field_at(index=12, name="Flask_reward:", value=self.quest.get_flask_reward())
+
             case "2":
-                if str(self.quest_req_kills.value) == "":
+                if self.quest_req_kills.value == "":
                     self.quest.set_req_kills("0")
                     self.embed.set_field_at(index=2, name="Req_kills:", value="None")
                 else:
                     self.quest.set_req_kills(int(self.quest_req_kills.value))
                     self.embed.set_field_at(index=2, name="Req_kills:", value=self.quest.get_req_kills())
 
-                if str(self.quest_req_item_count.value) == "":
+                if self.quest_req_item_count.value == "":
                     self.quest.set_req_item_count("0")
                     self.embed.set_field_at(index=3, name="Req_item_count:", value="None")
                 else:
                     self.quest.set_req_item_count(int(self.quest_req_item_count.value))
                     self.embed.set_field_at(index=3, name="Req_item_count:", value=self.quest.get_req_item_count())
 
-                if str(self.quest_req_runes.value) == "":
+                if self.quest_req_runes.value == "":
                     self.quest.set_req_runes("0")
                     self.embed.set_field_at(index=4, name="Req_runes:", value="None")
                 else:
-                    self.quest.set_req_runes(int(self.quest_req_runes.value))
+                    self.quest.set_req_runes(self.quest_req_runes.value)
                     self.embed.set_field_at(index=4, name="Req_runes:", value=self.quest.get_req_runes())
 
-                if str(self.quest_item_id.value) == "":
+                if self.quest_item_id.value == "":
                     self.quest.set_req_item("null")
                     self.embed.set_field_at(index=5, name=f"Item_id: None", value="None")
                 else:
-                    self.quest.set_req_item(int(self.quest_item_id.value))
+                    self.quest.set_req_item(self.quest_item_id.value)
                     self.embed.set_field_at(index=5, name=f"Item_id: {self.quest.get_item()}",
                                             value=str(db.get_item_name_from_id(str(self.quest_item_id))).strip("(,)"))
 
                 if self.quest_req_explore_count is not None:
-                    if str(self.quest_req_explore_count.value) == "":
+                    if self.quest_req_explore_count.value == "":
                         self.quest.set_req_explore_count("0")
                         self.embed.set_field_at(index=9, name="Req_explore_count:", value="None")
                     else:
