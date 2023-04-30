@@ -125,6 +125,7 @@ class Fight:
                     db.check_for_quest_update(idUser=users[0].get_userId(), item=item, runes=enemy.get_runes())
                 db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id(), runes=enemy.get_runes())
 
+
             # update quest enemy progress for host
             db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id(), runes=enemy.get_runes())
 
