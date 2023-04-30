@@ -194,7 +194,7 @@ def get_move_type_id_from_name(name):
 
 
 def get_encounter_id_from_description(description):
-    sql = f"SELECT idencounter FROM encounter WHERE description='{description}'"
+    sql = f"SELECT idEncounter FROM encounter WHERE description='{description}'"
     cursor.execute(sql)
     return cursor.fetchone()
 

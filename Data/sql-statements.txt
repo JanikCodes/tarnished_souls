@@ -3,3 +3,10 @@ INSERT INTO enemy VALUES(12, 1, "Ma'sha'lla", "Masha'las friend", 2222, 1111, 1)
 INSERT INTO enemy_has_item VALUES(null, 55, 12, 1, 25);
 INSERT INTO enemy_has_item VALUES(null, 644, 12, 1, 10);
 INSERT INTO enemy_moves VALUES(null, "Nah homie", 0, 1, 12, 69, 0, 0, 1)
+INSERT INTO enemy_moves VALUES(null, "dasadada", 0, 1, 12, 23, 0, 0, 1)
+INSERT INTO enemy_moves VALUES(null, "I'll dodge the ne't attak", 0, 2, 12, 0, 0, 0, 1)
+INSERT INTO encounter VALUES(null, "Hall'o My'lady", 25, 1)
+INSERT INTO encounter VALUES(null, "MI'gall Bu'bba", 22, 1)
+INSERT INTO encounter VALUES(null, "AHh' that's goog't", 11, 1)
+INSERT INTO encounter VALUES(null, "pipi und kacki", 1, 1)
+INSERT INTO encounter VALUES(null, "pi'ba bu'baa", 33, 1)

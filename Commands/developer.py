@@ -165,8 +165,10 @@ class ConfirmInsertButton(discord.ui.Button):
 
         if self.mode == "encounter":
             sql = db.add_encounter(self.encounter)
+
             with open('Data/sql-statements.txt', 'a') as f:
                 f.write(f"{sql}\n")
+
             self.encounter.set_id(db.get_encounter_id_from_description(self.encounter.get_description()))
             embed = discord.Embed(title=f"Database Insertion successful!",
                                   colour=discord.Color.green())
