@@ -324,7 +324,7 @@ class FightEnemySelect(discord.ui.Select):
                               description="",
                               colour=discord.Color.orange())
 
-        embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value="None")
+        embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value="")
         embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
 
         if self.visibility == 'public':
