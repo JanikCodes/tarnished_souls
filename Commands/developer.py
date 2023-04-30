@@ -277,21 +277,21 @@ class SelectEnemy(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
 
-        idEnemy = self.values[0]
+        enemy = Enemy(self.values[0])
         if self.quest:
-            self.quest.set_req_enemy(idEnemy)
+            self.quest.set_req_enemy(enemy.get_id())
             self.embed.set_field_at(index=6,
-                                    name=f"Enemy_id: {idEnemy}",
-                                    value=idEnemy)
+                                    name=f"Enemy_id: {enemy.get_id()}",
+                                    value=enemy.get_name())
             await interaction.message.edit(embed=self.embed,
                                            view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
             await interaction.response.defer()
             return
         else:
             preview_embed = discord.Embed(title="Adding Enemy_move",
-                                          description=f"The move will be added for: {str(self.values[0])}")
+                                          description=f"The move will be added for: {enemy.get_name()}")
 
-            self.enemy = Enemy(idEnemy=idEnemy)
+            self.enemy = Enemy(idEnemy=enemy.get_id())
 
             await interaction.message.edit(embed=preview_embed,
                                            view=SelectMoveTypeView(interaction.message.id, self.enemy, preview_embed))
