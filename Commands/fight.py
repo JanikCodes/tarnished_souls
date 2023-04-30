@@ -312,7 +312,7 @@ class FightEnemySelect(discord.ui.Select):
 
         if str(interaction.user.id) != self.users[0].get_userId():
             embed = discord.Embed(title=f"You're not allowed to use this action!",
-                                  description=None,
+                                  description="",
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
@@ -321,11 +321,11 @@ class FightEnemySelect(discord.ui.Select):
         selected_enemy = Enemy(self.values[0])
 
         embed = discord.Embed(title=f" {self.users[0].get_userName()} has started a {self.visibility} lobby",
-                              description=None,
+                              description="",
                               colour=discord.Color.orange())
 
-        embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value=None)
-        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value=None, inline=False)
+        embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value="None")
+        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
 
         if self.visibility == 'public':
             embed.set_footer(text="Click the button below in order to join!")
