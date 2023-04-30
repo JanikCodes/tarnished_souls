@@ -25,6 +25,7 @@ class Help(commands.Cog):
                 case 'stats':
                     embed = discord.Embed(title=f"Information about `Character Statistics`",
                                           description=f"Depending on your selected class you'll start with different starting stats.\n"
+                                                      f"You can check your stats by typing `/character`\n"
                                                       f"**Increasing** any stat will provide **bonus effects** depending on the stat. `/upgrade strength`")
                     embed.add_field(name="`Vitality`", value="**Increases** your **max health** in combat", inline=False)
                     embed.add_field(name="`Mind`", value="**No effect**, I appreciate `/feedback` for Mind", inline=False)
@@ -37,7 +38,7 @@ class Help(commands.Cog):
                     all_cmds = str()
                     for fileName in os.listdir('./Commands'):
                         if fileName.endswith('.py'):
-                            all_cmds += f"`{fileName[:-3]}` "
+                            all_cmds += f"`{fileName[:-3]}` \n"
 
                     embed = discord.Embed(title=f"Information about `Commands`",
                                           description=all_cmds)

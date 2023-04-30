@@ -3,15 +3,20 @@ import random
 
 class EnemyMove:
 
-    def __init__(self, idMove, description, phase, type, damage, healing, duration, max_targets):
-        self.id = idMove
-        self.description = description
-        self.phase = phase
-        self.type = type
-        self.damage = damage
-        self.healing = healing
-        self.duration = duration
-        self.max_targets = max_targets
+    def __init__(self, idMove=None, description=None, phase=None, type=None, damage=None,\
+                 healing=None, duration=None, max_targets=None):
+        if idMove is not None:
+            self.id = idMove
+            self.description = description
+            self.phase = phase
+            self.type = type
+            self.damage = damage
+            self.healing = healing
+            self.duration = duration
+            self.max_targets = max_targets
+        else:
+            # empty constructor
+            pass
 
     def get_id(self):
         return self.id
@@ -36,6 +41,30 @@ class EnemyMove:
 
     def get_max_targets(self):
         return self.max_targets
+
+    def set_id(self, move_id):
+        self.id = move_id
+
+    def set_description(self, description):
+        self.description = description
+
+    def set_phase(self, phase):
+        self.phase = phase
+
+    def set_type(self, type):
+        self.type = type
+
+    def set_damage(self, damage):
+        self.damage = damage
+
+    def set_healing(self, healing):
+        self.healing = healing
+
+    def set_duration(self, duration):
+        self.duration = duration
+
+    def set_max_targets(self, max_targets):
+        self.max_targets = max_targets
 
     def execute(self, enemy, users):
         # TODO: Make a seperate move_type class and use those instead of the raw id's here

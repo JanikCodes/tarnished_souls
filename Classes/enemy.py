@@ -5,23 +5,29 @@ from Classes.enemy_logic import EnemyLogic
 
 
 class Enemy:
-    def __init__(self, idEnemy):
-        result = db.get_enemy_with_id(idEnemy)
-        self.id = idEnemy
-        self.name = result[0]
-        self.logic = EnemyLogic(result[1])
-        self.description = result[2]
-        self.max_health = result[3]
-        self.runes = result[4]
-        self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
-        self.location = db.get_location_from_id(result[5])
-        self.item_rewards = db.get_items_from_enemy_id(idEnemy=idEnemy)
+    def __init__(self, idEnemy=None):
+        if idEnemy is not None:
+            result = db.get_enemy_with_id(idEnemy)
+            self.id = idEnemy
+            self.name = result[0]
+            self.logic = EnemyLogic(result[1])
+            self.description = result[2]
+            self.max_health = result[3]
+            self.runes = result[4]
+            self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
+            self.location = db.get_location_from_id(result[5])
+            self.item_rewards = db.get_items_from_enemy_id(idEnemy=idEnemy)
 
-        self.health = self.get_max_health()
-        self.phase = 0
-        self.last_move = None
-        self.dodge_next = False
-        self.last_move_text = str()
+            self.health = self.get_max_health()
+            self.phase = 0
+            self.last_move = None
+            self.dodge_next = False
+            self.last_move_text = str()
+        else:
+            # empty constructor
+            self.location = []
+            self.item_rewards = []
+            pass
 
     def get_id(self):
         return self.id
@@ -96,7 +102,31 @@ class Enemy:
     def get_location(self):
         return self.location
 
-    def get_item_rewards(self):
+    def set_id (self, id):
+        self.id = id
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_logic(self, logic):
+        self.logic = EnemyLogic(logic)
+
+    def set_description(self, description):
+        self.description = description
+
+    def set_runes(self, runes):
+        self.runes = runes
+
+    def set_moves(self, enemy_id):
+        self.moves = db.get_enemy_moves_with_enemy_id(enemy_id)
+
+    def set_location(self, location):
+        self.location.append(location)
+
+    def set_phase(self, phase):
+        self.phase = phase
+        
+    def get_item_rewards_random(self):
         items = []
         for item in self.item_rewards:
             rand = random.randint(0, 100)
@@ -106,3 +136,9 @@ class Enemy:
                 items.append(item)
 
         return items
+
+    def get_item_rewards(self):
+        return self.item_rewards
+
+    def set_item_rewards(self, item_reward):
+        self.item_rewards.append(item_reward)
