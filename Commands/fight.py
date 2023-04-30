@@ -107,7 +107,7 @@ class Fight:
 
             embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
             embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
-            embed.set_field_at(1, name="Items:", value=item_drop_text, inline=False)
+            embed.set_field_at(2, name="Items:", value=item_drop_text, inline=False)
 
             # grant rune rewards to all players
             for user in users:
