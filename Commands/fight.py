@@ -14,7 +14,7 @@ from Utils.classes import class_selection
 MAX_USERS = 3
 STAMINA_REGEN = 7
 STAMINA_COST = 45
-HEAL_AMOUNT = 475
+HEAL_AMOUNT = 380
 
 class Fight:
     def __init__(self, enemy, users, interaction, turn_index):
