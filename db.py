@@ -944,3 +944,59 @@ def update_flask_amount_from_user(idUser, amount):
     sql = f"UPDATE user u SET flaskCount = {amount} WHERE u.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
+    
+
+def get_leaderboard_runes():
+    leaderboard = []
+
+    sql = f"select username, souls FROM user ORDER BY souls DESC LIMIT 10;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            leaderboard.append((row[0], row[1]))
+
+    return leaderboard
+
+def get_user_position_in_lb_runes(idUser):
+    sql = f"SELECT username, souls, FIND_IN_SET(souls, (SELECT GROUP_CONCAT(souls ORDER BY souls DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        position = res[2]
+        return position
+    else:
+        # User not found in the database
+        return "error"
+
+
+def get_leaderboard_levels():
+    leaderboard = []
+
+    sql = "SELECT username, vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane AS total_level FROM user ORDER BY total_level DESC LIMIT 10;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            leaderboard.append((row[0], row[1]))
+
+    return leaderboard
+
+
+def get_user_position_in_lb_level(idUser):
+    sql = f"SELECT username, total_level, FIND_IN_SET(total_level, " \
+          f"(SELECT GROUP_CONCAT(total_level ORDER BY total_level DESC) FROM " \
+          f"(SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) AS total_level " \
+          f"FROM user GROUP BY username, idUser) AS t)) AS position " \
+          f"FROM (SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) AS total_level " \
+          f"FROM user GROUP BY username, idUser) AS u " \
+          f"WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        position = res[2]
+        return position
+    else:
+        # User not found in the database
+        return "error"
+
