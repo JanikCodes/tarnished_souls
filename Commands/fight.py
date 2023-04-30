@@ -306,7 +306,7 @@ class FightEnemySelect(discord.ui.Select):
             if enemy.get_description() == "Boss":
                 self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}", value=f"{enemy.get_id()}", emoji="💀")
             else:
-                self.add_option(label=f"{enemy.get_name()}", description=f"{enemy.get_description()}",value=f"{enemy.get_id()}")
+                self.add_option(label=f"{enemy.get_name()}", description=None, value=f"{enemy.get_id()}")
 
     async def callback(self, interaction: discord.Interaction):
 
