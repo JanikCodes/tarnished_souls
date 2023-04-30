@@ -268,20 +268,21 @@ class SelectEnemy(discord.ui.Select):
         self.modal_page = modal_page
         self.location_id = location_id
 
-        for enemy_desc in db.get_enemy_and_desc(location_id=self.location_id):
-            if enemy_desc[1] == "Boss":
-                self.add_option(label=enemy_desc[0], description=enemy_desc[1],
+        for enemy in db.get_enemies_from_location(location_id=self.location_id):
+            if enemy.get_description() == "Boss":
+                self.add_option(label=enemy.get_name(), description=enemy.get_description(),value=enemy.get_id(),
                                 emoji="💀")
             else:
-                self.add_option(label=enemy_desc[0], description=enemy_desc[1])
+                self.add_option(label=enemy.get_name(), description=enemy.get_description(),value=enemy.get_id())
 
     async def callback(self, interaction: discord.Interaction):
 
+        idEnemy = self.values[0]
         if self.quest:
-            self.quest.set_req_enemy((str(db.get_enemy_id_from_name(str(self.values[0]))).strip("(,)")))
+            self.quest.set_req_enemy(idEnemy)
             self.embed.set_field_at(index=6,
-                                    name=f"Enemy_id: {str(db.get_enemy_id_from_name(str(self.values[0]))).strip('(,)')}",
-                                    value=self.values[0])
+                                    name=f"Enemy_id: {idEnemy}",
+                                    value=idEnemy)
             await interaction.message.edit(embed=self.embed,
                                            view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
             await interaction.response.defer()
@@ -290,7 +291,7 @@ class SelectEnemy(discord.ui.Select):
             preview_embed = discord.Embed(title="Adding Enemy_move",
                                           description=f"The move will be added for: {str(self.values[0])}")
 
-            self.enemy = Enemy(str(db.get_enemy_id_from_name(str(self.values[0]))).strip("(,)"))
+            self.enemy = Enemy(idEnemy=idEnemy)
 
             await interaction.message.edit(embed=preview_embed,
                                            view=SelectMoveTypeView(interaction.message.id, self.enemy, preview_embed))

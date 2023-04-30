@@ -1,7 +1,5 @@
-INSERT INTO encounter VALUES(null, 'sex on the besch ', 100, 1)
-INSERT INTO enemy VALUES(16, 2, 'Fetter Mann', 'Boss', 10000, 12, 1);
-INSERT INTO enemy VALUES(17, 2, 'cubemaster', 'Boss', 100000, 100000, 1);
-INSERT INTO enemy_moves VALUES(null, 'mashallah die hübsche', 1, 1, 16, 123456, 0, 0, 1)
-INSERT INTO encounter VALUES(null, 'mashallah', 1, 1)
-INSERT INTO enemy VALUES(18, 2, 'Hurensohn', 'krasser mann', 1234, 12, 1);
-INSERT INTO enemy_moves VALUES(null, 'er steht rum', 0, 5, 18, 0, 0, 0, 1)
+INSERT INTO enemy_moves VALUES(null, "Sheep penetrates trough earth and the universe", 0, 1, 9, 9999, 0, 0, 3)
+INSERT INTO enemy VALUES(12, 1, "Ma'sha'lla", "Masha'las friend", 2222, 1111, 1);
+INSERT INTO enemy_has_item VALUES(null, 55, 12, 1, 25);
+INSERT INTO enemy_has_item VALUES(null, 644, 12, 1, 10);
+INSERT INTO enemy_moves VALUES(null, "Nah homie", 0, 1, 12, 69, 0, 0, 1)

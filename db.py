@@ -132,15 +132,16 @@ def get_quest_id_from_title_and_desc(title, desc):
     return cursor.fetchone()
 
 
-def get_enemy_and_desc(location_id):
-    enemy_desc = []
-    sql = f"SELECT name, description FROM enemy WHERE idLocation = {location_id};"
+def get_enemies_from_location(location_id):
+    enemies = []
+    sql = f"SELECT idEnemy FROM enemy WHERE idLocation = {location_id};"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            enemy_desc.append((row[0], row[1]))
-        return enemy_desc
+            enemy = Enemy(idEnemy=row[0])
+            enemies.append(enemy)
+        return enemies
     else:
         return None
 
