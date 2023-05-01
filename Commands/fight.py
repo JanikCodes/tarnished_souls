@@ -103,14 +103,12 @@ class Fight:
             # Enemy died
 
             # get random item drops from enemy
-            item_drops = enemy.get_item_rewards()
+            item_drops = enemy.get_item_rewards_random()
             item_drop_text = str()
             for item in item_drops:
-                rand = random.randint(0, 100)
-                if item.get_drop_rate() >= rand:
-                    category_emoji = discord.utils.get(self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
-                                                       name=item.get_iconCategory())
-                    item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
+                category_emoji = discord.utils.get(self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                                                   name=item.get_iconCategory())
+                item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
 
             embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
             embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
