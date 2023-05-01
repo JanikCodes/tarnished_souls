@@ -976,7 +976,7 @@ def get_user_position_in_lb_runes(idUser):
 def get_leaderboard_levels():
     leaderboard = []
 
-    sql = "SELECT username, vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane AS total_level FROM user ORDER BY total_level DESC LIMIT 10;"
+    sql = "SELECT username, vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user ORDER BY total_level DESC LIMIT 10;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -989,9 +989,9 @@ def get_leaderboard_levels():
 def get_user_position_in_lb_level(idUser):
     sql = f"SELECT username, total_level, FIND_IN_SET(total_level, " \
           f"(SELECT GROUP_CONCAT(total_level ORDER BY total_level DESC) FROM " \
-          f"(SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) AS total_level " \
+          f"(SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79) AS total_level " \
           f"FROM user GROUP BY username, idUser) AS t)) AS position " \
-          f"FROM (SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) AS total_level " \
+          f"FROM (SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79) AS total_level " \
           f"FROM user GROUP BY username, idUser) AS u " \
           f"WHERE idUser = {idUser};"
     cursor.execute(sql)
