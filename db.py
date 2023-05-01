@@ -48,12 +48,13 @@ def add_user(userId, userName):
 
 
 def get_item_name_from_id(item_id):
-    if item_id != "":
-        sql = f"SELECT name FROM item WHERE iditem = {item_id};"
-        cursor.execute(sql)
-        return cursor.fetchone()
-    else:
-        return None
+    sql = f"SELECT name FROM item WHERE idItem = {item_id};"
+    cursor.execute(sql)
+    res = cursor.fetchone()[0]
+    if res:
+        return res
+
+    return None
 
 
 # data insertion
@@ -129,7 +130,7 @@ def add_quest_has_item(quest_id, item_reward_id, count):
 def get_quest_id_from_title_and_desc(title, desc):
     sql = f'SELECT idquest FROM quest WHERE title="{title}" AND description="{desc}"'
     cursor.execute(sql)
-    return cursor.fetchone()
+    return cursor.fetchone()[0]
 
 
 def get_enemies_from_location(location_id):
@@ -190,7 +191,7 @@ def get_all_move_types():
 def get_move_type_id_from_name(name):
     sql = f"SELECT idType FROM move_type WHERE name='{name}'"
     cursor.execute(sql)
-    return cursor.fetchone()
+    return cursor.fetchone()[0]
 
 
 def get_encounter_id_from_description(description):
