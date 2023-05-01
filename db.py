@@ -1010,6 +1010,6 @@ def update_dev_user_maxLocation(idUser):
     return sql
 
 def get_user_level(idUser):
-    sql = f"SELECT vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane AS total_level FROM user WHERE idUser={idUser} ORDER BY total_level;"
+    sql = f"SELECT vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user WHERE idUser={idUser} ORDER BY total_level;"
     cursor.execute(sql)
     return cursor.fetchone()[0]
