@@ -1001,16 +1001,13 @@ def get_user_position_in_lb_level(idUser):
         # User not found in the database
         return "error"
 
-<<<<<<< Updated upstream
 def update_dev_user_maxLocation(idUser):
     sql = f"UPDATE user SET maxLocation=13 WHERE idUser={idUser}"
     cursor.execute(sql)
     mydb.commit()
     return sql
-=======
 
 def get_user_level(idUser):
     sql = f"SELECT vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane AS total_level FROM user WHERE idUser={idUser} ORDER BY total_level;"
     cursor.execute(sql)
     return cursor.fetchone()[0]
->>>>>>> Stashed changes
