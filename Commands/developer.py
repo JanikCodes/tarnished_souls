@@ -256,7 +256,7 @@ class AddEnemyItemDropButton(discord.ui.Button):
 
 class NextQuestModalButton(discord.ui.Button):
     def __init__(self, embed: discord.Embed = None, quest: Quest() = None,
-                 modal_page = None):
+                 modal_page=None):
         super().__init__(label="Next", style=discord.ButtonStyle.success)
         self.embed = embed
         self.quest = quest
@@ -278,10 +278,15 @@ class SelectEnemyLocation(discord.ui.Select):
             self.add_option(label=location_name, description=location_description, value=location_id)
 
     async def callback(self, interaction: discord.Interaction):
-        if self.quest:
-            await interaction.message.edit(view=SelectEnemyView(quest=self.quest, embed=self.embed, modal_page=self.modal_page, location_id=self.values[0]))
-        else:
-            await interaction.message.edit(view=SelectEnemyView(location_id=self.values[0]))
+        try:
+            if self.quest:
+                await interaction.message.edit(view=SelectEnemyView(quest=self.quest, embed=self.embed, modal_page=self.modal_page, location_id=self.values[0]))
+            else:
+                await interaction.message.edit(view=SelectEnemyView(location_id=self.values[0]))
+        except:
+            await interaction.message.edit(view=SelectEnemyLocationView())
+            await interaction.response.send_message(content="There are no enemies in this location!", ephemeral=True, delete_after=2)
+            return
         await interaction.response.defer()
 
 
@@ -300,6 +305,7 @@ class SelectEnemy(discord.ui.Select):
                                 emoji="💀")
             else:
                 self.add_option(label=enemy.get_name(), description=enemy.get_description(),value=enemy.get_id())
+
 
     async def callback(self, interaction: discord.Interaction):
 
