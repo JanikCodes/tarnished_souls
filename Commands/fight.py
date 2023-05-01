@@ -215,7 +215,7 @@ class StartButton(discord.ui.Button):
         if len(self.users) > 1:
             health_increase = self.enemy.get_max_health() * ((len(self.users) - 1) * 0.15)
 
-        self.enemy.set_max_health(self.enemy.get_max_health() + health_increase)
+        self.enemy.set_max_health(int(self.enemy.get_max_health() + health_increase))
 
         fight = Fight(enemy=self.enemy, users=self.users, interaction=interaction, turn_index=0)
         await fight.update_fight_battle_view()
