@@ -1,6 +1,7 @@
 bot.json
 Commands/__pycache__/*
 Classes/__pycache__/*
+Utils/__pycache__/*
 __pycache__/*
 *.log
 *.sql
