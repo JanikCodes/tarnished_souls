@@ -895,7 +895,7 @@ def get_all_user_count():
 
 
 def get_avg_user_quest():
-    sql = f"select AVG(idQuest) FROM user_has_quest;"
+    sql = f"select AVG(idQuest) FROM user_has_quest WHERE idQuest != 1;"
     cursor.execute(sql)
     res = int(cursor.fetchone()[0])
     if res:
