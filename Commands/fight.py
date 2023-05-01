@@ -41,6 +41,9 @@ class Fight:
     def check_phase_change(self, enemy):
         enemy_logic = enemy.get_logic()
 
+        if enemy.get_phase() == 1:
+            return
+
         match enemy_logic.get_id():
             case 1:
                 # none ( do nothing )
