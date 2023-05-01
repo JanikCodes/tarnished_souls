@@ -966,8 +966,7 @@ def get_user_position_in_lb_runes(idUser):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        position = res[2]
-        return position
+        return res[2]
     else:
         # User not found in the database
         return "error"
@@ -997,8 +996,7 @@ def get_user_position_in_lb_level(idUser):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        position = res[2]
-        return position
+        return res[2]
     else:
         # User not found in the database
         return "error"
@@ -1013,3 +1011,18 @@ def get_user_level(idUser):
     sql = f"SELECT vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user WHERE idUser={idUser} ORDER BY total_level;"
     cursor.execute(sql)
     return cursor.fetchone()[0]
+
+
+def get_all_enemies():
+    enemies = []
+
+    sql = f"SELECT idEnemy FROM enemy;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            enemy = Enemy(row[0])
+            if enemy:
+                enemies.append(enemy)
+
+    return enemies

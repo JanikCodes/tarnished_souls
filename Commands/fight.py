@@ -60,6 +60,39 @@ class Fight:
             case _:
                 raise ValueError(f"ERROR: Invalid enemy logic ID: {enemy_logic.get_id()}")
 
+    def handle_enemy_death(self, enemy, embed, users):
+        # get random item drops from enemy
+        item_drops = enemy.get_item_rewards_random()
+        item_drop_text = str()
+        for item in item_drops:
+            category_emoji = discord.utils.get(
+                self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                name=item.get_iconCategory())
+            item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
+
+        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
+        embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
+        if item_drop_text != str():
+            embed.set_field_at(2, name="Items:", value=item_drop_text, inline=False)
+
+
+        # grant rune rewards to all players
+        for user in users:
+            db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
+
+            # give each user the item drops
+            for item in item_drops:
+                db.add_item_to_user(user.get_userId(), item)
+                # update quest progress
+                db.check_for_quest_update(idUser=users[0].get_userId(), item=item)
+
+            db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes())
+
+        # update quest enemy progress for host
+        db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
+
+        await self.interaction.message.edit(embed=embed, view=None)
+        return
 
     async def update_fight_battle_view(self):
         # reset enemy dodge state
@@ -101,41 +134,8 @@ class Fight:
         # Check for fight end
         if enemy.get_health() <= 0:
             # Enemy died
+            self.handle_enemy_death(enemy=enemy, embed=embed, users=users)
 
-            # get random item drops from enemy
-            item_drops = enemy.get_item_rewards_random()
-            item_drop_text = str()
-            for item in item_drops:
-                category_emoji = discord.utils.get(self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
-                                                   name=item.get_iconCategory())
-                item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
-
-            embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*", inline=False)
-            embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
-            if item_drop_text != str():
-                embed.set_field_at(2, name="Items:", value=item_drop_text, inline=False)
-                embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
-                            value=f"{utils.create_health_bar(user.get_health(), user.get_max_health(), self.interaction)} `{user.get_health()}/{user.get_max_health()}` {user.get_last_move_text()}\n"
-                                  f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina(), self.interaction)} `{user.get_stamina()}/{user.get_max_stamina()}`",
-                            inline=False)
-
-            # grant rune rewards to all players
-            for user in users:
-                db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
-
-                # give each user the item drops
-                for item in item_drops:
-                    db.add_item_to_user(user.get_userId(), item)
-                    # update quest progress
-                    db.check_for_quest_update(idUser=users[0].get_userId(), item=item)
-
-                db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes())
-
-            # update quest enemy progress for host
-            db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
-
-            await self.interaction.message.edit(embed=embed, view=None)
-            return
         if len([user for user in users if user.get_health() > 0]) == 0:
             # All users died
             embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
