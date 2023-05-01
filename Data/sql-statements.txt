@@ -1,1 +1,0 @@
-Hallo Janik!INSERT INTO quest VALUES(null, "Gather some items", "Get those items my boy!", 3, 0, 0, null, 2, 1000, null, 0, null, 0, 0);
