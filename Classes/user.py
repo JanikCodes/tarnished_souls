@@ -22,7 +22,7 @@ class User:
             result = db.get_user_with_id(userId)
             self.userId = result[0]
             self.userName = result[1]
-            self.level = result[2]
+            self.level = db.get_user_level(idUser=userId)
             self.xp = result[3]
             self.runes = result[4]
             self.vigor = result[5]

@@ -37,6 +37,7 @@ class Character(commands.Cog):
                                       description=f"Below is <@{user.get_userId()}> character information.\nThis character is universal and the same on every server *unless you do* `/reset`")
 
                 stats_text = str()
+                stats_text += f"**Character Level**: `{user.get_level()}` \n"
                 stats_text += f"**Vig**: `{user.get_vigor()}` "
                 stats_text += f"**Min**: `{user.get_mind()}` "
                 stats_text += f"**End**: `{user.get_endurance()}` "
