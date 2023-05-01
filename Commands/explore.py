@@ -45,7 +45,7 @@ class Explore(commands.Cog):
             await self.client.send_error_message(e)
 
     async def explore_status(self, interaction, percentage, user, finished):
-        embed = discord.Embed(title=f"**Exploring: {percentage:.1f}%**")
+        embed = discord.Embed(title=f"**Exploring {user.get_current_location().get_name()}: {percentage:.1f}%**")
         embed.description = "You can find items, encounter events and explore the world."
         embed.colour = discord.Color.green() if finished else discord.Color.orange()
 
