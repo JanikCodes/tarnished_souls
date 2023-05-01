@@ -12,6 +12,7 @@ from Classes.item import Item
 from Classes.quest import Quest
 from Classes.user import User
 from Utils.classes import class_selection
+import os
 
 
 class CompleteQuestButton(discord.ui.Button):
@@ -110,6 +111,42 @@ class InsertQuestButton(discord.ui.Button):
         await interaction.response.send_message(embed=preview_embed,
                                                 view=SelectLocationView(quest=quest, embed=preview_embed))
 
+
+class ShowSQLTXTButton(discord.ui.Button):
+    def __init__(self, user):
+        super().__init__(label="Show SQL.txt", style=discord.ButtonStyle.success)
+        self.user = user
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != int(self.user.get_userId()):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        if os.stat("Data/sql-statements.txt").st_size != 0:
+            with open("Data/sql-statements.txt", "rb") as file:
+                await interaction.response.send_message(file=discord.File(file, "sql-statements.txt"))
+        else:
+            await interaction.response.send_message(content="You haven't created any statements yet!", ephemeral=True, delete_after=3)
+
+
+class UpdateDEVMaxLocation(discord.ui.Button):
+    def __init__(self, user):
+        super().__init__(label="Update maxLocation=13", style=discord.ButtonStyle.success)
+        self.user = user
+
+    async def callback(self, interaction: discord.Interaction):
+        if not interaction.user.id in config.botConfig["developer-ids"]:
+            embed = discord.Embed(title="You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        if db.update_dev_user_maxLocation(interaction.user.id):
+            await interaction.response.send_message(content="Successfully updated your maxLocation to all 13.", ephemeral=True, delete_after=3)
+        else:
+            await interaction.response.send_message(content=f"I wasn't able to update your maxLocation. idUser={interaction.user.id}", ephemeral=True, delete_after=2)
 
 class ConfirmInsertButton(discord.ui.Button):
     def __init__(self, enemy: Enemy() = None, message_id: str = None,
@@ -862,14 +899,16 @@ class NextQuestModalButtonView(discord.ui.View):
 
 class DeveloperView(discord.ui.View):
 
-    def __init__(self, user):
+    def __init__(self, interaction = None, user = None, current_page = None, total_page_count = None):
         super().__init__()
         self.user = user.update_user()
-        self.add_item(CompleteQuestButton(user=user))
         self.add_item(InsertEnemyButton(user=user))
         self.add_item(InsertEnemyMoveButton(user=user))
         self.add_item(InsertEncounterButton(user=user))
+        self.add_item(CompleteQuestButton(user=user))
         self.add_item(InsertQuestButton(user=user))
+        self.add_item(ShowSQLTXTButton(user=user))
+        self.add_item(UpdateDEVMaxLocation(user=user))
 
 
 class Developer(commands.Cog):

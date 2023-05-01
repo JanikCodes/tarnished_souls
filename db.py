@@ -1001,3 +1001,8 @@ def get_user_position_in_lb_level(idUser):
         # User not found in the database
         return "error"
 
+def update_dev_user_maxLocation(idUser):
+    sql = f"UPDATE user SET maxLocation=13 WHERE idUser={idUser}"
+    cursor.execute(sql)
+    mydb.commit()
+    return sql
