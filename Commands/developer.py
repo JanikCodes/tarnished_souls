@@ -171,7 +171,7 @@ class ConfirmInsertButton(discord.ui.Button):
             embed.set_footer(text=sql)
 
             with open('Data/sql-statements.txt', 'a') as f:
-                f.write(f"{sql}\n")
+                f.write(f"{sql};\n")
 
             await interaction.message.edit(embed=embed, view=InsertEnemyHasItemView(enemy=self.enemy, mode="enemy_no_item"))
 
@@ -179,7 +179,7 @@ class ConfirmInsertButton(discord.ui.Button):
             with open('Data/sql-statements.txt', 'a') as f:
                 for item in self.enemy.get_item_rewards():
                     sql = db.add_enemy_has_item(item.get_idItem(), self.enemy.get_id(), item.get_count(), item.get_drop_rate())
-                    f.write(f"{sql}\n")
+                    f.write(f"{sql};\n")
             embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
             await interaction.message.edit(embed=embed, view=None, delete_after=5)
 
@@ -192,7 +192,7 @@ class ConfirmInsertButton(discord.ui.Button):
             embed.set_footer(text=sql)
 
             with open('Data/sql-statements.txt', 'a') as f:
-                f.write(f"{sql}\n")
+                f.write(f"{sql};\n")
 
             await interaction.message.edit(embed=embed, view=None, delete_after=5)
 
@@ -204,7 +204,7 @@ class ConfirmInsertButton(discord.ui.Button):
             embed.set_footer(text=sql)
 
             with open('Data/sql-statements.txt', 'a') as f:
-                f.write(f"{sql}\n")
+                f.write(f"{sql};\n")
 
             await interaction.message.edit(embed=embed, view=None, delete_after=5)
 
@@ -217,7 +217,7 @@ class ConfirmInsertButton(discord.ui.Button):
             await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest, mode="quest_no_item"))
 
             with open('Data/sql-statements.txt', 'a') as f:
-                f.write(f"{sql}\n")
+                f.write(f"{sql};\n")
 
         if self.mode == "quest_no_item":
             await interaction.message.delete()

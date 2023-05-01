@@ -61,9 +61,9 @@ def get_item_name_from_id(item_id):
 def add_enemy(enemy, location_id):
     logic = enemy.get_logic()
     if enemy.get_description() == "null":
-        sql = f'INSERT INTO enemy VALUES({enemy.get_id()}, {logic.get_id()}, "{enemy.get_name()}", null, {enemy.get_health()}, {enemy.get_runes()}, {location_id});'
+        sql = f'INSERT INTO enemy VALUES({enemy.get_id()}, {logic.get_id()}, "{enemy.get_name()}", null, {enemy.get_health()}, {enemy.get_runes()}, {location_id})'
     else:
-        sql = f'INSERT INTO enemy VALUES({enemy.get_id()}, {logic.get_id()}, "{enemy.get_name()}", "{enemy.get_description()}", {enemy.get_health()}, {enemy.get_runes()}, {location_id});'
+        sql = f'INSERT INTO enemy VALUES({enemy.get_id()}, {logic.get_id()}, "{enemy.get_name()}", "{enemy.get_description()}", {enemy.get_health()}, {enemy.get_runes()}, {location_id})'
     sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
@@ -71,7 +71,7 @@ def add_enemy(enemy, location_id):
 
 
 def add_enemy_has_item(item_id, enemy_id, count, drop_chance):
-    sql = f'INSERT INTO enemy_has_item VALUES(null, {int(item_id)}, {int(enemy_id)}, {int(count)}, {int(drop_chance)});'
+    sql = f'INSERT INTO enemy_has_item VALUES(null, {int(item_id)}, {int(enemy_id)}, {int(count)}, {int(drop_chance)})'
     cursor.execute(sql)
     mydb.commit()
     return sql
