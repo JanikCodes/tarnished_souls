@@ -6,13 +6,55 @@ import config
 import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
-from Classes.enemy_logic import EnemyLogic
 from Classes.enemy_move import EnemyMove
-from Classes.item import Item
 from Classes.quest import Quest
 from Classes.user import User
 from Utils.classes import class_selection
 import os
+
+
+class DeveloperOptionsCategoryButton(discord.ui.Button):
+    def __init__(self, text, button_style, func, user):
+        super().__init__(label=text, style=button_style)
+        self.func = func
+        self.user = user
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != int(self.user.get_userId()):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        await interaction.response.defer()
+
+        match self.func:
+            case "enemy":
+                await interaction.message.edit(view=EnemyCategoryView(user=self.user))
+            case "encounter":
+                await interaction.message.edit(view=EncounterCategoryView(user=self.user))
+            case "quest":
+                await interaction.message.edit(view=QuestCategoryView(user=self.user))
+            case "debug":
+                await interaction.message.edit(view=DebugCategoryView(user=self.user))
+
+
+class DeveloperOptionsReturnButton(discord.ui.Button):
+    def __init__(self, user):
+        super().__init__(label="Return", style=discord.ButtonStyle.danger)
+        self.user = user
+        self.client = commands.Bot
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != int(self.user.get_userId()):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        await interaction.response.defer()
+
+        await interaction.message.edit(view=DeveloperDefaultView(user=self.user))
 
 
 class CompleteQuestButton(discord.ui.Button):
@@ -131,7 +173,7 @@ class ShowSQLTXTButton(discord.ui.Button):
             await interaction.response.send_message(content="You haven't created any statements yet!", ephemeral=True, delete_after=3)
 
 
-class UpdateDEVMaxLocation(discord.ui.Button):
+class UpdateDEVMaxLocationButton(discord.ui.Button):
     def __init__(self, user):
         super().__init__(label="Update maxLocation=13", style=discord.ButtonStyle.success)
         self.user = user
@@ -663,7 +705,7 @@ class AddQuestModal(discord.ui.Modal):
                     self.quest_req_explore_count = discord.ui.TextInput(label="Required explore count:",
                                                                         style=discord.TextStyle.short,
                                                                         placeholder="Please enter a valid count..",
-                                                                        required=False)
+                                                                        required=True)
                     self.add_item(self.quest_req_explore_count)
 
                 self.add_item(self.quest_req_kills)
@@ -852,18 +894,47 @@ class NextQuestModalButtonView(discord.ui.View):
             NextQuestModalButton(embed=embed, modal_page=modal_page + 1, quest=quest))
 
 
-class DeveloperView(discord.ui.View):
-
-    def __init__(self, user = None):
+class EnemyCategoryView(discord.ui.View):
+    def __init__(self, user):
         super().__init__()
-        self.user = user.update_user()
+        self.add_item(DeveloperOptionsReturnButton(user=user))
         self.add_item(InsertEnemyButton(user=user))
         self.add_item(InsertEnemyMoveButton(user=user))
+
+
+class EncounterCategoryView(discord.ui.View):
+    def __init__(self, user):
+        super().__init__()
+        self.add_item(DeveloperOptionsReturnButton(user=user))
         self.add_item(InsertEncounterButton(user=user))
-        self.add_item(CompleteQuestButton(user=user))
+
+
+class QuestCategoryView(discord.ui.View):
+    def __init__(self, user):
+        super().__init__()
+        self.add_item(DeveloperOptionsReturnButton(user=user))
         self.add_item(InsertQuestButton(user=user))
+        self.add_item(CompleteQuestButton(user=user))
+
+
+class DebugCategoryView(discord.ui.View):
+    def __init__(self, user):
+        super().__init__()
+        self.add_item(DeveloperOptionsReturnButton(user=user))
+        self.add_item(UpdateDEVMaxLocationButton(user=user))
+
+
+class DeveloperDefaultView(discord.ui.View):
+
+    def __init__(self, user=None):
+        super().__init__()
+        self.user = user.update_user()
         self.add_item(ShowSQLTXTButton(user=user))
-        self.add_item(UpdateDEVMaxLocation(user=user))
+
+        self.add_item(DeveloperOptionsCategoryButton(text="Enemy", button_style=discord.ButtonStyle.grey, func="enemy", user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Encounter", button_style=discord.ButtonStyle.grey, func="encounter", user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Quest", button_style=discord.ButtonStyle.grey, func="quest", user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Debugging", button_style=discord.ButtonStyle.grey, func="debug", user=user))
 
 
 class Developer(commands.Cog):
@@ -887,7 +958,7 @@ class Developer(commands.Cog):
                     embed.add_field(name="Users", value=f"{db.get_all_user_count()}")
                     embed.add_field(name="AVG Quest", value=f"{db.get_avg_user_quest()}")
 
-                    await interaction.followup.send(embed=embed, view=DeveloperView(user=user))
+                    await interaction.followup.send(embed=embed, view=DeveloperDefaultView(user=user))
                 else:
                     await interaction.followup.send("You're not a developer!", ephemeral=True)
             else:
