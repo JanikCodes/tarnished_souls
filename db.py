@@ -78,7 +78,7 @@ def add_enemy_has_item(item_id, enemy_id, count, drop_chance):
 
 
 def add_enemy_move(enemy_move, enemy):
-    sql = f'INSERT INTO enemy_moves VALUES(null, "{enemy_move.get_description()}", {enemy_move.get_phase()}, {enemy_move.get_type()}, {enemy.get_id()}, {enemy_move.get_damage()}, {enemy_move.get_healing()}, {enemy_move.get_duration()}, {enemy_move.get_max_targets()})'
+    sql = f'INSERT INTO enemy_moves VALUES(null, "{enemy_move.get_description()}", {enemy_move.get_phase()}, {enemy_move.get_id()}, {enemy.get_id()}, {enemy_move.get_damage()}, {enemy_move.get_healing()}, {enemy_move.get_duration()}, {enemy_move.get_max_targets()})'
     sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
@@ -86,8 +86,7 @@ def add_enemy_move(enemy_move, enemy):
 
 
 def add_encounter(encounter):
-    location = encounter.get_location()[0]
-    sql = f'INSERT INTO encounter VALUES(null, "{encounter.get_description()}", {encounter.get_drop_rate()}, {location.get_id()})'
+    sql = f'INSERT INTO encounter VALUES(null, "{encounter.get_description()}", {encounter.get_drop_rate()}, {encounter.get_location().get_id()})'
     cursor.execute(sql)
     mydb.commit()
     return sql
@@ -101,16 +100,16 @@ def add_quest(quest: Quest()):
     else:
         enemy_id = "null"
 
-    if quest.get_explore_location()[0] is None:
+    if quest.get_explore_location() is None:
         exploration_location_id = "null"
     else:
-        exploration_location = quest.get_explore_location()[0]
+        exploration_location = quest.get_explore_location()
         exploration_location_id = exploration_location.get_id()
 
-    if quest.get_location_reward()[0] is None:
+    if quest.get_location_reward() is None:
         location_reward_id = "null"
     else:
-        location_reward = quest.get_location_reward()[0]
+        location_reward = quest.get_location_reward()
         location_reward_id = location_reward.get_id()
 
     sql = f'INSERT INTO quest VALUES(null, "{quest.get_title()}", "{quest.get_description()}", {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_item()}, {enemy_id}, {quest.get_rune_reward()}, {location_reward_id}, {quest.get_req_explore_count()}, {exploration_location_id}, {quest.get_cooldown()}, {quest.get_flask_reward()});'
@@ -183,9 +182,23 @@ def get_enemy_logic_id_from_name(name):
 
 
 def get_all_move_types():
-    sql = "SELECT name FROM move_type"
+    move_types = []
+    sql = "SELECT idType, name FROM move_type"
     cursor.execute(sql)
-    return cursor.fetchall()
+    res = cursor.fetchall()
+    if res:
+        for move in res:
+            enemy_move = EnemyMove(idMove=move[0], type=move[1])
+            move_types.append(enemy_move)
+        return move_types
+    else:
+        return None
+
+
+def get_move_type_name_from_id(id):
+    sql = f"SELECT name FROM move_type WHERE idType = {id}"
+    cursor.execute(sql)
+    return cursor.fetchone()[0]
 
 
 def get_move_type_id_from_name(name):

@@ -26,8 +26,8 @@ class Quest:
 
         else:
             # empty constructor
-            self.location_reward = []
-            self.explore_location = []
+            self.location_reward = None
+            self.explore_location = None
             self.item_reward = []
             pass
 
@@ -104,13 +104,13 @@ class Quest:
         self.item_reward.append(item)
 
     def set_location_reward(self, location_reward):
-        self.location_reward.append(location_reward)
+        self.location_reward = location_reward
 
     def set_req_explore_count(self, req_explore_count):
         self.req_explore_count = req_explore_count
 
     def set_explore_location(self, explore_location):
-        self.explore_location.append(explore_location)
+        self.explore_location = explore_location
 
     def set_cooldown(self, cooldown):
         self.cooldown = cooldown

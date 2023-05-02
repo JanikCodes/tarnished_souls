@@ -11,7 +11,7 @@ class Encounter:
 
         else:
             # empty constructor
-            self.location = []
+            self.location = None
     def get_id(self):
         return self.id
 
@@ -34,4 +34,4 @@ class Encounter:
         self.drop_rate = drop_rate
 
     def set_location(self, location):
-        self.location.append(location)
+        self.location = location
