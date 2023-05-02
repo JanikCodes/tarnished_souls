@@ -631,19 +631,19 @@ def increase_runes_from_user_with_id(idUser, amount):
 
 
 def reset_user(idUser):
-    sql = f"DELETE FROM user_has_quest r WHERE r.idUser = {idUser};"
+    sql = f"DELETE FROM user_has_quest WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
 
-    sql = f"DELETE FROM user_encounter e WHERE e.idUser = {idUser};"
+    sql = f"DELETE FROM user_encounter WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
 
-    sql = f"DELETE FROM user_has_item r WHERE r.idUser = {idUser};"
+    sql = f"DELETE FROM user_has_item WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
 
-    sql = f"DELETE FROM user u WHERE u.idUser = {idUser};"
+    sql = f"DELETE FROM user WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
 
@@ -800,7 +800,7 @@ def update_max_location_from_user(idUser, idLocation):
 def get_all_enemies_from_location(idLocation):
     enemies = []
 
-    sql = f"SELECT idEnemy FROM enemy WHERE idLocation = {idLocation};"
+    sql = f"SELECT idEnemy FROM enemy WHERE idLocation = {idLocation} ORDER BY description DESC, name ASC;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
