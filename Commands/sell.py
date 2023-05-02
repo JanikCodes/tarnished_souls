@@ -29,6 +29,7 @@ class SellButton(discord.ui.Button):
             if sell_item.get_count() >= self.amount:
                 db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(), amount=self.amount)
                 db.increase_runes_from_user_with_id(self.user.get_userId(), self.item.get_price() * self.amount)
+                db.check_for_quest_update(idUser=self.user.get_userId(), runes=self.item.get_price() * self.amount)
                 message = interaction.message
                 edited_embed = message.embeds[0]
                 edited_embed.colour = discord.Color.green()
