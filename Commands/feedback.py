@@ -11,8 +11,8 @@ class FeedbackModal(discord.ui.Modal, title="Feedback"):
         self.bot = bot
 
     feedback = ui.TextInput(label='Feedback', style=discord.TextStyle.paragraph)
-    like = ui.TextInput(label="What do you like the most? 💕", style=discord.TextStyle.short)
-    dislike = ui.TextInput(label="What do you dislike the most? 👎", style=discord.TextStyle.short)
+    like = ui.TextInput(label="What do you like the most? 💕", style=discord.TextStyle.paragraph)
+    dislike = ui.TextInput(label="What do you dislike the most? 👎", style=discord.TextStyle.paragraph)
 
     async def on_submit(self, interaction: discord.Interaction):
         try:

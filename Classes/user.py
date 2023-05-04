@@ -48,6 +48,7 @@ class User:
             self.remaining_flasks = result[23]
             self.dodge_next = False
             self.last_move_text = str()
+            self.maxHordeWave = result[24]
         else:
             # empty constructor
             pass
@@ -78,11 +79,15 @@ class User:
         self.remaining_flasks = result[23]
         self.dodge_next = False
         self.last_move_text = str()
+        self.maxHordeWave = result[24]
 
         return self
 
     def get_ng(self):
         return self.ng
+
+    def get_max_horde_wave(self):
+        return self.maxHordeWave
 
     def get_last_quest(self):
         return self.last_quest

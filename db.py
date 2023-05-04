@@ -37,7 +37,7 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2)"
+    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1)"
     cursor.execute(sql)
     mydb.commit()
 
@@ -218,7 +218,7 @@ def get_location_id_from_name(name):
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount FROM user u WHERE u.idUser = {userId};"
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount, maxHordeWave FROM user u WHERE u.idUser = {userId};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -966,8 +966,7 @@ def get_user_position_in_lb_runes(idUser):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        position = res[2]
-        return position
+        return res[2]
     else:
         # User not found in the database
         return "error"
@@ -997,8 +996,7 @@ def get_user_position_in_lb_level(idUser):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        position = res[2]
-        return position
+        return res[2]
     else:
         # User not found in the database
         return "error"
@@ -1011,5 +1009,63 @@ def update_dev_user_maxLocation(idUser):
 
 def get_user_level(idUser):
     sql = f"SELECT vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user WHERE idUser={idUser} ORDER BY total_level;"
+    cursor.execute(sql)
+    return cursor.fetchone()[0]
+
+
+def get_all_enemies():
+    enemies = []
+
+    sql = f"SELECT idEnemy FROM enemy;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            enemy = Enemy(row[0])
+            if enemy:
+                enemies.append(enemy)
+
+    return enemies
+
+
+def get_leaderboard_horde():
+    leaderboard = []
+
+    sql = f"select username, maxHordeWave FROM user ORDER BY maxHordeWave DESC LIMIT 10;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            leaderboard.append((row[0], row[1]))
+
+    return leaderboard
+
+
+def get_user_position_in_lb_horde(idUser):
+    sql = f"SELECT username, maxHordeWave, FIND_IN_SET(maxHordeWave, (SELECT GROUP_CONCAT(maxHordeWave ORDER BY maxHordeWave DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return res[2]
+    else:
+        # User not found in the database
+        return "error"
+
+
+def update_max_horde_wave_from_user(idUser, wave):
+    sql = f"select maxHordeWave FROM user WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()[0]
+    if res:
+        maxWave = int(res)
+        # only update maxWave if the wave is bigger than previous ones lol
+        if maxWave < wave:
+            sql = f"UPDATE user SET maxHordeWave = {wave} WHERE idUser = {idUser}"
+            cursor.execute(sql)
+            mydb.commit()
+
+
+def get_highest_max_horde_wave():
+    sql = f"SELECT max(maxHordeWave) from user;"
     cursor.execute(sql)
     return cursor.fetchone()[0]
