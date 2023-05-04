@@ -26,6 +26,14 @@ def get_leaderboard_text_from_choice(selected_choice, idUser):
             for x in range(len(leaderboard)):
                 ld_text += f"**{x + 1}.** {leaderboard[x][0]} - level {leaderboard[x][1]}\n"
             return ld_text, user_pos
+        case "wave":
+            leaderboard = db.get_leaderboard_horde()
+            user_pos = db.get_user_position_in_lb_horde(idUser=idUser)
+            ld_text = "**Top 10 players with the highest wave count in horde mode**\n"
+
+            for x in range(len(leaderboard)):
+                ld_text += f"**{x + 1}.** {leaderboard[x][0]} - wave {leaderboard[x][1]}\n"
+            return ld_text, user_pos
 
     ld_text = "There was an error.."
     return ld_text
@@ -39,6 +47,7 @@ class LeaderboardCommand(commands.Cog):
     @app_commands.choices(choices=[
         app_commands.Choice(name="Runes", value="runes"),
         app_commands.Choice(name="Level", value="level"),
+        app_commands.Choice(name="Horde-mode", value="wave"),
     ])
     async def leaderboard(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         await interaction.response.defer()

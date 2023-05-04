@@ -1026,3 +1026,27 @@ def get_all_enemies():
                 enemies.append(enemy)
 
     return enemies
+
+
+def get_leaderboard_horde():
+    leaderboard = []
+
+    sql = f"select username, maxHordeWave FROM user ORDER BY maxHordeWave DESC LIMIT 10;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            leaderboard.append((row[0], row[1]))
+
+    return leaderboard
+
+
+def get_user_position_in_lb_horde(idUser):
+    sql = f"SELECT username, maxHordeWave, FIND_IN_SET(maxHordeWave, (SELECT GROUP_CONCAT(maxHordeWave ORDER BY maxHordeWave DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return res[2]
+    else:
+        # User not found in the database
+        return "error"
