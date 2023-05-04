@@ -28,7 +28,7 @@ class HordeCommand(commands.Cog):
 
                 embed.add_field(name=f"Horde Mode 💀", value="Defeat as many enemies as you can without dying!")
                 embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
-                embed.set_footer(text="Click the button below in order to join!")
+                embed.set_footer(text="Enemy health is increased based on player count")
 
                 enemy_list = db.get_all_enemies()
 

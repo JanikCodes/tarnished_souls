@@ -92,7 +92,12 @@ class Fight:
 
             await self.interaction.message.edit(embed=embed, view=None)
         else:
-            self.enemy_index = self.enemy_index + 1
+            # an enemy in the horde mode died.
+            if self.enemy_index + 1 > len(self.enemy_list):
+                # no more enemis to fight!
+                pass
+            else:
+                self.enemy_index = self.enemy_index + 1
 
     async def update_fight_battle_view(self):
         # Check for fight end for horde mode
@@ -358,7 +363,7 @@ class FightEnemySelect(discord.ui.Select):
         embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
 
         if self.visibility == 'public':
-            embed.set_footer(text="Click the button below in order to join!")
+            embed.set_footer(text="Enemy health is increased based on player count")
 
         await interaction.message.edit(embed=embed, view=FightLobbyView(users=self.users, enemy=selected_enemy, visibility=self.visibility))
 
