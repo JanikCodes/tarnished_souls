@@ -1064,3 +1064,8 @@ def update_max_horde_wave_from_user(idUser, wave):
             cursor.execute(sql)
             mydb.commit()
 
+
+def get_highest_max_horde_wave():
+    sql = f"SELECT max(maxHordeWave) from user;"
+    cursor.execute(sql)
+    return cursor.fetchone()[0]

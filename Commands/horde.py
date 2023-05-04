@@ -25,7 +25,10 @@ class HordeCommand(commands.Cog):
                                       description="",
                                       colour=discord.Color.orange())
 
-                embed.add_field(name=f"Horde Mode 💀", value="Defeat as many enemies as you can without dying!")
+                worldrecord_wave = db.get_highest_max_horde_wave()
+
+                embed.add_field(name=f"Horde Mode 💀", value="Defeat as many enemies as you can without dying!\n"
+                                                            f"**WORLD RECORD:** `wave {worldrecord_wave}`")
                 embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
                 embed.set_footer(text="Enemy health is increased based on player count")
 
