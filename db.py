@@ -215,9 +215,16 @@ def get_encounter_id_from_description(description):
 
 # data insertion
 def get_all_locations():
-    sql = "SELECT name, description, idlocation FROM location"
+    locations = []
+
+    sql = "SELECT idlocation, name, description FROM location"
     cursor.execute(sql)
-    return cursor.fetchall()
+    res = cursor.fetchall()
+    for i in res:
+        location = Location(i[0], i[1], i[2])
+        locations.append(location)
+
+    return locations
 
 
 def get_location_id_from_name(name):
@@ -918,6 +925,22 @@ def get_avg_user_quest():
         return 1
 
 
+def get_items_from_location_id(idLocation):
+    items = []
+
+    sql = f"SELECT idItem FROM location_has_item WHERE idLocation = {idLocation};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            item = get_item_from_item_id(row[0])
+            if item:
+                items.append(item)
+    else:
+        return None
+    return items
+
+
 def get_items_from_enemy_id(idEnemy):
     items = []
 
@@ -1027,3 +1050,11 @@ def get_user_level(idUser):
     sql = f"SELECT vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user WHERE idUser={idUser} ORDER BY total_level;"
     cursor.execute(sql)
     return cursor.fetchone()[0]
+
+def show_tables_in_db():
+    sql = "SHOW TABLES;"
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
+

@@ -37,6 +37,10 @@ class DeveloperOptionsCategoryButton(discord.ui.Button):
                 await interaction.message.edit(view=QuestCategoryView(user=self.user))
             case "debug":
                 await interaction.message.edit(view=DebugCategoryView(user=self.user))
+            case "db":
+                await interaction.message.edit(view=DBManagementCategoryView(user=self.user))
+            case "location":
+                await interaction.message.edit(view=LocationCategoryView(user=self.user))
 
 
 class DeveloperOptionsReturnButton(discord.ui.Button):
@@ -102,6 +106,31 @@ class InsertEnemyMoveButton(discord.ui.Button):
         await interaction.response.send_message(view=SelectEnemyLocationView())
 
 
+class ShowEnemiesButton(discord.ui.Button):
+    def __init__(self, user):
+        super().__init__(label="Show Enemies", style=discord.ButtonStyle.success)
+        self.user = user
+
+    async def callback(self, interaction: discord.Interaction):
+        if not interaction.user.id in config.botConfig["developer-ids"]:
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        enemy = Enemy(1)
+        embed = discord.Embed(title=f"Enemy: {enemy.get_id()}")
+        embed.add_field(name=f"Logic: {enemy.get_logic().get_id()}", value=enemy.get_logic().get_name())
+        embed.add_field(name="Name:", value=enemy.get_name())
+        embed.add_field(name="Description:", value=enemy.get_description())
+        embed.add_field(name="Health:", value=enemy.get_health())
+        embed.add_field(name="Runes:", value=enemy.get_runes())
+        embed.add_field(name=f"Location: {enemy.get_location().get_id()}", value=enemy.get_location().get_name())
+        embed.set_footer(text="Margit is used as a dummy, this button is still in development.")
+
+        await interaction.response.send_message(embed=embed)
+
+
 class InsertEncounterButton(discord.ui.Button):
     def __init__(self, user):
         super().__init__(label="Insert Encounter", style=discord.ButtonStyle.success)
@@ -154,7 +183,7 @@ class InsertQuestButton(discord.ui.Button):
                                                 view=SelectLocationView(quest=quest, embed=preview_embed))
 
 
-class ShowSQLTXTButton(discord.ui.Button):
+class DBCatShowSQLTXTButton(discord.ui.Button):
     def __init__(self, user):
         super().__init__(label="Show SQL.txt", style=discord.ButtonStyle.success)
         self.user = user
@@ -173,7 +202,7 @@ class ShowSQLTXTButton(discord.ui.Button):
             await interaction.response.send_message(content="You haven't created any statements yet!", ephemeral=True, delete_after=3)
 
 
-class UpdateDEVMaxLocationButton(discord.ui.Button):
+class DebugCatUpdateDEVMaxLocationButton(discord.ui.Button):
     def __init__(self):
         super().__init__(label="Update maxLocation=13", style=discord.ButtonStyle.success)
 
@@ -182,6 +211,47 @@ class UpdateDEVMaxLocationButton(discord.ui.Button):
             await interaction.response.send_message(content="Successfully updated your maxLocation to all 13.", ephemeral=True, delete_after=3)
         else:
             await interaction.response.send_message(content=f"I wasn't able to update your maxLocation. idUser={interaction.user.id}", ephemeral=True, delete_after=2)
+
+
+class DBCatShowTablesButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="Show Tables", style=discord.ButtonStyle.success)
+
+    async def callback(self, interaction: discord.Interaction):
+        embed = discord.Embed(title="Tables in current DB")
+        for table in db.show_tables_in_db():
+            embed.add_field(name=table[0], value="")
+
+        await interaction.response.send_message(embed=embed)
+
+
+class LocCatShowLocationsButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="Show Locations", style=discord.ButtonStyle.success)
+
+    async def callback(self, interaction: discord.Interaction):
+        embed = discord.Embed(title="All Locations in current DB")
+        for location in db.get_all_locations():
+            items = str()
+            if location.get_item_rewards():
+                for x in location.get_item_rewards():
+                    items += f"{x.get_name()}, "
+            embed.add_field(name=f"{location.get_name()} | {location.get_id()}", value=f"Items: {items if items != '' else 'no items'}", inline=False)
+
+        await interaction.response.send_message(embed=embed)
+
+
+class LocCatAddItemToLocationButton(discord.ui.Button):
+    def __init__(self, location=None, embed=None):
+        super().__init__(label="Add Item", style=discord.ButtonStyle.success)
+        self.location = location
+        self.embed = embed
+
+    async def callback(self, interaction: discord.Interaction):
+        if self.location:
+            await interaction.response.send_modal(AddLocationModal(location=self.location, embed=self.embed))
+        else:
+            await interaction.response.send_message(view=SelectLocationView(embed=self.embed, add_item_to_location=True))
 
 
 class ConfirmInsertButton(discord.ui.Button):
@@ -266,6 +336,20 @@ class ConfirmInsertButton(discord.ui.Button):
                     for item in self.quest.get_item_reward():
                         sql = db.add_quest_has_item(self.quest.get_id(), item.get_idItem(), item.get_count())
                         f.write(f"{sql}\n")
+
+            case "location":
+                print("dummy1")
+
+            case "location_no_item":
+                await interaction.message.delete()
+
+            case "location_with_item":
+                print("dummy2")
+
+            case "location_add_item":
+                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
+                await interaction.message.edit(embed=embed, view=None, delete_after=5)
+                print("dummy3")
 
         await interaction.response.defer()
 
@@ -391,7 +475,7 @@ class SelectMoveType(discord.ui.Select):
 
 
 class SelectLocation(discord.ui.Select):
-    def __init__(self, embed, enemy=None, encounter=None, quest=None, index=None):
+    def __init__(self, embed, enemy=None, encounter=None, quest=None, index=None, add_item_to_location=None):
         if index == 2:
             super().__init__(placeholder="Select the corresponding reward_location", max_values=1, min_values=1)
         else:
@@ -401,12 +485,13 @@ class SelectLocation(discord.ui.Select):
         self.quest = quest
         self.index = index
         self.encounter = encounter
+        self.add_item_to_location = add_item_to_location
 
         if self.quest:
             self.add_option(label="None", description="Select for no location", value="no_location")
 
-        for location_name, location_description, location_id in db.get_all_locations():
-            self.add_option(label=location_name, description=location_description, value=location_id)
+        for location in db.get_all_locations():
+            self.add_option(label=location.get_name(), description=location.get_description(), value=location.get_id())
 
     async def callback(self, interaction: discord.Interaction):
         if self.enemy:
@@ -459,6 +544,14 @@ class SelectLocation(discord.ui.Select):
                 await interaction.message.edit(embed=self.embed, view=None)
                 await interaction.response.send_modal(AddQuestModal(modal_page=1, embed=self.embed, quest=self.quest))
                 return
+
+        elif self.add_item_to_location:
+            location = db.get_location_from_id(self.values[0])
+            self.embed = discord.Embed(title=f"Adding item to: {location.get_name()}")
+            await interaction.message.edit(embed=self.embed, view=None)
+            await interaction.response.send_modal(AddLocationModal(location=location, embed=self.embed))
+            return
+
         await interaction.response.defer()
 
 
@@ -811,6 +904,22 @@ class AddQuestModal(discord.ui.Modal):
         await interaction.response.defer()
 
 
+class AddLocationModal(discord.ui.Modal):
+    def __init__(self, embed, location):
+        super().__init__(title=f"Add item to: {location.get_name()}")
+        self.embed = embed
+        self.location = location
+
+    item_id = discord.ui.TextInput(label="Item_id", style=discord.TextStyle.short, placeholder="Enter a valid item id..",
+                                   required=True)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        item = db.get_item_from_item_id(self.item_id.value)
+        self.embed.add_field(name=f"ID: {item.get_idItem()}", value=item.get_name())
+
+        await interaction.message.edit(embed=self.embed, view=LocationAddItemView(embed=self.embed, location=self.location, mode="location_add_item"))
+        await interaction.response.defer()
+
 class SelectEnemyView(discord.ui.View):
     def __init__(self, quest=None, embed=None, modal_page=None, location_id=None):
         super().__init__(timeout=None)
@@ -839,7 +948,7 @@ class SelectMoveTypeView(discord.ui.View):
 
 
 class SelectLocationView(discord.ui.View):
-    def __init__(self, embed, enemy=None, encounter=None, quest=None):
+    def __init__(self, embed, enemy=None, encounter=None, quest=None, add_item_to_location=None):
         super().__init__(timeout=None)
 
         if quest:
@@ -851,6 +960,8 @@ class SelectLocationView(discord.ui.View):
             elif quest.get_location_reward() is None:
                 self.add_item(SelectLocation(embed, enemy, encounter, quest, index=2))
 
+        elif add_item_to_location:
+            self.add_item(SelectLocation(embed, add_item_to_location=add_item_to_location))
         else:
             self.add_item(SelectLocation(embed, enemy=enemy, encounter=encounter, quest=quest))
 
@@ -882,12 +993,20 @@ class NextQuestModalButtonView(discord.ui.View):
             NextQuestModalButton(embed=embed, modal_page=modal_page + 1, quest=quest))
 
 
+class LocationAddItemView(discord.ui.View):
+    def __init__(self, embed, location, mode):
+        super().__init__(timeout=None)
+        self.add_item(ConfirmInsertButton(mode=mode))
+        self.add_item(LocCatAddItemToLocationButton(embed=embed, location=location))
+
+
 class EnemyCategoryView(discord.ui.View):
     def __init__(self, user):
         super().__init__()
         self.add_item(DeveloperOptionsReturnButton(user=user))
         self.add_item(InsertEnemyButton(user=user))
         self.add_item(InsertEnemyMoveButton(user=user))
+        self.add_item(ShowEnemiesButton(user=user))
 
 
 class EncounterCategoryView(discord.ui.View):
@@ -909,7 +1028,23 @@ class DebugCategoryView(discord.ui.View):
     def __init__(self, user):
         super().__init__()
         self.add_item(DeveloperOptionsReturnButton(user=user))
-        self.add_item(UpdateDEVMaxLocationButton())
+        self.add_item(DebugCatUpdateDEVMaxLocationButton())
+
+
+class DBManagementCategoryView(discord.ui.View):
+    def __init__(self, user):
+        super().__init__()
+        self.add_item(DeveloperOptionsReturnButton(user=user))
+        self.add_item(DBCatShowTablesButton())
+        self.add_item(DBCatShowSQLTXTButton(user=user))
+
+
+class LocationCategoryView(discord.ui.View):
+    def __init__(self, user):
+        super().__init__()
+        self.add_item(DeveloperOptionsReturnButton(user=user))
+        self.add_item(LocCatShowLocationsButton())
+        self.add_item(LocCatAddItemToLocationButton())
 
 
 class DeveloperDefaultView(discord.ui.View):
@@ -917,12 +1052,13 @@ class DeveloperDefaultView(discord.ui.View):
     def __init__(self, user=None):
         super().__init__()
         self.user = user.update_user()
-        self.add_item(ShowSQLTXTButton(user=user))
 
         self.add_item(DeveloperOptionsCategoryButton(text="Enemy", button_style=discord.ButtonStyle.grey, func="enemy", user=user))
         self.add_item(DeveloperOptionsCategoryButton(text="Encounter", button_style=discord.ButtonStyle.grey, func="encounter", user=user))
         self.add_item(DeveloperOptionsCategoryButton(text="Quest", button_style=discord.ButtonStyle.grey, func="quest", user=user))
         self.add_item(DeveloperOptionsCategoryButton(text="Debugging", button_style=discord.ButtonStyle.grey, func="debug", user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Database", button_style=discord.ButtonStyle.grey, func="db", user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Location", button_style=discord.ButtonStyle.grey, func="location", user=user))
 
 
 class Developer(commands.Cog):

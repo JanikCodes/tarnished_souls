@@ -6,4 +6,7 @@ __pycache__/*
 *.log
 *.sql
 Data/sql-statements.txt
+Data/db-statements.txt
+Data/init-data.txt
 fill_db.py
+test.txt
