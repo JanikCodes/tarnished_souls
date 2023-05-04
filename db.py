@@ -1053,7 +1053,14 @@ def get_user_position_in_lb_horde(idUser):
 
 
 def update_max_horde_wave_from_user(idUser, wave):
-    sql = f"UPDATE user SET maxHordeWave = {wave} WHERE idUser = {idUser}"
+    sql = f"select maxHordeWave FROM user WHERE idUser = {idUser};"
     cursor.execute(sql)
-    mydb.commit()
-    return sql
+    res = cursor.fetchone()[0]
+    if res:
+        maxWave = int(res)
+        # only update maxWave if the wave is bigger than previous ones lol
+        if maxWave < wave:
+            sql = f"UPDATE user SET maxHordeWave = {wave} WHERE idUser = {idUser}"
+            cursor.execute(sql)
+            mydb.commit()
+
