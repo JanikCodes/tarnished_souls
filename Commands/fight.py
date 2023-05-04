@@ -62,7 +62,7 @@ class Fight:
             case _:
                 raise ValueError(f"ERROR: Invalid enemy logic ID: {enemy_logic.get_id()}")
 
-    async def handle_enemy_death(self, enemy, embed = None, users = None):
+    async def handle_enemy_death(self, enemy, users, embed = None):
         # It was a single enemy fight and he died.
         if len(self.enemy_list) == 1:
             item_drops = enemy.get_item_rewards_random()
@@ -93,9 +93,8 @@ class Fight:
 
             await self.interaction.message.edit(embed=embed, view=None)
         else:
-            # an enemy in the horde mode died.
-            if self.enemy_index + 1 > len(self.enemy_list):
-                # no more enemies to fight!
+            # no more enemies to fight!
+            if self.enemy_index + 2 > len(self.enemy_list):
                 total_rune_reward = int(self.enemy_index * RUNE_REWARD_FOR_WAVE)
 
                 # grant rune reward to each user
@@ -105,8 +104,6 @@ class Fight:
                 embed.set_field_at(0, name="Enemy action:", value=f"*You killed every possible enemy!*", inline=False)
                 embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!", inline=False)
                 await self.interaction.message.edit(embed=embed, view=None)
-            else:
-                self.enemy_index = self.enemy_index + 1
 
     async def handle_all_user_death(self, embed, enemy):
         # All users died
@@ -115,7 +112,7 @@ class Fight:
         # grant rune reward to each user
         for user in self.users:
             db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
-            db.update_
+            db.update_max_horde_wave_from_user(idUser=user.get_userId(), wave=self.enemy_index + 1)
 
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*", inline=False)
         embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n"
@@ -123,10 +120,10 @@ class Fight:
 
         await self.interaction.message.edit(embed=embed, view=None)
 
-    async def update_fight_battle_view(self):
+    async def update_fight_battle_view(self, embed = None):
         # Check for fight end for horde mode
-        if self.get_current_enemy().get_health() <= 0 and len(self.enemy_list) > 1:
-            await self.handle_enemy_death(enemy=self.get_current_enemy())
+        if self.get_current_enemy().get_health() <= 0 and self.enemy_index + 1 < len(self.enemy_list):
+            self.enemy_index = self.enemy_index + 1
 
         # reset enemy dodge state
         self.get_current_enemy().reset_dodge()
@@ -176,7 +173,7 @@ class Fight:
             await self.handle_all_user_death(embed=embed, enemy=enemy)
             return
 
-        await self.interaction.message.edit(embed=embed, view=FightBattleView(fight=self))
+        await self.interaction.message.edit(embed=embed, view=FightBattleView(fight=self, embed=embed))
 
 
     def cycle_turn_index(self, turn_index, users):
@@ -269,9 +266,10 @@ class FightSelectView(discord.ui.View):
 
 
 class BattleButton(discord.ui.Button):
-    def __init__(self, fight, label, style):
+    def __init__(self, fight, label, style, embed):
         super().__init__(label=label, style=style)
         self.fight = fight
+        self.embed = embed
 
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.fight.get_current_user().get_userId():
@@ -284,22 +282,21 @@ class BattleButton(discord.ui.Button):
         if self.fight.get_current_user().get_health() > 0 and self.fight.get_current_enemy().get_health() > 0:
             self.execute_action()
 
-            await self.fight.update_fight_battle_view()
+            await self.fight.update_fight_battle_view(embed=self.embed)
 
     def execute_action(self):
         pass
 
 
 class InstaKillButton(BattleButton):
-    def __init__(self, fight):
-        super().__init__(fight, label=f"Attack (-99999)", style=discord.ButtonStyle.danger)
+    def __init__(self, fight, embed):
+        super().__init__(fight, label=f"Attack (-99999)", style=discord.ButtonStyle.danger, embed=embed)
     def execute_action(self):
         self.fight.get_current_enemy().reduce_health(99999)
 
 class AttackButton(BattleButton):
-    def __init__(self, fight):
-        super().__init__(fight, label=f"Attack (-{fight.get_current_user().get_damage()})",
-                         style=discord.ButtonStyle.danger)
+    def __init__(self, fight, embed):
+        super().__init__(fight, label=f"Attack (-{fight.get_current_user().get_damage()})", style=discord.ButtonStyle.danger, embed=embed)
 
     def execute_action(self):
         if not self.fight.get_current_enemy().get_is_dodging():
@@ -307,9 +304,8 @@ class AttackButton(BattleButton):
 
 
 class HealButton(BattleButton):
-    def __init__(self, fight):
-        super().__init__(fight, label=f"Heal (+{HEAL_AMOUNT})",
-                         style=discord.ButtonStyle.success)
+    def __init__(self, fight, embed):
+        super().__init__(fight, label=f"Heal (+{HEAL_AMOUNT})", style=discord.ButtonStyle.success, embed=embed)
         # Disable button if no flasks remaining
         self.disabled = fight.get_current_user().get_remaining_flasks() == 0
 
@@ -318,9 +314,8 @@ class HealButton(BattleButton):
 
 
 class DodgeButton(BattleButton):
-    def __init__(self, fight):
-        super().__init__(fight, label=f"Dodge (-{STAMINA_COST})",
-                         style=discord.ButtonStyle.primary)
+    def __init__(self, fight, embed):
+        super().__init__(fight, label=f"Dodge (-{STAMINA_COST})", style=discord.ButtonStyle.primary, embed=embed)
 
         # Disable button if not enough stamina
         self.disabled = fight.get_current_user().get_stamina() < STAMINA_COST
@@ -330,12 +325,12 @@ class DodgeButton(BattleButton):
 
 
 class FightBattleView(discord.ui.View):
-    def __init__(self, fight):
+    def __init__(self, fight, embed):
         super().__init__()
 
-        self.add_item(AttackButton(fight=fight))
-        self.add_item(HealButton(fight=fight))
-        self.add_item(DodgeButton(fight=fight))
+        self.add_item(AttackButton(fight=fight, embed=embed))
+        self.add_item(HealButton(fight=fight, embed=embed))
+        self.add_item(DodgeButton(fight=fight, embed=embed))
         #self.add_item(InstaKillButton(current_user=users[turn_index], users=users, enemy=enemy, turn_index=turn_index))
 
 class FightLobbyView(discord.ui.View):

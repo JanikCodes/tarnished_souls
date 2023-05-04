@@ -37,7 +37,7 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2)"
+    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1)"
     cursor.execute(sql)
     mydb.commit()
 
@@ -1050,3 +1050,10 @@ def get_user_position_in_lb_horde(idUser):
     else:
         # User not found in the database
         return "error"
+
+
+def update_max_horde_wave_from_user(idUser, wave):
+    sql = f"UPDATE user SET maxHordeWave = {wave} WHERE idUser = {idUser}"
+    cursor.execute(sql)
+    mydb.commit()
+    return sql
