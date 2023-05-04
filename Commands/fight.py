@@ -72,6 +72,7 @@ class Fight:
                     name=item.get_iconCategory())
                 item_drop_text += f"Received {category_emoji} **{item.get_name()}** {item.get_count()}x \n"
 
+            embed.colour = discord.Color.green()
             embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*",
                                inline=False)
             embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!", inline=False)
@@ -101,6 +102,7 @@ class Fight:
                     db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
                     db.update_max_horde_wave_from_user(idUser=user.get_userId(), wave=self.enemy_index + 1)
 
+                embed.colour = discord.Color.green()
                 embed.set_field_at(0, name="Enemy action:", value=f"*You killed every possible enemy!*", inline=False)
                 embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!", inline=False)
                 await self.interaction.message.edit(embed=embed, view=None)
@@ -114,6 +116,7 @@ class Fight:
             db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
             db.update_max_horde_wave_from_user(idUser=user.get_userId(), wave=self.enemy_index + 1)
 
+        embed.colour = discord.Color.red()
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
                            inline=False)
         embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n"
@@ -193,7 +196,6 @@ class Fight:
 
         return next_index
 
-
 class JoinButton(discord.ui.Button):
     def __init__(self, users, disabled=False):
         super().__init__(label='Join Lobby', style=discord.ButtonStyle.secondary, disabled=disabled)
@@ -212,10 +214,15 @@ class JoinButton(discord.ui.Button):
 
             self.users.append(interaction_user)
 
+            # If not solo lobby
+            all_user_text = str()
+
+            for user in self.users:
+                all_user_text += f"• {user.get_userName()}\n"
+
             message = interaction.message
             edited_embed = message.embeds[0]
-            edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value="",
-                                      inline=False)
+            edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value=all_user_text, inline=False)
 
             await interaction.message.edit(embed=edited_embed)
         else:
@@ -353,8 +360,7 @@ class FightLobbyView(discord.ui.View):
             disable = True
 
         self.add_item(StartButton(users=users, enemy=enemy, enemy_list=enemy_list))
-        if visibility == 'public':
-            self.add_item(JoinButton(users=users, disabled=disable))
+        self.add_item(JoinButton(users=users, disabled=disable))
 
 
 class FightEnemySelect(discord.ui.Select):
@@ -384,15 +390,25 @@ class FightEnemySelect(discord.ui.Select):
 
         selected_enemy = Enemy(self.values[0])
 
+        # If solo visible skip lobby scene
+        if not self.visibility:
+            fight = Fight(enemy_list=[selected_enemy], users=self.users, interaction=interaction, turn_index=0, enemy_index=0)
+            await fight.update_fight_battle_view()
+            return
+
+        # If not solo lobby
+        all_user_text = str()
+
+        for user in self.users:
+            all_user_text += f"• {user.get_userName()}\n"
+
         embed = discord.Embed(title=f" {self.users[0].get_userName()} has started a {self.visibility} lobby",
                               description="",
                               colour=discord.Color.orange())
 
         embed.add_field(name=f"Enemy: **{selected_enemy.get_name()}**", value="")
-        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
-
-        if self.visibility == 'public':
-            embed.set_footer(text="Enemy health is increased based on player count")
+        embed.add_field(name=f"Players: **1/{MAX_USERS}**", value=all_user_text, inline=False)
+        embed.set_footer(text="Enemy health is increased based on player count")
 
         await interaction.message.edit(embed=embed, view=FightLobbyView(users=self.users, enemy=selected_enemy, visibility=self.visibility, enemy_list=None))
 
@@ -403,16 +419,19 @@ class FightCommand(commands.Cog):
 
     @app_commands.command(name="fight", description="Choose an enemy to fight in your current location")
     @app_commands.choices(visibility=[
-        app_commands.Choice(name="Solo", value="solo"),
         app_commands.Choice(name="Public", value="public"),
+        app_commands.Choice(name="More soon..", value="public")
     ])
-    async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str]):
+    async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str] = None):
         await interaction.response.defer()
 
         if db.validate_user(interaction.user.id):
 
             user = User(interaction.user.id)
-            selected_visibility = visibility.value
+            selected_visibility = None
+
+            if visibility:
+                selected_visibility = visibility.value
 
             embed = discord.Embed(title=f" {user.get_userName()} is choosing an enemy to fight..",
                                   description=f"The enemies below are all from `{user.get_current_location().get_name()}`\n"
