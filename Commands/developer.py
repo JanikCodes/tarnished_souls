@@ -85,7 +85,7 @@ class InsertEnemyButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if not interaction.user.id in config.botConfig["developer-ids"]:
-            embed = discord.Embed(title=f"You're not allowed to use this action!", description="",colour=discord.Color.red())
+            embed = discord.Embed(title=f"You're not allowed to use this action!", description="", colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         else:
             await interaction.response.send_message(view=SelectELView())
@@ -234,8 +234,11 @@ class LocCatShowLocationsButton(discord.ui.Button):
         for location in db.get_all_locations():
             items = str()
             if location.get_item_rewards():
-                for x in location.get_item_rewards():
-                    items += f"{x.get_name()}, "
+                for i, item in enumerate(location.get_item_rewards(), start=1):
+                    if len(location.get_item_rewards()) == i:
+                        items += f"`{item.get_name()}`"
+                    else:
+                        items += f"`{item.get_name()}`, "
             embed.add_field(name=f"{location.get_name()} | {location.get_id()}", value=f"Items: {items if items != '' else 'no items'}", inline=False)
 
         await interaction.response.send_message(embed=embed)
@@ -255,8 +258,8 @@ class LocCatAddItemToLocationButton(discord.ui.Button):
 
 
 class ConfirmInsertButton(discord.ui.Button):
-    def __init__(self, enemy: Enemy() = None, mode=None, enemy_move: EnemyMove() = None,
-                 encounter: Encounter() = None, quest: Quest() = None, embed: discord.Embed() = None):
+    def __init__(self, enemy = None, mode=None, enemy_move = None,
+                 encounter = None, quest = None, embed = None, location=None):
         super().__init__(label="Confirm", style=discord.ButtonStyle.success)
         self.enemy = enemy
         self.mode = mode
@@ -264,6 +267,7 @@ class ConfirmInsertButton(discord.ui.Button):
         self.encounter = encounter
         self.quest = quest
         self.embed = embed
+        self.location = location
 
     async def callback(self, interaction: discord.Interaction):
         match self.mode:
@@ -316,26 +320,28 @@ class ConfirmInsertButton(discord.ui.Button):
 
             case "quest":
                 sql = db.add_quest(self.quest)
+
+                with open('Data/sql-statements.txt', 'a') as f:
+                    f.write(f"{sql};\n")
+
                 self.quest.set_id(db.get_quest_id_from_title_and_desc(self.quest.get_title(), self.quest.get_description()))
                 embed = discord.Embed(title=f"Database Insertion successful!",
                                       colour=discord.Color.green())
                 embed.set_footer(text=sql)
-                await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest, mode="quest_no_item"))
-
-                with open('Data/sql-statements.txt', 'a') as f:
-                    f.write(f"{sql};\n")
+                await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest,
+                                                                                        mode="quest_no_item"))
 
             case "quest_no_item":
                 await interaction.message.delete()
 
             case "quest_with_item":
-                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
-                await interaction.message.edit(embed=embed, view=None, delete_after=5)
-
                 with open('Data/sql-statements.txt', 'a') as f:
                     for item in self.quest.get_item_reward():
                         sql = db.add_quest_has_item(self.quest.get_id(), item.get_idItem(), item.get_count())
                         f.write(f"{sql}\n")
+
+                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
+                await interaction.message.edit(embed=embed, view=None, delete_after=5)
 
             case "location":
                 print("dummy1")
@@ -347,9 +353,13 @@ class ConfirmInsertButton(discord.ui.Button):
                 print("dummy2")
 
             case "location_add_item":
+                with open('Data/sql-statements.txt', 'a') as f:
+                    for item in self.location.get_items():
+                        sql = db.add_item_to_location(self.location, item)
+                        f.write(f"{sql}\n")
+
                 embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
                 await interaction.message.edit(embed=embed, view=None, delete_after=5)
-                print("dummy3")
 
         await interaction.response.defer()
 
@@ -910,11 +920,13 @@ class AddLocationModal(discord.ui.Modal):
         self.embed = embed
         self.location = location
 
-    item_id = discord.ui.TextInput(label="Item_id", style=discord.TextStyle.short, placeholder="Enter a valid item id..",
-                                   required=True)
+    item_id = discord.ui.TextInput(label="Item_id", style=discord.TextStyle.short, placeholder="Enter a valid item id..", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
         item = db.get_item_from_item_id(self.item_id.value)
+
+        self.location.add_item_reward(item)
+
         self.embed.add_field(name=f"ID: {item.get_idItem()}", value=item.get_name())
 
         await interaction.message.edit(embed=self.embed, view=LocationAddItemView(embed=self.embed, location=self.location, mode="location_add_item"))
@@ -996,7 +1008,7 @@ class NextQuestModalButtonView(discord.ui.View):
 class LocationAddItemView(discord.ui.View):
     def __init__(self, embed, location, mode):
         super().__init__(timeout=None)
-        self.add_item(ConfirmInsertButton(mode=mode))
+        self.add_item(ConfirmInsertButton(mode=mode, location=location))
         self.add_item(LocCatAddItemToLocationButton(embed=embed, location=location))
 
 

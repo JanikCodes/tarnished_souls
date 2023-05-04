@@ -12,6 +12,8 @@ class Encounter:
         else:
             # empty constructor
             self.location = None
+
+
     def get_id(self):
         return self.id
 

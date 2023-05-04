@@ -8,6 +8,8 @@ class Location:
         self.description = description
         self.item_rewards = db.get_items_from_location_id(idLocation=id)
 
+        self.items = []
+
     def get_id(self):
         return self.id
 
@@ -19,3 +21,9 @@ class Location:
 
     def get_item_rewards(self):
         return self.item_rewards
+
+    def get_items(self):
+        return self.items
+
+    def add_item_reward(self, item):
+        self.items.append(item)

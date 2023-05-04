@@ -713,6 +713,13 @@ def get_location_from_id(idLocation):
     return None
 
 
+def add_item_to_location(location, item):
+    sql = f"INSERT INTO location_has_item VALUES(null, {location.get_id()}, {item.get_idItem()})"
+    cursor.execute(sql)
+    mydb.commit()
+    return sql
+
+
 def get_user_quest_with_user_id(idUser):
     sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser};"
     cursor.execute(sql)

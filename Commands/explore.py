@@ -6,11 +6,13 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils.classes import class_selection
 
-EXPLORE_TIME = 60 * 15
+STONE_DROP_CHANCE = 20
+EXPLORE_TIME = 15
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 
@@ -59,13 +61,11 @@ class Explore(commands.Cog):
         for i in range(0, len(encounters)):
             loot_sentence = str()
 
-            item = db.get_item_from_user_encounter_with_enc_id(idUser=user.get_userId(),
-                                                               idEncounter=encounters[i].get_id())
+            item = db.get_item_from_user_encounter_with_enc_id(idUser=user.get_userId(), idEncounter=encounters[i].get_id())
 
             if item:
                 # received a drop
-                emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis,
-                                          name=item.get_iconCategory())
+                emoji = discord.utils.get(self.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis, name=item.get_iconCategory())
                 loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
 
             embed.add_field(
@@ -93,6 +93,14 @@ class Explore(commands.Cog):
                     db.update_user_encounter_item(idEncounter=new_encounter.get_id(), item=item, idUser=user.get_userId())
 
                     loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
+                if STONE_DROP_CHANCE >= random.randint(0, 100):
+                    item = random.choice(new_encounter.get_location().get_item_rewards())
+
+                    emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis,
+                                              name=item.get_iconCategory())
+
+                    loot_sentence += f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
+                    print(item.get_name())
                 else:
                     pass
 
