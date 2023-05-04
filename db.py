@@ -218,7 +218,7 @@ def get_location_id_from_name(name):
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount FROM user u WHERE u.idUser = {userId};"
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount, maxHordeWave FROM user u WHERE u.idUser = {userId};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:

@@ -15,6 +15,7 @@ MAX_USERS = 4
 STAMINA_REGEN = 7
 STAMINA_COST = 45
 HEAL_AMOUNT = 380
+RUNE_REWARD_FOR_WAVE = 450
 
 class Fight:
     def __init__(self, users, interaction, turn_index, enemy_index, enemy_list):
@@ -94,10 +95,33 @@ class Fight:
         else:
             # an enemy in the horde mode died.
             if self.enemy_index + 1 > len(self.enemy_list):
-                # no more enemis to fight!
-                pass
+                # no more enemies to fight!
+                total_rune_reward = int(self.enemy_index * RUNE_REWARD_FOR_WAVE)
+
+                # grant rune reward to each user
+                for user in users:
+                    db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
+
+                embed.set_field_at(0, name="Enemy action:", value=f"*You killed every possible enemy!*", inline=False)
+                embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!", inline=False)
+                await self.interaction.message.edit(embed=embed, view=None)
             else:
                 self.enemy_index = self.enemy_index + 1
+
+    async def handle_all_user_death(self, embed, enemy):
+        # All users died
+        total_rune_reward = int(self.enemy_index * RUNE_REWARD_FOR_WAVE)
+
+        # grant rune reward to each user
+        for user in self.users:
+            db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
+            db.update_
+
+        embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*", inline=False)
+        embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n"
+                                                    f"You've reached wave `{self.enemy_index + 1}`", inline=False)
+
+        await self.interaction.message.edit(embed=embed, view=None)
 
     async def update_fight_battle_view(self):
         # Check for fight end for horde mode
@@ -149,11 +173,7 @@ class Fight:
             return
 
         if len([user for user in users if user.get_health() > 0]) == 0:
-            # All users died
-            embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*", inline=False)
-            embed.set_field_at(1, name="", value="", inline=False)
-
-            await self.interaction.message.edit(embed=embed, view=None)
+            await self.handle_all_user_death(embed=embed, enemy=enemy)
             return
 
         await self.interaction.message.edit(embed=embed, view=FightBattleView(fight=self))

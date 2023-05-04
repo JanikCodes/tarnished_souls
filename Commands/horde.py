@@ -1,10 +1,9 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-
 import db
 from Classes.user import User
-from Commands.fight import Fight, FightLobbyView
+from Commands.fight import FightLobbyView
 from Utils.classes import class_selection
 
 MAX_USERS = 4
