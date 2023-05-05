@@ -203,10 +203,8 @@ class LeaveButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if db.validate_user(interaction.user.id):
-
-            await interaction.response.defer()
-
             if any(int(user.get_userId()) == interaction.user.id for user in self.users):
+                await interaction.response.defer()
                 for user in self.users:
                     if int(user.get_userId()) == interaction.user.id:
                         self.users.remove(user)
@@ -228,7 +226,6 @@ class LeaveButton(discord.ui.Button):
                                       description="",
                                       colour=discord.Color.red())
                 return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
-
         else:
             embed = discord.Embed(title=f"Please choose a class first",
                                   description=f"You can do that by tying any command for example `/explore` or `/character`",
