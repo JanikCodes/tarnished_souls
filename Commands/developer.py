@@ -14,9 +14,9 @@ import os
 
 
 class DeveloperOptionsCategoryButton(discord.ui.Button):
-    def __init__(self, text, button_style, func, user):
-        super().__init__(label=text, style=button_style)
-        self.func = func
+    def __init__(self, text, custom_view, user):
+        super().__init__(label=text, style=discord.ButtonStyle.grey)
+        self.custom_view = custom_view
         self.user = user
 
     async def callback(self, interaction: discord.Interaction):
@@ -28,20 +28,7 @@ class DeveloperOptionsCategoryButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        match self.func:
-            case "enemy":
-                await interaction.message.edit(view=EnemyCategoryView(user=self.user))
-            case "encounter":
-                await interaction.message.edit(view=EncounterCategoryView(user=self.user))
-            case "quest":
-                await interaction.message.edit(view=QuestCategoryView(user=self.user))
-            case "debug":
-                await interaction.message.edit(view=DebugCategoryView(user=self.user))
-            case "db":
-                await interaction.message.edit(view=DBManagementCategoryView(user=self.user))
-            case "location":
-                await interaction.message.edit(view=LocationCategoryView(user=self.user))
-
+        await interaction.message.edit(view=self.custom_view)
 
 class DeveloperOptionsReturnButton(discord.ui.Button):
     def __init__(self, user):
@@ -269,6 +256,15 @@ class ConfirmInsertButton(discord.ui.Button):
         self.embed = embed
         self.location = location
 
+    def execute_change(self, interaction, sql):
+        embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
+        embed.set_footer(text=sql)
+
+        with open('Data/sql-statements.txt', 'a') as f:
+            f.write(f"{sql};\n")
+
+        await interaction.message.edit(embed=embed, view=None, delete_after=5)
+
     async def callback(self, interaction: discord.Interaction):
         match self.mode:
             case "enemy":
@@ -298,25 +294,12 @@ class ConfirmInsertButton(discord.ui.Button):
 
             case "enemy_move":
                 sql = db.add_enemy_move(self.enemy_move, self.enemy)
-                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
-                embed.set_footer(text=sql)
-
-                with open('Data/sql-statements.txt', 'a') as f:
-                    f.write(f"{sql};\n")
-
-                await interaction.message.edit(embed=embed, view=None, delete_after=5)
+                self.execute_change(interaction, sql)
 
             case "encounter":
                 self.encounter.set_id(db.get_encounter_id_from_description(self.encounter.get_description()))
                 sql = db.add_encounter(self.encounter)
-
-                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
-                embed.set_footer(text=sql)
-
-                with open('Data/sql-statements.txt', 'a') as f:
-                    f.write(f"{sql};\n")
-
-                await interaction.message.edit(embed=embed, view=None, delete_after=5)
+                self.execute_change(interaction, sql)
 
             case "quest":
                 sql = db.add_quest(self.quest)
@@ -325,9 +308,9 @@ class ConfirmInsertButton(discord.ui.Button):
                     f.write(f"{sql};\n")
 
                 self.quest.set_id(db.get_quest_id_from_title_and_desc(self.quest.get_title(), self.quest.get_description()))
-                embed = discord.Embed(title=f"Database Insertion successful!",
-                                      colour=discord.Color.green())
+                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
                 embed.set_footer(text=sql)
+
                 await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest,
                                                                                         mode="quest_no_item"))
 
@@ -1065,12 +1048,12 @@ class DeveloperDefaultView(discord.ui.View):
         super().__init__()
         self.user = user.update_user()
 
-        self.add_item(DeveloperOptionsCategoryButton(text="Enemy", button_style=discord.ButtonStyle.grey, func="enemy", user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Encounter", button_style=discord.ButtonStyle.grey, func="encounter", user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Quest", button_style=discord.ButtonStyle.grey, func="quest", user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Debugging", button_style=discord.ButtonStyle.grey, func="debug", user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Database", button_style=discord.ButtonStyle.grey, func="db", user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Location", button_style=discord.ButtonStyle.grey, func="location", user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Enemy", custom_view=EnemyCategoryView(user=user), user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Encounter", custom_view=EncounterCategoryView(user=user), user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Quest", custom_view=QuestCategoryView(user=user), user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Debugging", custom_view=DebugCategoryView(user=user), user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Database", custom_view=DBManagementCategoryView(user=user), user=user))
+        self.add_item(DeveloperOptionsCategoryButton(text="Location", custom_view=LocationCategoryView(user=user), user=user))
 
 
 class Developer(commands.Cog):
