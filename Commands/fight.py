@@ -124,11 +124,15 @@ class Fight:
             db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
             db.update_max_horde_wave_from_user(idUser=user.get_userId(), wave=self.enemy_index + 1)
 
+        wave_text = str()
+        if len(self.enemy_list) > 1:
+            # it's horde mode
+            wave_text = f"You've reached wave `{self.enemy_index + 1}`"
+
         embed.colour = discord.Color.red()
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
                            inline=False)
-        embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n"
-                                                    f"You've reached wave `{self.enemy_index + 1}`", inline=False)
+        embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n {wave_text}", inline=False)
 
         if self.interaction.message:
             await self.interaction.message.edit(embed=embed, view=None)

@@ -24,9 +24,13 @@ class InvadeCommand(commands.Cog):
 
                 enemy_user = User(random.choice(db.get_all_user_ids_from_location(location=user.get_current_location(), himself=user.get_userId())))
 
+                # TODO: Get enemy template from user weapon iconCategory
                 enemy_template = Enemy(idEnemy=21)
+                enemy_template.is_player = enemy_user
+                enemy_template.overwrite_moves_with_damage()
                 enemy_template.set_max_health(enemy_user.get_max_health())
                 enemy_template.set_name(enemy_user.get_userName())
+                enemy_template.set_runes(enemy_user.get_max_health() + 150)
 
                 fight = Fight(enemy_list=[enemy_template], users=[user], interaction=interaction, turn_index=0, enemy_index=0)
                 await fight.update_fight_battle_view()
