@@ -196,6 +196,45 @@ class Fight:
 
         return next_index
 
+class LeaveButton(discord.ui.Button):
+    def __init__(self, users):
+        super().__init__(label='Leave Lobby', style=discord.ButtonStyle.danger)
+        self.users = users
+
+    async def callback(self, interaction: discord.Interaction):
+        if db.validate_user(interaction.user.id):
+
+            await interaction.response.defer()
+
+            if any(int(user.get_userId()) == interaction.user.id for user in self.users):
+                for user in self.users:
+                    if int(user.get_userId()) == interaction.user.id:
+                        self.users.remove(user)
+                        break
+
+                # If not solo lobby
+                all_user_text = str()
+
+                for user in self.users:
+                    all_user_text += f"• {user.get_userName()}\n"
+
+                message = interaction.message
+                edited_embed = message.embeds[0]
+                edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value=all_user_text, inline=False)
+
+                await interaction.message.edit(embed=edited_embed)
+            else:
+                embed = discord.Embed(title=f"You're not part of this lobby..",
+                                      description="",
+                                      colour=discord.Color.red())
+                return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        else:
+            embed = discord.Embed(title=f"Please choose a class first",
+                                  description=f"You can do that by tying any command for example `/explore` or `/character`",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=8)
+
 class JoinButton(discord.ui.Button):
     def __init__(self, users, disabled=False):
         super().__init__(label='Join Lobby', style=discord.ButtonStyle.secondary, disabled=disabled)
@@ -240,6 +279,11 @@ class StartButton(discord.ui.Button):
         self.enemy_list = enemy_list
 
     async def callback(self, interaction: discord.Interaction):
+        if len(self.users) == 0:
+            embed = discord.Embed(title=f"You're not allowed to start the fight..",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         if str(interaction.user.id) != self.users[0].get_userId():
             embed = discord.Embed(title=f"You're not allowed to start the fight.",
                                   description="",
@@ -361,6 +405,7 @@ class FightLobbyView(discord.ui.View):
 
         self.add_item(StartButton(users=users, enemy=enemy, enemy_list=enemy_list))
         self.add_item(JoinButton(users=users, disabled=disable))
+        self.add_item(LeaveButton(users=users))
 
 
 class FightEnemySelect(discord.ui.Select):
