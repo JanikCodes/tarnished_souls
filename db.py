@@ -1069,3 +1069,16 @@ def get_highest_max_horde_wave():
     sql = f"SELECT max(maxHordeWave) from user;"
     cursor.execute(sql)
     return cursor.fetchone()[0]
+
+
+def get_all_user_ids_from_location(location, himself):
+    idUsers = []
+    sql = f"SELECT idUser from user WHERE currentLocation = {location.get_id()} AND idUser != {himself};"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+
+    return idUsers

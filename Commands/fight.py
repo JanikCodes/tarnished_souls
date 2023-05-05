@@ -91,7 +91,11 @@ class Fight:
                     # update quest progress
                     db.check_for_quest_update(idUser=users[0].get_userId(), item=item)
 
-            await self.interaction.message.edit(embed=embed, view=None)
+            if self.interaction.message:
+                await self.interaction.message.edit(embed=embed, view=None)
+            else:
+                await self.interaction.edit_original_response(embed=embed, view=None)
+
         else:
             # no more enemies to fight!
             if self.enemy_index + 2 > len(self.enemy_list):
@@ -105,7 +109,11 @@ class Fight:
                 embed.colour = discord.Color.green()
                 embed.set_field_at(0, name="Enemy action:", value=f"*You killed every possible enemy!*", inline=False)
                 embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!", inline=False)
-                await self.interaction.message.edit(embed=embed, view=None)
+
+                if self.interaction.message:
+                    await self.interaction.message.edit(embed=embed, view=None)
+                else:
+                    await self.interaction.edit_original_response(embed=embed, view=None)
 
     async def handle_all_user_death(self, embed, enemy):
         # All users died
@@ -122,7 +130,10 @@ class Fight:
         embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n"
                                                     f"You've reached wave `{self.enemy_index + 1}`", inline=False)
 
-        await self.interaction.message.edit(embed=embed, view=None)
+        if self.interaction.message:
+            await self.interaction.message.edit(embed=embed, view=None)
+        else:
+            await self.interaction.edit_original_response(embed=embed, view=None)
 
     async def update_fight_battle_view(self):
 
@@ -180,7 +191,13 @@ class Fight:
             await self.handle_all_user_death(embed=embed, enemy=enemy)
             return
 
-        await self.interaction.message.edit(embed=embed, view=FightBattleView(fight=self))
+        if self.interaction.message:
+            await self.interaction.message.edit(embed=embed, view=FightBattleView(fight=self))
+        else:
+            if self.interaction.response.is_done():
+                await self.interaction.edit_original_response(embed=embed, view=FightBattleView(fight=self))
+            else:
+                await self.interaction.response.send_message(embed=embed, view=FightBattleView(fight=self))
 
     def cycle_turn_index(self, turn_index, users):
         party_length = len(users)
