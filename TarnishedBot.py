@@ -3,12 +3,10 @@ import os
 import platform
 import time
 import traceback
-
+import config
 import discord
 from colorama import Back, Fore, Style
 from discord.ext import commands
-
-import config
 import db
 
 MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
