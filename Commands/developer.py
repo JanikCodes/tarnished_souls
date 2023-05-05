@@ -256,6 +256,15 @@ class ConfirmInsertButton(discord.ui.Button):
         self.embed = embed
         self.location = location
 
+    def execute_change(self, interaction, sql):
+        embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
+        embed.set_footer(text=sql)
+
+        with open('Data/sql-statements.txt', 'a') as f:
+            f.write(f"{sql};\n")
+
+        await interaction.message.edit(embed=embed, view=None, delete_after=5)
+
     async def callback(self, interaction: discord.Interaction):
         match self.mode:
             case "enemy":
@@ -285,25 +294,12 @@ class ConfirmInsertButton(discord.ui.Button):
 
             case "enemy_move":
                 sql = db.add_enemy_move(self.enemy_move, self.enemy)
-                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
-                embed.set_footer(text=sql)
-
-                with open('Data/sql-statements.txt', 'a') as f:
-                    f.write(f"{sql};\n")
-
-                await interaction.message.edit(embed=embed, view=None, delete_after=5)
+                self.execute_change(interaction, sql)
 
             case "encounter":
                 self.encounter.set_id(db.get_encounter_id_from_description(self.encounter.get_description()))
                 sql = db.add_encounter(self.encounter)
-
-                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
-                embed.set_footer(text=sql)
-
-                with open('Data/sql-statements.txt', 'a') as f:
-                    f.write(f"{sql};\n")
-
-                await interaction.message.edit(embed=embed, view=None, delete_after=5)
+                self.execute_change(interaction, sql)
 
             case "quest":
                 sql = db.add_quest(self.quest)
@@ -312,9 +308,9 @@ class ConfirmInsertButton(discord.ui.Button):
                     f.write(f"{sql};\n")
 
                 self.quest.set_id(db.get_quest_id_from_title_and_desc(self.quest.get_title(), self.quest.get_description()))
-                embed = discord.Embed(title=f"Database Insertion successful!",
-                                      colour=discord.Color.green())
+                embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
                 embed.set_footer(text=sql)
+
                 await interaction.message.edit(embed=embed, view=InsertQuestHasItemView(embed=embed, quest=self.quest,
                                                                                         mode="quest_no_item"))
 
