@@ -5,7 +5,6 @@ __pycache__/*
 *.log
 *.sql
 Data/sql-statements.txt
-config.py
 .idea/*
 
 # Byte-compiled / optimized / DLL files

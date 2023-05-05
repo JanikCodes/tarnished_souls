@@ -20,6 +20,7 @@ class HordeCommand(commands.Cog):
             if db.validate_user(interaction.user.id):
 
                 user = User(interaction.user.id)
+                users = [user]
 
                 embed = discord.Embed(title=f"Public Lobby",
                                       description="",
@@ -27,14 +28,20 @@ class HordeCommand(commands.Cog):
 
                 worldrecord_wave = db.get_highest_max_horde_wave()
 
+                # If not solo lobby
+                all_user_text = str()
+
+                for user in users:
+                    all_user_text += f"• {user.get_userName()}\n"
+
                 embed.add_field(name=f"Horde Mode 💀", value="Defeat as many enemies as you can without dying!\n"
                                                             f"**WORLD RECORD:** `wave {worldrecord_wave}`")
-                embed.add_field(name=f"Players: **1/{MAX_USERS}**", value="", inline=False)
+                embed.add_field(name=f"Players: **{len(users)}/{MAX_USERS}**", value=all_user_text, inline=False)
                 embed.set_footer(text="Enemy health is increased based on player count")
 
                 enemy_list = db.get_all_enemies()
 
-                await interaction.followup.send(embed=embed, view=FightLobbyView(users=[user], visibility="public", enemy_list=enemy_list))
+                await interaction.followup.send(embed=embed, view=FightLobbyView(users=users, visibility="public", enemy_list=enemy_list))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:
