@@ -243,7 +243,7 @@ class User:
         absorb = min(amount - armor, 15)
 
         self.health = max(self.health - (amount + absorb), 0)
-        self.last_move_text = f"`-{amount - absorb}`"
+        self.last_move_text = f"`-{amount + absorb}`"
 
     def increase_health(self, amount):
         if self.remaining_flasks > 0:
