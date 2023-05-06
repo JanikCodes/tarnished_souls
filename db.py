@@ -1040,7 +1040,7 @@ def get_user_level(idUser):
 def get_all_enemies():
     enemies = []
 
-    sql = f"SELECT idEnemy FROM enemy;"
+    sql = f"select idEnemy from enemy ORDER BY health;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
