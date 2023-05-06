@@ -412,7 +412,7 @@ class FightBattleView(discord.ui.View):
         self.add_item(AttackButton(fight=fight))
         self.add_item(HealButton(fight=fight))
         self.add_item(DodgeButton(fight=fight))
-        self.add_item(InstaKillButton(fight=fight))
+        #self.add_item(InstaKillButton(fight=fight))
 
 
 class FightLobbyView(discord.ui.View):

@@ -239,7 +239,7 @@ class User:
         return lookup_table[self.vigor] if self.vigor in lookup_table else None
 
     def reduce_health(self, amount):
-        armor = int((self.get_total_armor() / 4))
+        armor = int((self.get_total_armor() / 2))
         absorb = min(amount - armor, 15)
 
         self.health = max(self.health - (amount - absorb), 0)
