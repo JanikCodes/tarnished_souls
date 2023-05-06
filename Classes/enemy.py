@@ -14,7 +14,7 @@ class Enemy:
             self.description = result[2]
             self.max_health = result[3]
             self.runes = result[4]
-            self.moves = db.get_enemy_moves_with_enemy_id(idEnemy)
+            self.moves = db.get_enemy_moves_with_enemy_id(idEnemy=idEnemy)
             self.location = db.get_location_from_id(result[5])
             self.item_rewards = db.get_items_from_enemy_id(idEnemy=idEnemy)
 
@@ -23,6 +23,7 @@ class Enemy:
             self.last_move = None
             self.dodge_next = False
             self.last_move_text = str()
+            self.is_player = None
         else:
             # empty constructor
             self.location = []
@@ -64,8 +65,25 @@ class Enemy:
         self.health = min(self.health + amount, self.max_health)
         self.last_move_text = f"`+{amount}`"
 
+    def set_is_player(self, user):
+        self.is_player = user
+
+    def get_is_player(self):
+        return self.is_player
+
     def set_health(self, amount):
         self.health = amount
+
+    def overwrite_moves_with_damage(self):
+        if self.is_player:
+
+            for move in self.moves:
+                move.set_damage(self.is_player.get_damage())
+                move.set_max_targets(3)
+
+    def overwrite_alL_move_descriptions(self, name):
+        for move in self.moves:
+            move.overwrite_name_in_description(name)
 
     def get_move(self, phase):
         available_moves = [move for move in self.moves if

@@ -66,6 +66,9 @@ class EnemyMove:
     def set_max_targets(self, max_targets):
         self.max_targets = max_targets
 
+    def overwrite_name_in_description(self, enemy_name):
+        self.description = self.description.replace("@enemy", f"**{enemy_name}**")
+
     def execute(self, enemy, users):
         # TODO: Make a seperate move_type class and use those instead of the raw id's here
 

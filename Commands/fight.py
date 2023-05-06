@@ -91,7 +91,11 @@ class Fight:
                     # update quest progress
                     db.check_for_quest_update(idUser=users[0].get_userId(), item=item)
 
-            await self.interaction.message.edit(embed=embed, view=None)
+            if self.interaction.message:
+                await self.interaction.message.edit(embed=embed, view=None)
+            else:
+                await self.interaction.edit_original_response(embed=embed, view=None)
+
         else:
             # no more enemies to fight!
             if self.enemy_index + 2 > len(self.enemy_list):
@@ -105,7 +109,11 @@ class Fight:
                 embed.colour = discord.Color.green()
                 embed.set_field_at(0, name="Enemy action:", value=f"*You killed every possible enemy!*", inline=False)
                 embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!", inline=False)
-                await self.interaction.message.edit(embed=embed, view=None)
+
+                if self.interaction.message:
+                    await self.interaction.message.edit(embed=embed, view=None)
+                else:
+                    await self.interaction.edit_original_response(embed=embed, view=None)
 
     async def handle_all_user_death(self, embed, enemy):
         # All users died
@@ -116,13 +124,20 @@ class Fight:
             db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
             db.update_max_horde_wave_from_user(idUser=user.get_userId(), wave=self.enemy_index + 1)
 
+        wave_text = str()
+        if len(self.enemy_list) > 1:
+            # it's horde mode
+            wave_text = f"You've reached wave `{self.enemy_index + 1}`"
+
         embed.colour = discord.Color.red()
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
                            inline=False)
-        embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n"
-                                                    f"You've reached wave `{self.enemy_index + 1}`", inline=False)
+        embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n {wave_text}", inline=False)
 
-        await self.interaction.message.edit(embed=embed, view=None)
+        if self.interaction.message:
+            await self.interaction.message.edit(embed=embed, view=None)
+        else:
+            await self.interaction.edit_original_response(embed=embed, view=None)
 
     async def update_fight_battle_view(self):
 
@@ -180,7 +195,13 @@ class Fight:
             await self.handle_all_user_death(embed=embed, enemy=enemy)
             return
 
-        await self.interaction.message.edit(embed=embed, view=FightBattleView(fight=self))
+        if self.interaction.message:
+            await self.interaction.message.edit(embed=embed, view=FightBattleView(fight=self))
+        else:
+            if self.interaction.response.is_done():
+                await self.interaction.edit_original_response(embed=embed, view=FightBattleView(fight=self))
+            else:
+                await self.interaction.response.send_message(embed=embed, view=FightBattleView(fight=self))
 
     def cycle_turn_index(self, turn_index, users):
         party_length = len(users)
@@ -296,17 +317,20 @@ class StartButton(discord.ui.Button):
                 health_increase = self.enemy.get_max_health() * ((len(self.users) - 1) * 0.15)
 
             self.enemy.set_max_health(int(self.enemy.get_max_health() + health_increase))
+            self.enemy.overwrite_alL_move_descriptions(self.enemy.get_name())
 
             fight = Fight(enemy_list=[self.enemy], users=self.users, interaction=interaction, turn_index=0,
                           enemy_index=0)
             await fight.update_fight_battle_view()
 
+        # horde mode ?
         elif self.enemy_list:
-
-            if len(self.users) > 1:
-                for enemy in self.enemy_list:
+            for enemy in self.enemy_list:
+                if len(self.users) > 1:
                     health_increase = enemy.get_max_health() * ((len(self.users) - 1) * 0.15)
                     enemy.set_max_health(int(enemy.get_max_health() + health_increase))
+
+                enemy.overwrite_alL_move_descriptions(enemy.get_name())
 
             fight = Fight(users=self.users, interaction=interaction, turn_index=0, enemy_index=0,
                           enemy_list=self.enemy_list)
@@ -388,7 +412,7 @@ class FightBattleView(discord.ui.View):
         self.add_item(AttackButton(fight=fight))
         self.add_item(HealButton(fight=fight))
         self.add_item(DodgeButton(fight=fight))
-        self.add_item(InstaKillButton(fight=fight))
+        #self.add_item(InstaKillButton(fight=fight))
 
 
 class FightLobbyView(discord.ui.View):
@@ -434,6 +458,8 @@ class FightEnemySelect(discord.ui.Select):
 
         # If solo visible skip lobby scene
         if not self.visibility:
+            selected_enemy.overwrite_alL_move_descriptions(selected_enemy.get_name())
+
             fight = Fight(enemy_list=[selected_enemy], users=self.users, interaction=interaction, turn_index=0, enemy_index=0)
             await fight.update_fight_battle_view()
             return

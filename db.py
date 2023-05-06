@@ -300,10 +300,23 @@ def fill_db_weapons():
 
         total_dmg = sum(attack['amount'] for attack in weapon['attack'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']}, '{weapon['image']}', '{scl_vigor}', '{scl_mind}', '{scl_endurance}', '{scl_strength}', '{scl_dexterity}', '{scl_intelligence}', '{scl_faith}', '{scl_arcane}' );"
-
+        sql = f"SELECT * FROM item WHERE name = '{weapon_name}';"
         cursor.execute(sql)
-        mydb.commit()
+        res = cursor.fetchone()
+        if res:
+            # update item
+            # add new item
+            sql = f"UPDATE item SET name = '{weapon_name}', value = {total_dmg}, price = {total_dmg * 6}, iconCategory = '{weapon['category']}', type='Weapon', reqVigor={req_vigor}, reqMind={req_mind}, reqEndurance={req_endurance}, reqStrength={req_strength}, reqDexterity={req_dexterity}, reqIntelligence={req_intelligence}, reqFaith={req_faith}, reqArcane={req_arcane}, obtainable=1, weight={weapon['weight']}, iconUrl='{weapon['image']}', sclVigor='{scl_vigor}', sclMind='{scl_mind}', sclEndurance='{scl_endurance}', sclStrength='{scl_strength}', sclDexterity='{scl_dexterity}', sclIntelligence='{scl_intelligence}', sclFaith='{scl_faith}', sclArcane='{scl_arcane}' WHERE name = '{weapon_name}';"
+            cursor.execute(sql)
+            mydb.commit()
+        else:
+            # add new item
+            print(f"Added new item: {weapon_name}")
+            sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']}, '{weapon['image']}', '{scl_vigor}', '{scl_mind}', '{scl_endurance}', '{scl_strength}', '{scl_dexterity}', '{scl_intelligence}', '{scl_faith}', '{scl_arcane}' );"
+            cursor.execute(sql)
+            mydb.commit()
+
+
 
     print("Added weapons..")
 
@@ -319,10 +332,20 @@ def fill_db_armor():
 
         total_negation = sum(negation['amount'] for negation in armor['dmgNegation'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}', '-', '-', '-', '-', '-', '-', '-', '-');"
-
+        sql = f"SELECT * FROM item WHERE name = '{armor_name}';"
         cursor.execute(sql)
-        mydb.commit()
+        res = cursor.fetchone()
+        if res:
+            # update item
+            sql = f"UPDATE item SET name = '{armor_name}', value = {total_negation}, price = {total_negation * 6}, iconCategory = '{armor['category']}', type='Armor', obtainable=1, weight={armor['weight']}, iconUrl='{armor['image']}' WHERE name = '{armor_name}';"
+            cursor.execute(sql)
+            mydb.commit()
+        else:
+            # add new item
+            print(f"Added new item: {armor_name}")
+            sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}', '-', '-', '-', '-', '-', '-', '-', '-');"
+            cursor.execute(sql)
+            mydb.commit()
 
     print("Added armor..")
 
@@ -618,7 +641,8 @@ def get_enemy_moves_with_enemy_id(idEnemy):
     res = cursor.fetchall()
     if res:
         for row in res:
-            enemy_moves.append(EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+            move = EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+            enemy_moves.append(move)
 
     return enemy_moves
 
@@ -1069,3 +1093,16 @@ def get_highest_max_horde_wave():
     sql = f"SELECT max(maxHordeWave) from user;"
     cursor.execute(sql)
     return cursor.fetchone()[0]
+
+
+def get_all_user_ids_from_location(location, himself):
+    idUsers = []
+    sql = f"SELECT idUser from user WHERE currentLocation = {location.get_id()} AND idUser != {himself};"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+
+    return idUsers
