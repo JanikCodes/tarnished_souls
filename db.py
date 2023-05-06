@@ -618,7 +618,8 @@ def get_enemy_moves_with_enemy_id(idEnemy):
     res = cursor.fetchall()
     if res:
         for row in res:
-            enemy_moves.append(EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+            move = EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+            enemy_moves.append(move)
 
     return enemy_moves
 

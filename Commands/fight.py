@@ -317,17 +317,20 @@ class StartButton(discord.ui.Button):
                 health_increase = self.enemy.get_max_health() * ((len(self.users) - 1) * 0.15)
 
             self.enemy.set_max_health(int(self.enemy.get_max_health() + health_increase))
+            self.enemy.overwrite_alL_move_descriptions(self.enemy.get_name())
 
             fight = Fight(enemy_list=[self.enemy], users=self.users, interaction=interaction, turn_index=0,
                           enemy_index=0)
             await fight.update_fight_battle_view()
 
+        # horde mode ?
         elif self.enemy_list:
-
-            if len(self.users) > 1:
-                for enemy in self.enemy_list:
+            for enemy in self.enemy_list:
+                if len(self.users) > 1:
                     health_increase = enemy.get_max_health() * ((len(self.users) - 1) * 0.15)
                     enemy.set_max_health(int(enemy.get_max_health() + health_increase))
+
+                enemy.overwrite_alL_move_descriptions(enemy.get_name())
 
             fight = Fight(users=self.users, interaction=interaction, turn_index=0, enemy_index=0,
                           enemy_list=self.enemy_list)
@@ -455,6 +458,8 @@ class FightEnemySelect(discord.ui.Select):
 
         # If solo visible skip lobby scene
         if not self.visibility:
+            selected_enemy.overwrite_alL_move_descriptions(selected_enemy.get_name())
+
             fight = Fight(enemy_list=[selected_enemy], users=self.users, interaction=interaction, turn_index=0, enemy_index=0)
             await fight.update_fight_battle_view()
             return
