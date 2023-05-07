@@ -17529,8 +17529,8 @@
       "description":"Sinister katana modeled after a serpent bone. The denely packed row of spines that jut away from the cutting edge are coated in a lethal poison",
       "attack":[
          {
-            "name":"Phy120",
-            "amount":0
+            "name":"Phy",
+            "amount":120
          },
          {
             "name":"Mag",
@@ -17550,7 +17550,7 @@
          },
          {
             "name":"Crit",
-            "amount":0
+            "amount":100
          }
       ],
       "defence":[

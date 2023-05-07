@@ -60,17 +60,17 @@ class QuestProgress:
         text = str()
 
         if self.quest.get_rune_reward() > 0:
-            text += f"- `{self.quest.get_rune_reward()}` runes!\n"
+            text += f"• `{self.quest.get_rune_reward()}` runes!\n"
         if self.quest.get_location_reward():
-            text += f"- `{self.quest.get_location_reward().get_name()}` as a new location!\n"
+            text += f"• `{self.quest.get_location_reward().get_name()}` as a new location!\n"
         if len(self.quest.get_item_reward()) > 0:
             for item in self.quest.get_item_reward():
                 category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name=item.get_iconCategory())
-                text += f"- {category_emoji} `{item.get_name()}` **{item.get_count()}**x\n"
+                text += f"• {category_emoji} `{item.get_name()}` **{item.get_count()}**x\n"
         if self.quest.get_flask_reward() > 0:
             category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
                                                name="flask")
-            text += f"- {category_emoji} **+1**\n"
+            text += f"• {category_emoji} **+1**\n"
 
 
         return text

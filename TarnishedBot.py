@@ -3,16 +3,15 @@ import os
 import platform
 import time
 import traceback
-
+import config
 import discord
 from colorama import Back, Fore, Style
 from discord.ext import commands
-
-import config
 import db
 
 MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
-
+UPDATE_ITEMS = False
+FILL_FIRST_TIME_DATA = False
 
 class Client(commands.Bot):
     def __init__(self):
@@ -36,11 +35,13 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
-        if int(db.check_if_add_all_items()) == 0:
+        if UPDATE_ITEMS:
             db.fill_db_weapons()
             print("Added weapon data..")
             db.fill_db_armor()
             print("Added armor data..")
+
+        if FILL_FIRST_TIME_DATA:
             db.fill_db_init()
             print("Added init data..")
 

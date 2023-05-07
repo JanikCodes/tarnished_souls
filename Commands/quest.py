@@ -23,6 +23,14 @@ class FinishQuest(discord.ui.Button):
 
         await interaction.response.defer()
 
+        # Check if user even has the quest anymore
+        if not db.get_user_quest_with_quest_id(idUser=self.user.get_userId(), idQuest=self.current_quest.get_quest().get_id()):
+            message = interaction.message
+            edited_embed = message.embeds[0]
+            edited_embed.colour = discord.Color.red()
+            await interaction.message.edit(embed=edited_embed, view=None)
+            return
+
         # Give out quest rewards to user
         # Add runes
         if self.current_quest.get_quest().get_rune_reward() > 0:
@@ -71,7 +79,7 @@ class Quest(commands.Cog):
 
                 user = User(interaction.user.id)
 
-                current_quest = db.get_user_quest_with_user_id(idUser=user.get_userId())
+                current_quest = db.get_current_user_quest(idUser=user.get_userId())
 
                 if current_quest is None:
                     # create new quest rel

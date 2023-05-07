@@ -38,7 +38,8 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2)"
+    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1);'
+    sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
 
@@ -240,7 +241,7 @@ def get_location_id_from_name(name):
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount FROM user u WHERE u.idUser = {userId};"
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount, maxHordeWave FROM user u WHERE u.idUser = {userId};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -322,10 +323,23 @@ def fill_db_weapons():
 
         total_dmg = sum(attack['amount'] for attack in weapon['attack'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']}, '{weapon['image']}', '{scl_vigor}', '{scl_mind}', '{scl_endurance}', '{scl_strength}', '{scl_dexterity}', '{scl_intelligence}', '{scl_faith}', '{scl_arcane}' );"
-
+        sql = f"SELECT * FROM item WHERE name = '{weapon_name}';"
         cursor.execute(sql)
-        mydb.commit()
+        res = cursor.fetchone()
+        if res:
+            # update item
+            # add new item
+            sql = f"UPDATE item SET name = '{weapon_name}', value = {total_dmg}, price = {total_dmg * 6}, iconCategory = '{weapon['category']}', type='Weapon', reqVigor={req_vigor}, reqMind={req_mind}, reqEndurance={req_endurance}, reqStrength={req_strength}, reqDexterity={req_dexterity}, reqIntelligence={req_intelligence}, reqFaith={req_faith}, reqArcane={req_arcane}, obtainable=1, weight={weapon['weight']}, iconUrl='{weapon['image']}', sclVigor='{scl_vigor}', sclMind='{scl_mind}', sclEndurance='{scl_endurance}', sclStrength='{scl_strength}', sclDexterity='{scl_dexterity}', sclIntelligence='{scl_intelligence}', sclFaith='{scl_faith}', sclArcane='{scl_arcane}' WHERE name = '{weapon_name}';"
+            cursor.execute(sql)
+            mydb.commit()
+        else:
+            # add new item
+            print(f"Added new item: {weapon_name}")
+            sql = f"INSERT INTO item VALUES (NULL,'{weapon_name}', {total_dmg}, {total_dmg * 6}, '{weapon['category']}', 'Weapon', {req_vigor}, {req_mind}, {req_endurance}, {req_strength}, {req_dexterity}, {req_intelligence}, {req_faith}, {req_arcane}, 1, {weapon['weight']}, '{weapon['image']}', '{scl_vigor}', '{scl_mind}', '{scl_endurance}', '{scl_strength}', '{scl_dexterity}', '{scl_intelligence}', '{scl_faith}', '{scl_arcane}' );"
+            cursor.execute(sql)
+            mydb.commit()
+
+
 
     print("Added weapons..")
 
@@ -341,10 +355,20 @@ def fill_db_armor():
 
         total_negation = sum(negation['amount'] for negation in armor['dmgNegation'])
 
-        sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}', '-', '-', '-', '-', '-', '-', '-', '-');"
-
+        sql = f"SELECT * FROM item WHERE name = '{armor_name}';"
         cursor.execute(sql)
-        mydb.commit()
+        res = cursor.fetchone()
+        if res:
+            # update item
+            sql = f"UPDATE item SET name = '{armor_name}', value = {total_negation}, price = {total_negation * 20}, iconCategory = '{armor['category']}', type='Armor', obtainable=1, weight={armor['weight']}, iconUrl='{armor['image']}' WHERE name = '{armor_name}';"
+            cursor.execute(sql)
+            mydb.commit()
+        else:
+            # add new item
+            print(f"Added new item: {armor_name}")
+            sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 20}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}', '-', '-', '-', '-', '-', '-', '-', '-');"
+            cursor.execute(sql)
+            mydb.commit()
 
     print("Added armor..")
 
@@ -647,7 +671,8 @@ def get_enemy_moves_with_enemy_id(idEnemy):
     res = cursor.fetchall()
     if res:
         for row in res:
-            enemy_moves.append(EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+            move = EnemyMove(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+            enemy_moves.append(move)
 
     return enemy_moves
 
@@ -720,15 +745,13 @@ def get_location_from_id(idLocation):
             return 0
     return None
 
-
 def add_item_to_location(location, item):
     sql = f"INSERT INTO location_has_item VALUES(null, {location.get_id()}, {item.get_idItem()})"
     cursor.execute(sql)
     mydb.commit()
     return sql
 
-
-def get_user_quest_with_user_id(idUser):
+def get_current_user_quest(idUser):
     sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -738,7 +761,15 @@ def get_user_quest_with_user_id(idUser):
     else:
         return None
 
-
+def get_user_quest_with_quest_id(idUser, idQuest):
+    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5], res[6])
+        return quest_progress
+    else:
+        return None
 def get_quest_with_id(idQuest):
     sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId, cooldown, flaskReward FROM quest WHERE idQuest = {idQuest};"
     cursor.execute(sql)
@@ -757,10 +788,11 @@ def add_init_quest_to_user(idUser):
     cursor.execute(sql)
     mydb.commit()
 
-    return get_user_quest_with_user_id(idUser=idUser)
+    return get_current_user_quest(idUser=idUser)
 
 
 def remove_quest_from_user_with_quest_id(idUser, idQuest):
+    print(f"Deleting {idQuest}")
     sql = f"DELETE FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
     cursor.execute(sql)
     mydb.commit()
@@ -1018,8 +1050,7 @@ def get_user_position_in_lb_runes(idUser):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        position = res[2]
-        return position
+        return res[2]
     else:
         # User not found in the database
         return "error"
@@ -1028,7 +1059,7 @@ def get_user_position_in_lb_runes(idUser):
 def get_leaderboard_levels():
     leaderboard = []
 
-    sql = "SELECT username, vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane AS total_level FROM user ORDER BY total_level DESC LIMIT 10;"
+    sql = "SELECT username, vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user ORDER BY total_level DESC LIMIT 10;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -1041,16 +1072,15 @@ def get_leaderboard_levels():
 def get_user_position_in_lb_level(idUser):
     sql = f"SELECT username, total_level, FIND_IN_SET(total_level, " \
           f"(SELECT GROUP_CONCAT(total_level ORDER BY total_level DESC) FROM " \
-          f"(SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) AS total_level " \
+          f"(SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79) AS total_level " \
           f"FROM user GROUP BY username, idUser) AS t)) AS position " \
-          f"FROM (SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) AS total_level " \
+          f"FROM (SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79) AS total_level " \
           f"FROM user GROUP BY username, idUser) AS u " \
           f"WHERE idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        position = res[2]
-        return position
+        return res[2]
     else:
         # User not found in the database
         return "error"
@@ -1066,10 +1096,79 @@ def get_user_level(idUser):
     cursor.execute(sql)
     return cursor.fetchone()[0]
 
+
 def show_tables_in_db():
     sql = "SHOW TABLES;"
     cursor.execute(sql)
     return cursor.fetchall()
 
 
+def get_all_enemies():
+    enemies = []
 
+    sql = f"select idEnemy from enemy ORDER BY health;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            enemy = Enemy(row[0])
+            if enemy:
+                enemies.append(enemy)
+
+    return enemies
+
+
+def get_leaderboard_horde():
+    leaderboard = []
+
+    sql = f"select username, maxHordeWave FROM user ORDER BY maxHordeWave DESC LIMIT 10;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            leaderboard.append((row[0], row[1]))
+
+    return leaderboard
+
+
+def get_user_position_in_lb_horde(idUser):
+    sql = f"SELECT username, maxHordeWave, FIND_IN_SET(maxHordeWave, (SELECT GROUP_CONCAT(maxHordeWave ORDER BY maxHordeWave DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return res[2]
+    else:
+        # User not found in the database
+        return "error"
+
+
+def update_max_horde_wave_from_user(idUser, wave):
+    sql = f"select maxHordeWave FROM user WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()[0]
+    if res:
+        maxWave = int(res)
+        # only update maxWave if the wave is bigger than previous ones lol
+        if maxWave < wave:
+            sql = f"UPDATE user SET maxHordeWave = {wave} WHERE idUser = {idUser}"
+            cursor.execute(sql)
+            mydb.commit()
+
+
+def get_highest_max_horde_wave():
+    sql = f"SELECT max(maxHordeWave) from user;"
+    cursor.execute(sql)
+    return cursor.fetchone()[0]
+
+
+def get_all_user_ids_from_location(location, himself):
+    idUsers = []
+    sql = f"SELECT idUser from user WHERE currentLocation = {location.get_id()} AND idUser != {himself};"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+
+    return idUsers
