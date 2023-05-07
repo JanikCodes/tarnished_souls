@@ -717,7 +717,7 @@ def get_location_from_id(idLocation):
     return None
 
 
-def get_user_quest_with_user_id(idUser):
+def get_current_user_quest(idUser):
     sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -727,7 +727,15 @@ def get_user_quest_with_user_id(idUser):
     else:
         return None
 
-
+def get_user_quest_with_quest_id(idUser, idQuest):
+    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5], res[6])
+        return quest_progress
+    else:
+        return None
 def get_quest_with_id(idQuest):
     sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId, cooldown, flaskReward FROM quest WHERE idQuest = {idQuest};"
     cursor.execute(sql)
@@ -746,10 +754,11 @@ def add_init_quest_to_user(idUser):
     cursor.execute(sql)
     mydb.commit()
 
-    return get_user_quest_with_user_id(idUser=idUser)
+    return get_current_user_quest(idUser=idUser)
 
 
 def remove_quest_from_user_with_quest_id(idUser, idQuest):
+    print(f"Deleting {idQuest}")
     sql = f"DELETE FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
     cursor.execute(sql)
     mydb.commit()
