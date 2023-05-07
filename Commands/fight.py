@@ -18,15 +18,19 @@ RUNE_REWARD_FOR_WAVE = 450
 
 
 class Fight:
-    def __init__(self, users, interaction, turn_index, enemy_index, enemy_list):
+    def __init__(self, users, interaction, turn_index, enemy_index, enemy_list, horde_mode = False):
         self.users = users
         self.interaction = interaction
         self.turn_index = turn_index
         self.enemy_list = enemy_list
         self.enemy_index = enemy_index
+        self.horde_mode = horde_mode
 
     def get_current_enemy(self):
         return self.enemy_list[self.enemy_index]
+
+    def get_is_horde_mode(self):
+        return self.horde_mode
 
     def get_users(self):
         return self.users
@@ -64,7 +68,7 @@ class Fight:
 
     async def handle_enemy_death(self, enemy, users, embed):
         # It was a single enemy fight and he died.
-        if len(self.enemy_list) == 1:
+        if not self.get_is_horde_mode():
             item_drops = enemy.get_item_rewards_random()
             item_drop_text = str()
             for item in item_drops:
@@ -126,7 +130,7 @@ class Fight:
             db.update_max_horde_wave_from_user(idUser=user.get_userId(), wave=self.enemy_index + 1)
 
         wave_text = str()
-        if len(self.enemy_list) > 1:
+        if self.get_is_horde_mode():
             # it's horde mode
             wave_text = f"You've reached wave `{self.enemy_index + 1}`"
 
@@ -146,8 +150,9 @@ class Fight:
         self.check_phase_change(self.get_current_enemy())
 
         # Check for fight end for horde mode
-        if self.get_current_enemy().get_health() <= 0 and self.enemy_index + 1 < len(self.enemy_list):
-            self.enemy_index = self.enemy_index + 1
+        if self.get_is_horde_mode():
+            if self.get_current_enemy().get_health() <= 0 and self.enemy_index + 1 < len(self.enemy_list):
+                self.enemy_index = self.enemy_index + 1
 
         # reset enemy dodge state
         self.get_current_enemy().reset_dodge()
@@ -334,7 +339,7 @@ class StartButton(discord.ui.Button):
                 enemy.overwrite_alL_move_descriptions(enemy.get_name())
 
             fight = Fight(users=self.users, interaction=interaction, turn_index=0, enemy_index=0,
-                          enemy_list=self.enemy_list)
+                          enemy_list=self.enemy_list, horde_mode=True)
             await fight.update_fight_battle_view()
 
 
@@ -351,18 +356,20 @@ class BattleButton(discord.ui.Button):
         self.fight = fight
 
     async def callback(self, interaction: discord.Interaction):
-        if str(interaction.user.id) != self.fight.get_current_user().get_userId():
-            embed = discord.Embed(title=f"It's not your turn..",
-                                  description="",
-                                  colour=discord.Color.orange())
-            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
-        await interaction.response.defer()
+        try:
+            if str(interaction.user.id) != self.fight.get_current_user().get_userId():
+                embed = discord.Embed(title=f"It's not your turn..",
+                                      description="",
+                                      colour=discord.Color.orange())
+                return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+            await interaction.response.defer()
 
-        if self.fight.get_current_user().get_health() > 0 and self.fight.get_current_enemy().get_health() > 0:
-            self.execute_action()
+            if self.fight.get_current_user().get_health() > 0 and self.fight.get_current_enemy().get_health() > 0:
+                self.execute_action()
 
-            await self.fight.update_fight_battle_view()
-
+                await self.fight.update_fight_battle_view()
+        except discord.errors.NotFound:
+            pass
     def execute_action(self):
         pass
 
