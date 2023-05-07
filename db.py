@@ -82,6 +82,7 @@ def add_enemy_has_item(item_id, enemy_id, count, drop_chance):
 def add_enemy_move(enemy_move, enemy):
     sql = f'INSERT INTO enemy_moves VALUES(null, "{enemy_move.get_description()}", {enemy_move.get_phase()}, {enemy_move.get_id()}, {enemy.get_id()}, {enemy_move.get_damage()}, {enemy_move.get_healing()}, {enemy_move.get_duration()}, {enemy_move.get_max_targets()})'
     sql.replace('"', '\"')
+    sql.replace("'", "\'")
     cursor.execute(sql)
     mydb.commit()
     return sql
@@ -96,19 +97,18 @@ def add_encounter(encounter):
 
 def add_quest(quest: Quest()):
     Enemy = quest.get_enemy()
-    enemy_id = None
     if Enemy is not None:
         enemy_id = Enemy.get_id()
     else:
         enemy_id = "null"
 
-    if quest.get_explore_location() is None:
+    if quest.get_explore_location() == "no_location":
         exploration_location_id = "null"
     else:
         exploration_location = quest.get_explore_location()
         exploration_location_id = exploration_location.get_id()
 
-    if quest.get_location_reward() is None:
+    if quest.get_location_reward() == "no_location":
         location_reward_id = "null"
     else:
         location_reward = quest.get_location_reward()

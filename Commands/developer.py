@@ -306,12 +306,12 @@ class ConfirmInsertButton(discord.ui.Button):
 
             case "enemy_move":
                 sql = db.add_enemy_move(self.enemy_move, self.enemy)
-                execute_change(interaction, sql)
+                await execute_change(interaction, sql)
 
             case "encounter":
                 self.encounter.set_id(db.get_encounter_id_from_description(self.encounter.get_description()))
                 sql = db.add_encounter(self.encounter)
-                execute_change(interaction, sql)
+                await execute_change(interaction, sql)
 
             case "quest":
                 sql = db.add_quest(self.quest)
@@ -400,8 +400,8 @@ class SelectEnemyLocation(discord.ui.Select):
         self.embed = embed
         self.modal_page = modal_page
 
-        for location_name, location_description, location_id in db.get_all_locations():
-            self.add_option(label=location_name, description=location_description, value=location_id)
+        for location in db.get_all_locations():
+            self.add_option(label=location.get_name(), description=location.get_description(), value=location.get_id())
 
     async def callback(self, interaction: discord.Interaction):
         try:
@@ -428,7 +428,7 @@ class SelectEnemy(discord.ui.Select):
         self.modal_page = modal_page
         self.location_id = location_id
 
-        for enemy in db.get_enemies_from_location(location_id=self.location_id):
+        for enemy in db.get_all_enemies_from_location(idLocation=self.location_id):
             if enemy.get_description() and enemy.get_description().upper() == "BOSS":
                 self.add_option(label=enemy.get_name(), description=enemy.get_description(), value=enemy.get_id(),
                                 emoji="💀")
@@ -1107,14 +1107,25 @@ class Developer(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
+    tools: ["balancing", "test_tool"]
+
     @app_commands.command(name="developer", description="Developer only.. sorry")
-    async def developer(self, interaction: discord.Interaction):
+    @app_commands.choices(tool=[
+        app_commands.Choice(name="balancing", value="balancing")
+    ])
+    async def developer(self, interaction: discord.Interaction, tool: app_commands.Choice[str] = None):
         await interaction.response.defer()
 
         try:
             if db.validate_user(interaction.user.id):
 
                 user = User(interaction.user.id)
+
+                if tool:
+                    match tool:
+                        case "balancing":
+                            await interaction.followup.send("this is a test.", ephemeral=True)
+                    return
 
                 if interaction.user.id in config.botConfig["developer-ids"]:
 
