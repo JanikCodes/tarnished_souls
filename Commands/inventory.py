@@ -144,7 +144,14 @@ async def view_inventory_page(interaction, label, user, page):
                               f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n",
                         inline=False)
             case "items":
-                pass
+                for item in items:
+                    category_emoji = discord.utils.get(
+                        interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                        name=item.get_iconCategory())
+
+                    new_embed.add_field(
+                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
+                        value=f"**Used for smithing** \n", inline=False)
 
     new_embed.set_footer(text=f"Page {page}/{str(total_page_count)}")
 

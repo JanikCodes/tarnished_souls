@@ -4,6 +4,7 @@ import random
 import mysql.connector
 
 import config
+import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
 from Classes.enemy_logic import EnemyLogic
@@ -378,19 +379,25 @@ def get_encounters_from_user(user):
     return encounters
 
 
-def get_item_from_user_encounter_with_enc_id(idUser, idEncounter):
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, r.extra, i.obtainable, i.weight, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_encounter r WHERE r.idEncounter = {idEncounter} AND r.idUser = {idUser} AND r.idItem = i.idItem;"
-    cursor.execute(sql)
-    res = cursor.fetchone()
-    if res:
-        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
-                    reqEndurance=[6], reqStrength=res[7], reqDexterity=[8], reqIntelligence=res[9], reqFaith=res[10],
-                    reqArcane=res[11], value=res[12], price=res[13], obtainable=res[15], weight=res[16],
-                    iconUrl=res[17], sclVigor=res[18], sclMind=res[19], sclEndurance=res[20], sclStrength=res[21],
-                    sclDexterity=res[22], sclIntelligence=res[23], sclFaith=res[24], sclArcane=res[25])
-        item.set_extra_value(res[14])
-        return item
+def get_item_from_encounter_has_item_with_enc_id(idUser, idEncounter):
+    items = []
 
+    sql = f"SELECT i.idItem FROM item i, encounter_has_item e, user_encounter r WHERE r.idEncounter = {idEncounter} AND e.idEncounter = {idEncounter} AND r.idUser = {idUser} AND e.idItem = i.idItem;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    for idItem in res:
+        item = db.get_item_from_item_id(idItem[0])
+
+
+        sql = f"SELECT extraValue FROM encounter_has_item e, item i, user_encounter r WHERE r.idEncounter = {idEncounter} AND e.idEncounter = {idEncounter} AND r.idUser = {idUser} AND e.idItem = i.idItem AND e.idItem = {item.get_idItem()};"
+        cursor.execute(sql)
+        res = cursor.fetchone()
+        if res:
+            item.set_extra_value(res[0])
+
+        items.append(item)
+
+    return items
 
 def update_last_explore_timer_from_user_with_id(idUser, current_time):
     sql = f"UPDATE user u SET last_explore = {current_time} WHERE u.idUser = {idUser};"
@@ -417,7 +424,7 @@ def create_new_encounter_from_location(idUser, idLocation):
     if len(all_encounters) > 0:
         selected_encounter = random.choice(all_encounters)
 
-        sql = f"INSERT INTO user_encounter VALUE(NULL, {selected_encounter.get_id()}, {idUser}, NULL, 0);"
+        sql = f"INSERT INTO user_encounter VALUE(NULL, {selected_encounter.get_id()}, {idUser});"
         cursor.execute(sql)
         mydb.commit()
 
@@ -426,17 +433,23 @@ def create_new_encounter_from_location(idUser, idLocation):
 
 
 def remove_user_encounters(idUser):
-    sql = f"DELETE FROM user_encounter WHERE idUser = {idUser};"
+    sql = f"DELETE r, e FROM user_encounter r LEFT JOIN encounter_has_item e ON r.idEncounter = e.idEncounter WHERE r.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
 
 
-def get_all_item_ids(obtainable_only):
+def get_all_item_ids(obtainable_only, item_type):
     item_ids = []
+    add_where_clause = str()
+    match item_type:
+        case "equip":
+            add_where_clause = "WHERE type='armor' OR type='weapon'"
+        case "items":
+            add_where_clause = "WHERE type='items'"
     if obtainable_only:
-        sql = f"SELECT i.idItem FROM item i WHERE i.obtainable = 1;"
+        sql = f"SELECT i.idItem FROM item i {add_where_clause} AND i.obtainable = 1;"
     else:
-        sql = f"SELECT i.idItem FROM item i;"
+        sql = f"SELECT i.idItem FROM item i {add_where_clause};"
 
     cursor.execute(sql)
     res = cursor.fetchall()
@@ -518,15 +531,10 @@ def get_item_from_item_name(item_name):
         return None
 
 
-def update_user_encounter_item(idEncounter, item, idUser):
-    sql = f"SELECT r.idRel FROM user_encounter r WHERE r.idEncounter = {idEncounter} AND r.idUser = {idUser};"
+def add_item_to_encounter_has_item(idEncounter, item):
+    sql = f"INSERT INTO encounter_has_item VALUE(null, {idEncounter}, {item.get_idItem()}, {item.get_extra_value()}, {item.get_count()});"
     cursor.execute(sql)
-
-    res = cursor.fetchone()
-    if res:
-        sql = f"UPDATE user_encounter r SET r.idItem = {item.get_idItem()}, r.extra = {item.get_extra_value()} WHERE r.idEncounter = {idEncounter} AND r.idUser = {idUser};"
-        cursor.execute(sql)
-        mydb.commit()
+    mydb.commit()
 
 
 def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page):

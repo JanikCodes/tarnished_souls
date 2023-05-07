@@ -30,6 +30,7 @@ class DeveloperOptionsCategoryButton(discord.ui.Button):
 
         await interaction.message.edit(view=self.custom_view)
 
+
 class DeveloperOptionsReturnButton(discord.ui.Button):
     def __init__(self, user):
         super().__init__(label="Return", style=discord.ButtonStyle.danger)
@@ -72,7 +73,8 @@ class InsertEnemyButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if not interaction.user.id in config.botConfig["developer-ids"]:
-            embed = discord.Embed(title=f"You're not allowed to use this action!", description="", colour=discord.Color.red())
+            embed = discord.Embed(title=f"You're not allowed to use this action!", description="",
+                                  colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
         else:
             await interaction.response.send_message(view=SelectELView())
@@ -186,7 +188,8 @@ class DBCatShowSQLTXTButton(discord.ui.Button):
             with open("Data/sql-statements.txt", "rb") as file:
                 await interaction.response.send_message(file=discord.File(file, "sql-statements.txt"))
         else:
-            await interaction.response.send_message(content="You haven't created any statements yet!", ephemeral=True, delete_after=3)
+            await interaction.response.send_message(content="You haven't created any statements yet!", ephemeral=True,
+                                                    delete_after=3)
 
 
 class DebugCatUpdateDEVMaxLocationButton(discord.ui.Button):
@@ -195,9 +198,12 @@ class DebugCatUpdateDEVMaxLocationButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if db.update_dev_user_maxLocation(interaction.user.id):
-            await interaction.response.send_message(content="Successfully updated your maxLocation to all 13.", ephemeral=True, delete_after=3)
+            await interaction.response.send_message(content="Successfully updated your maxLocation to all 13.",
+                                                    ephemeral=True, delete_after=3)
         else:
-            await interaction.response.send_message(content=f"I wasn't able to update your maxLocation. idUser={interaction.user.id}", ephemeral=True, delete_after=2)
+            await interaction.response.send_message(
+                content=f"I wasn't able to update your maxLocation. idUser={interaction.user.id}", ephemeral=True,
+                delete_after=2)
 
 
 class DBCatShowTablesButton(discord.ui.Button):
@@ -226,7 +232,8 @@ class LocCatShowLocationsButton(discord.ui.Button):
                         items += f"`{item.get_name()}`"
                     else:
                         items += f"`{item.get_name()}`, "
-            embed.add_field(name=f"{location.get_name()} | {location.get_id()}", value=f"Items: {items if items != '' else 'no items'}", inline=False)
+            embed.add_field(name=f"{location.get_name()} | {location.get_id()}",
+                            value=f"Items: {items if items != '' else 'no items'}", inline=False)
 
         await interaction.response.send_message(embed=embed)
 
@@ -241,12 +248,23 @@ class LocCatAddItemToLocationButton(discord.ui.Button):
         if self.location:
             await interaction.response.send_modal(AddLocationModal(location=self.location, embed=self.embed))
         else:
-            await interaction.response.send_message(view=SelectLocationView(embed=self.embed, add_item_to_location=True))
+            await interaction.response.send_message(
+                view=SelectLocationView(embed=self.embed, add_item_to_location=True))
+
+
+async def execute_change(interaction, sql):
+    embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
+    embed.set_footer(text=sql)
+
+    with open('Data/sql-statements.txt', 'a') as f:
+        f.write(f"{sql};\n")
+
+    await interaction.message.edit(embed=embed, view=None, delete_after=5)
 
 
 class ConfirmInsertButton(discord.ui.Button):
-    def __init__(self, enemy = None, mode=None, enemy_move = None,
-                 encounter = None, quest = None, embed = None, location=None):
+    def __init__(self, enemy=None, mode=None, enemy_move=None,
+                 encounter=None, quest=None, embed=None, location=None):
         super().__init__(label="Confirm", style=discord.ButtonStyle.success)
         self.enemy = enemy
         self.mode = mode
@@ -256,15 +274,6 @@ class ConfirmInsertButton(discord.ui.Button):
         self.embed = embed
         self.location = location
 
-    def execute_change(self, interaction, sql):
-        embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
-        embed.set_footer(text=sql)
-
-        with open('Data/sql-statements.txt', 'a') as f:
-            f.write(f"{sql};\n")
-
-        await interaction.message.edit(embed=embed, view=None, delete_after=5)
-
     async def callback(self, interaction: discord.Interaction):
         match self.mode:
             case "enemy":
@@ -273,18 +282,21 @@ class ConfirmInsertButton(discord.ui.Button):
                 self.enemy.set_id(enemy_id)
                 location = self.enemy.get_location()
                 sql = db.add_enemy(enemy=self.enemy, location_id=location.get_id())
-                embed = discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}", colour=discord.Color.green())
+                embed = discord.Embed(title=f"Database Insertion successful!, Enemy_id: {self.enemy.get_id()}",
+                                      colour=discord.Color.green())
                 embed.set_footer(text=sql)
 
                 with open('Data/sql-statements.txt', 'a') as f:
                     f.write(f"{sql};\n")
 
-                await interaction.message.edit(embed=embed, view=InsertEnemyHasItemView(enemy=self.enemy, mode="enemy_no_item"))
+                await interaction.message.edit(embed=embed,
+                                               view=InsertEnemyHasItemView(enemy=self.enemy, mode="enemy_no_item"))
 
             case "enemy_with_item":
                 with open('Data/sql-statements.txt', 'a') as f:
                     for item in self.enemy.get_item_rewards():
-                        sql = db.add_enemy_has_item(item.get_idItem(), self.enemy.get_id(), item.get_count(), item.get_drop_rate())
+                        sql = db.add_enemy_has_item(item.get_idItem(), self.enemy.get_id(), item.get_count(),
+                                                    item.get_drop_rate())
                         f.write(f"{sql};\n")
                 embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
                 await interaction.message.edit(embed=embed, view=None, delete_after=5)
@@ -294,12 +306,12 @@ class ConfirmInsertButton(discord.ui.Button):
 
             case "enemy_move":
                 sql = db.add_enemy_move(self.enemy_move, self.enemy)
-                self.execute_change(interaction, sql)
+                execute_change(interaction, sql)
 
             case "encounter":
                 self.encounter.set_id(db.get_encounter_id_from_description(self.encounter.get_description()))
                 sql = db.add_encounter(self.encounter)
-                self.execute_change(interaction, sql)
+                execute_change(interaction, sql)
 
             case "quest":
                 sql = db.add_quest(self.quest)
@@ -307,7 +319,8 @@ class ConfirmInsertButton(discord.ui.Button):
                 with open('Data/sql-statements.txt', 'a') as f:
                     f.write(f"{sql};\n")
 
-                self.quest.set_id(db.get_quest_id_from_title_and_desc(self.quest.get_title(), self.quest.get_description()))
+                self.quest.set_id(
+                    db.get_quest_id_from_title_and_desc(self.quest.get_title(), self.quest.get_description()))
                 embed = discord.Embed(title=f"Database Insertion successful!", colour=discord.Color.green())
                 embed.set_footer(text=sql)
 
@@ -375,8 +388,9 @@ class NextQuestModalButton(discord.ui.Button):
         self.modal_page = modal_page
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_modal(AddQuestModal(embed=self.embed, modal_page=self.modal_page, quest=self.quest))
-        
+        await interaction.response.send_modal(
+            AddQuestModal(embed=self.embed, modal_page=self.modal_page, quest=self.quest))
+
 
 class SelectEnemyLocation(discord.ui.Select):
     def __init__(self, embed=None, quest=None, modal_page=None):
@@ -392,12 +406,15 @@ class SelectEnemyLocation(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         try:
             if self.quest:
-                await interaction.message.edit(view=SelectEnemyView(quest=self.quest, embed=self.embed, modal_page=self.modal_page, location_id=self.values[0]))
+                await interaction.message.edit(
+                    view=SelectEnemyView(quest=self.quest, embed=self.embed, modal_page=self.modal_page,
+                                         location_id=self.values[0]))
             else:
                 await interaction.message.edit(view=SelectEnemyView(location_id=self.values[0]))
         except:
             await interaction.message.edit(view=SelectEnemyLocationView())
-            await interaction.response.send_message(content="There are no enemies in this location!", ephemeral=True, delete_after=2)
+            await interaction.response.send_message(content="There are no enemies in this location!", ephemeral=True,
+                                                    delete_after=2)
             return
         await interaction.response.defer()
 
@@ -413,10 +430,10 @@ class SelectEnemy(discord.ui.Select):
 
         for enemy in db.get_enemies_from_location(location_id=self.location_id):
             if enemy.get_description() and enemy.get_description().upper() == "BOSS":
-                self.add_option(label=enemy.get_name(), description=enemy.get_description(),value=enemy.get_id(),
+                self.add_option(label=enemy.get_name(), description=enemy.get_description(), value=enemy.get_id(),
                                 emoji="💀")
             else:
-                self.add_option(label=enemy.get_name(), description=enemy.get_description(),value=enemy.get_id())
+                self.add_option(label=enemy.get_name(), description=enemy.get_description(), value=enemy.get_id())
 
     async def callback(self, interaction: discord.Interaction):
 
@@ -426,13 +443,15 @@ class SelectEnemy(discord.ui.Select):
 
             self.embed.set_field_at(index=6, name=f"Enemy_id: {enemy.get_id()}", value=enemy.get_name())
 
-            await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
+            await interaction.message.edit(embed=self.embed,
+                                           view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
             await interaction.response.defer()
             return
         else:
             self.enemy = Enemy(idEnemy=enemy.get_id())
 
-            preview_embed = discord.Embed(title="Adding Enemy_move", description=f"The move will be added for: {enemy.get_name()}")
+            preview_embed = discord.Embed(title="Adding Enemy_move",
+                                          description=f"The move will be added for: {enemy.get_name()}")
 
             await interaction.message.edit(embed=preview_embed, view=SelectMoveTypeView(self.enemy, preview_embed))
             await interaction.response.defer()
@@ -492,7 +511,8 @@ class SelectLocation(discord.ui.Select):
             location = self.enemy.get_location()
 
             self.embed.set_field_at(index=3, name="Location:", value=location.get_name())
-            await interaction.message.edit(view=ConfirmInsertButtonView(enemy=self.enemy, mode="enemy"), embed=self.embed)
+            await interaction.message.edit(view=ConfirmInsertButtonView(enemy=self.enemy, mode="enemy"),
+                                           embed=self.embed)
 
         elif self.encounter:
             self.encounter.set_location(db.get_location_from_id(self.values[0]))
@@ -515,7 +535,8 @@ class SelectLocation(discord.ui.Select):
                 self.embed.set_field_at(index=10, name=f"Location_id: {ex_loc.get_id()}", value=ex_loc.get_name())
 
             if not self.quest.get_location_reward() or None:
-                await interaction.message.edit(embed=self.embed, view=SelectLocationView(embed=self.embed, quest=self.quest))
+                await interaction.message.edit(embed=self.embed,
+                                               view=SelectLocationView(embed=self.embed, quest=self.quest))
             else:
                 await interaction.message.edit(embed=self.embed, view=None)
                 await interaction.response.send_modal(AddQuestModal(modal_page=1, embed=self.embed, quest=self.quest))
@@ -529,10 +550,12 @@ class SelectLocation(discord.ui.Select):
                 self.quest.set_location_reward(db.get_location_from_id(self.values[0]))
                 rew_loc = self.quest.get_location_reward()
 
-                self.embed.set_field_at(index=8, name=f"Location_id_reward: {rew_loc.get_id()}", value=rew_loc.get_name())
+                self.embed.set_field_at(index=8, name=f"Location_id_reward: {rew_loc.get_id()}",
+                                        value=rew_loc.get_name())
 
             if not self.quest.get_explore_location() or None:
-                await interaction.message.edit(embed=self.embed, view=SelectLocationView(embed=self.embed, quest=self.quest))
+                await interaction.message.edit(embed=self.embed,
+                                               view=SelectLocationView(embed=self.embed, quest=self.quest))
             else:
                 await interaction.message.edit(embed=self.embed, view=None)
                 await interaction.response.send_modal(AddQuestModal(modal_page=1, embed=self.embed, quest=self.quest))
@@ -601,14 +624,17 @@ class AddEnemyModal(discord.ui.Modal):
 
             self.enemy.set_item_rewards(item)
             if self.embed is None:
-                self.embed = discord.Embed(title=f"Adding item(s) reward(s) to: [NAME: {self.enemy.get_name()} | ID: {self.enemy.get_id()}]")
+                self.embed = discord.Embed(
+                    title=f"Adding item(s) reward(s) to: [NAME: {self.enemy.get_name()} | ID: {self.enemy.get_id()}]")
                 self.embed.color = discord.Color.purple()
                 self.embed.set_footer(text=None)
 
             self.embed.add_field(name=f"Item_drop_id: {item.get_idItem()}", value=item.get_name())
             self.embed.add_field(name=f"Reward amount/count:", value=item.get_count())
             self.embed.add_field(name=f"Drop chance:", value=f"{item.get_drop_rate()}%")
-            await interaction.message.edit(embed=self.embed, view=InsertEnemyHasItemView(enemy=self.enemy, mode="enemy_with_item", embed=self.embed))
+            await interaction.message.edit(embed=self.embed,
+                                           view=InsertEnemyHasItemView(enemy=self.enemy, mode="enemy_with_item",
+                                                                       embed=self.embed))
 
         else:
             self.enemy.set_name(self.enemy_name.value)
@@ -637,7 +663,7 @@ class AddEnemyMoveModal(discord.ui.Modal):
                                       placeholder="Enter a valid phase number..", required=True)
 
     def __init__(self, enemy, move_type, embed):
-        super().__init__(title=f"Add Enemy_moves to [{enemy.get_name()}]")
+        super().__init__(title=f"Add Enemy_moves")
         self.enemy = enemy
         self.move_type = move_type
         self.embed = embed
@@ -693,7 +719,9 @@ class AddEnemyMoveModal(discord.ui.Modal):
 
         self.move_type.set_duration(0)
 
-        await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(enemy=self.enemy, mode="enemy_move", enemy_move=self.move_type))
+        await interaction.message.edit(embed=self.embed,
+                                       view=ConfirmInsertButtonView(enemy=self.enemy, mode="enemy_move",
+                                                                    enemy_move=self.move_type))
         await interaction.response.defer()
 
 
@@ -715,7 +743,8 @@ class AddEncounterModal(discord.ui.Modal):
         self.encounter.set_description(self.encounter_description)
         self.encounter.set_drop_rate(self.encounter_dropRate)
 
-        await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(mode="encounter", encounter=self.encounter))
+        await interaction.message.edit(embed=self.embed,
+                                       view=ConfirmInsertButtonView(mode="encounter", encounter=self.encounter))
         await interaction.response.defer()
 
 
@@ -755,7 +784,8 @@ class AddQuestModal(discord.ui.Modal):
                 self.quest_rune_reward = discord.ui.TextInput(label="Rune_reward:", style=discord.TextStyle.short,
                                                               placeholder="Please enter a valid reward", required=False)
                 self.quest_flask_reward = discord.ui.TextInput(label="Flask_reward:", style=discord.TextStyle.short,
-                                                               placeholder="Please enter the new flask_amount", required=False)
+                                                               placeholder="Please enter the new flask_amount",
+                                                               required=False)
 
                 self.add_item(self.quest_title)
                 self.add_item(self.quest_description)
@@ -874,25 +904,33 @@ class AddQuestModal(discord.ui.Modal):
 
         match self.modal_page:
             case 1:
-                await interaction.message.edit(embed=self.embed, view=NextQuestModalButtonView(modal_page=self.modal_page, quest=self.quest, embed=self.embed))
+                await interaction.message.edit(embed=self.embed,
+                                               view=NextQuestModalButtonView(modal_page=self.modal_page,
+                                                                             quest=self.quest, embed=self.embed))
             case 2:
                 if self.quest.get_req_kills() == "0":
                     self.quest.set_req_enemy(None)
-                    await interaction.message.edit(embed=self.embed, view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
+                    await interaction.message.edit(embed=self.embed,
+                                                   view=ConfirmInsertButtonView(quest=self.quest, mode="quest"))
                 else:
-                    await interaction.message.edit(embed=self.embed, view=SelectEnemyLocationView(quest=self.quest, embed=self.embed, modal_page=self.modal_page))
+                    await interaction.message.edit(embed=self.embed,
+                                                   view=SelectEnemyLocationView(quest=self.quest, embed=self.embed,
+                                                                                modal_page=self.modal_page))
             case 3:
                 self.embed.color = discord.Color.purple()
                 self.embed.title = "Adding item(s) to quest."
                 self.embed.set_footer(text=None)
-                self.embed.add_field(name=f"Item_Reward_id: {self.quest_item_reward_id}", value=db.get_item_name_from_id(self.quest_item_reward_id))
+                self.embed.add_field(name=f"Item_Reward_id: {self.quest_item_reward_id}",
+                                     value=db.get_item_name_from_id(self.quest_item_reward_id))
                 self.embed.add_field(name="Reward amount/count:", value=self.quest_item_count.value)
 
                 self.quest.set_item_reward(db.get_item_from_item_id(self.quest_item_reward_id))
                 item = self.quest.get_item_reward()[0]
                 item.set_count(self.quest_item_count.value)
 
-                await interaction.message.edit(embed=self.embed, view=InsertQuestHasItemView(embed=self.embed, quest=self.quest, mode="quest_with_item"))
+                await interaction.message.edit(embed=self.embed,
+                                               view=InsertQuestHasItemView(embed=self.embed, quest=self.quest,
+                                                                           mode="quest_with_item"))
 
         await interaction.response.defer()
 
@@ -903,7 +941,8 @@ class AddLocationModal(discord.ui.Modal):
         self.embed = embed
         self.location = location
 
-    item_id = discord.ui.TextInput(label="Item_id", style=discord.TextStyle.short, placeholder="Enter a valid item id..", required=True)
+    item_id = discord.ui.TextInput(label="Item_id", style=discord.TextStyle.short,
+                                   placeholder="Enter a valid item id..", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
         item = db.get_item_from_item_id(self.item_id.value)
@@ -912,8 +951,11 @@ class AddLocationModal(discord.ui.Modal):
 
         self.embed.add_field(name=f"ID: {item.get_idItem()}", value=item.get_name())
 
-        await interaction.message.edit(embed=self.embed, view=LocationAddItemView(embed=self.embed, location=self.location, mode="location_add_item"))
+        await interaction.message.edit(embed=self.embed,
+                                       view=LocationAddItemView(embed=self.embed, location=self.location,
+                                                                mode="location_add_item"))
         await interaction.response.defer()
+
 
 class SelectEnemyView(discord.ui.View):
     def __init__(self, quest=None, embed=None, modal_page=None, location_id=None):
@@ -964,7 +1006,8 @@ class SelectLocationView(discord.ui.View):
 class InsertQuestHasItemView(discord.ui.View):
     def __init__(self, enemy=None, mode=None, enemy_move=None, encounter=None, quest=None, embed=None):
         super().__init__(timeout=None)
-        self.add_item(ConfirmInsertButton(enemy=enemy, mode=mode, enemy_move=enemy_move, encounter=encounter, quest=quest))
+        self.add_item(
+            ConfirmInsertButton(enemy=enemy, mode=mode, enemy_move=enemy_move, encounter=encounter, quest=quest))
         self.add_item(InsertQuestHasItemButton(embed=embed, quest=quest))
 
 
@@ -1049,11 +1092,15 @@ class DeveloperDefaultView(discord.ui.View):
         self.user = user.update_user()
 
         self.add_item(DeveloperOptionsCategoryButton(text="Enemy", custom_view=EnemyCategoryView(user=user), user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Encounter", custom_view=EncounterCategoryView(user=user), user=user))
+        self.add_item(
+            DeveloperOptionsCategoryButton(text="Encounter", custom_view=EncounterCategoryView(user=user), user=user))
         self.add_item(DeveloperOptionsCategoryButton(text="Quest", custom_view=QuestCategoryView(user=user), user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Debugging", custom_view=DebugCategoryView(user=user), user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Database", custom_view=DBManagementCategoryView(user=user), user=user))
-        self.add_item(DeveloperOptionsCategoryButton(text="Location", custom_view=LocationCategoryView(user=user), user=user))
+        self.add_item(
+            DeveloperOptionsCategoryButton(text="Debugging", custom_view=DebugCategoryView(user=user), user=user))
+        self.add_item(
+            DeveloperOptionsCategoryButton(text="Database", custom_view=DBManagementCategoryView(user=user), user=user))
+        self.add_item(
+            DeveloperOptionsCategoryButton(text="Location", custom_view=LocationCategoryView(user=user), user=user))
 
 
 class Developer(commands.Cog):
