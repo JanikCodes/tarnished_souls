@@ -15,48 +15,49 @@ class SellButton(discord.ui.Button):
         self.amount = amount
 
     async def callback(self, interaction: discord.Interaction):
+        try:
+            if interaction.user.id != int(self.user.get_userId()):
+                embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                      description="",
+                                      colour=discord.Color.red())
+                return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
-        if interaction.user.id != int(self.user.get_userId()):
-            embed = discord.Embed(title=f"You're not allowed to use this action!",
-                                  description="",
-                                  colour=discord.Color.red())
-            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+            await interaction.response.defer()
 
-        await interaction.response.defer()
+            sell_item = db.get_item_from_user_with_id_rel(idUser=self.user.get_userId(), idRel=self.item.get_idRel())
+            if sell_item:
+                if sell_item.get_count() >= self.amount:
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(), amount=self.amount)
+                    db.increase_runes_from_user_with_id(self.user.get_userId(), self.item.get_price() * self.amount)
+                    db.check_for_quest_update(idUser=self.user.get_userId(), runes=self.item.get_price() * self.amount)
+                    message = interaction.message
+                    edited_embed = message.embeds[0]
+                    edited_embed.colour = discord.Color.green()
 
-        sell_item = db.get_item_from_user_with_id_rel(idUser=self.user.get_userId(), idRel=self.item.get_idRel())
-        if sell_item:
-            if sell_item.get_count() >= self.amount:
-                db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(), amount=self.amount)
-                db.increase_runes_from_user_with_id(self.user.get_userId(), self.item.get_price() * self.amount)
-                db.check_for_quest_update(idUser=self.user.get_userId(), runes=self.item.get_price() * self.amount)
-                message = interaction.message
-                edited_embed = message.embeds[0]
-                edited_embed.colour = discord.Color.green()
-
-                if sell_item.get_count() - self.amount > 0:
-                    edited_embed.title = f"**{sell_item.get_name()}** {sell_item.get_count() - self.amount}x `id: {sell_item.get_idRel()}`"
-                    await interaction.message.edit(embed=edited_embed, view=SellView(user=self.user, item=self.item))
+                    if sell_item.get_count() - self.amount > 0:
+                        edited_embed.title = f"**{sell_item.get_name()}** {sell_item.get_count() - self.amount}x `id: {sell_item.get_idRel()}`"
+                        await interaction.message.edit(embed=edited_embed, view=SellView(user=self.user, item=self.item))
+                    else:
+                        # completely sold
+                        edited_embed.title = f"**{sell_item.get_name()}**"
+                        edited_embed.description = "Completely sold this item!"
+                        await interaction.message.edit(embed=edited_embed, view=None)
                 else:
-                    # completely sold
-                    edited_embed.title = f"**{sell_item.get_name()}**"
-                    edited_embed.description = "Completely sold this item!"
+                    message = interaction.message
+                    edited_embed = message.embeds[0]
+                    edited_embed.colour = discord.Color.red()
+                    edited_embed.set_footer(text="This item no longer exists with that item quantity..")
+
                     await interaction.message.edit(embed=edited_embed, view=None)
             else:
                 message = interaction.message
                 edited_embed = message.embeds[0]
                 edited_embed.colour = discord.Color.red()
-                edited_embed.set_footer(text="This item no longer exists with that item quantity..")
+                edited_embed.set_footer(text="This item no longer exists..")
 
                 await interaction.message.edit(embed=edited_embed, view=None)
-        else:
-            message = interaction.message
-            edited_embed = message.embeds[0]
-            edited_embed.colour = discord.Color.red()
-            edited_embed.set_footer(text="This item no longer exists..")
-
-            await interaction.message.edit(embed=edited_embed, view=None)
-
+        except discord.errors.NotFound:
+            pass
 
 class SellView(discord.ui.View):
 
