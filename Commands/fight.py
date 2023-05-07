@@ -423,7 +423,7 @@ class FightBattleView(discord.ui.View):
         super().__init__()
 
         self.add_item(AttackButton(fight=fight))
-        self.add_item(HeavyAttackButton(fight=fight))
+        #self.add_item(HeavyAttackButton(fight=fight))
         self.add_item(HealButton(fight=fight))
         self.add_item(DodgeButton(fight=fight))
         #self.add_item(InstaKillButton(fight=fight))
