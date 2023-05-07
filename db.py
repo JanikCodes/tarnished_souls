@@ -758,7 +758,6 @@ def add_init_quest_to_user(idUser):
 
 
 def remove_quest_from_user_with_quest_id(idUser, idQuest):
-    print(f"Deleting {idQuest}")
     sql = f"DELETE FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
     cursor.execute(sql)
     mydb.commit()
