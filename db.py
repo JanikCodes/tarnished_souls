@@ -338,7 +338,7 @@ def fill_db_armor():
         res = cursor.fetchone()
         if res:
             # update item
-            sql = f"UPDATE item SET name = '{armor_name}', value = {total_negation}, price = {total_negation * 6}, iconCategory = '{armor['category']}', type='Armor', obtainable=1, weight={armor['weight']}, iconUrl='{armor['image']}' WHERE name = '{armor_name}';"
+            sql = f"UPDATE item SET name = '{armor_name}', value = {total_negation}, price = {total_negation * 40}, iconCategory = '{armor['category']}', type='Armor', obtainable=1, weight={armor['weight']}, iconUrl='{armor['image']}' WHERE name = '{armor_name}';"
             cursor.execute(sql)
             mydb.commit()
         else:

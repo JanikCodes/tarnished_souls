@@ -38,6 +38,7 @@ class Client(commands.Bot):
         print("Added weapon data..")
         db.fill_db_armor()
         print("Added armor data..")
+
         if FILL_FIRST_TIME_DATA:
             db.fill_db_init()
             print("Added init data..")
