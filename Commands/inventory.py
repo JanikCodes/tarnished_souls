@@ -151,7 +151,7 @@ async def view_inventory_page(interaction, label, user, page):
 
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
-                        value=f"**Used for smithing** \n", inline=False)
+                        value=f"**Used for upgrading weapons** \n", inline=False)
 
     new_embed.set_footer(text=f"Page {page}/{str(total_page_count)}")
 
