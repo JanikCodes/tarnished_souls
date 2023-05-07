@@ -10,6 +10,7 @@ from discord.ext import commands
 import db
 
 MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
+UPDATE_ITEMS = False
 FILL_FIRST_TIME_DATA = False
 
 class Client(commands.Bot):
@@ -34,10 +35,11 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
-        db.fill_db_weapons()
-        print("Added weapon data..")
-        db.fill_db_armor()
-        print("Added armor data..")
+        if UPDATE_ITEMS:
+            db.fill_db_weapons()
+            print("Added weapon data..")
+            db.fill_db_armor()
+            print("Added armor data..")
 
         if FILL_FIRST_TIME_DATA:
             db.fill_db_init()
