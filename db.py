@@ -338,13 +338,13 @@ def fill_db_armor():
         res = cursor.fetchone()
         if res:
             # update item
-            sql = f"UPDATE item SET name = '{armor_name}', value = {total_negation}, price = {total_negation * 40}, iconCategory = '{armor['category']}', type='Armor', obtainable=1, weight={armor['weight']}, iconUrl='{armor['image']}' WHERE name = '{armor_name}';"
+            sql = f"UPDATE item SET name = '{armor_name}', value = {total_negation}, price = {total_negation * 20}, iconCategory = '{armor['category']}', type='Armor', obtainable=1, weight={armor['weight']}, iconUrl='{armor['image']}' WHERE name = '{armor_name}';"
             cursor.execute(sql)
             mydb.commit()
         else:
             # add new item
             print(f"Added new item: {armor_name}")
-            sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 40}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}', '-', '-', '-', '-', '-', '-', '-', '-');"
+            sql = f"INSERT INTO item VALUES (NULL,'{armor_name}', {total_negation}, {total_negation * 20}, '{armor['category']}', 'Armor', 0, 0, 0, 0, 0, 0, 0, 0, 1, {armor['weight']}, '{armor['image']}', '-', '-', '-', '-', '-', '-', '-', '-');"
             cursor.execute(sql)
             mydb.commit()
 
