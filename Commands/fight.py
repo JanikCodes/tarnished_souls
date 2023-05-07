@@ -12,6 +12,7 @@ from Utils.classes import class_selection
 MAX_USERS = 4
 STAMINA_REGEN = 7
 STAMINA_COST = 45
+HEAVY_STAMINA_COST = 65
 HEAL_AMOUNT = 380
 RUNE_REWARD_FOR_WAVE = 450
 
@@ -345,8 +346,8 @@ class FightSelectView(discord.ui.View):
 
 
 class BattleButton(discord.ui.Button):
-    def __init__(self, fight, label, style):
-        super().__init__(label=label, style=style)
+    def __init__(self, fight, label, style, row):
+        super().__init__(label=label, style=style, row=row)
         self.fight = fight
 
     async def callback(self, interaction: discord.Interaction):
@@ -368,7 +369,7 @@ class BattleButton(discord.ui.Button):
 
 class InstaKillButton(BattleButton):
     def __init__(self, fight):
-        super().__init__(fight, label=f"Attack (-99999)", style=discord.ButtonStyle.danger)
+        super().__init__(fight, label=f"Attack (-99999)", style=discord.ButtonStyle.danger, row=0)
 
     def execute_action(self):
         self.fight.get_current_enemy().reduce_health(99999)
@@ -377,16 +378,28 @@ class InstaKillButton(BattleButton):
 class AttackButton(BattleButton):
     def __init__(self, fight):
         super().__init__(fight, label=f"Attack (-{fight.get_current_user().get_damage()})",
-                         style=discord.ButtonStyle.danger)
+                         style=discord.ButtonStyle.danger, row=0)
 
     def execute_action(self):
         if not self.fight.get_current_enemy().get_is_dodging():
             self.fight.get_current_enemy().reduce_health(self.fight.get_current_user().get_damage())
 
+class HeavyAttackButton(BattleButton):
+    def __init__(self, fight):
+        super().__init__(fight, label=f"Heavy Attack (-{ int(fight.get_current_user().get_damage() * 1.25) })",
+                         style=discord.ButtonStyle.danger, row=1)
+
+        # Disable button if not enough stamina
+        self.disabled = fight.get_current_user().get_stamina() < HEAVY_STAMINA_COST
+    def execute_action(self):
+        if not self.fight.get_current_enemy().get_is_dodging():
+            self.fight.get_current_enemy().reduce_health(int(self.fight.get_current_user().get_damage() * 1.25))
+
+
 
 class HealButton(BattleButton):
     def __init__(self, fight):
-        super().__init__(fight, label=f"Heal (+{HEAL_AMOUNT})", style=discord.ButtonStyle.success)
+        super().__init__(fight, label=f"Heal (+{HEAL_AMOUNT})", style=discord.ButtonStyle.success, row=0)
         # Disable button if no flasks remaining
         self.disabled = fight.get_current_user().get_remaining_flasks() == 0
 
@@ -396,7 +409,7 @@ class HealButton(BattleButton):
 
 class DodgeButton(BattleButton):
     def __init__(self, fight):
-        super().__init__(fight, label=f"Dodge (-{STAMINA_COST})", style=discord.ButtonStyle.primary)
+        super().__init__(fight, label=f"Dodge (-{STAMINA_COST})", style=discord.ButtonStyle.primary, row=0)
 
         # Disable button if not enough stamina
         self.disabled = fight.get_current_user().get_stamina() < STAMINA_COST
@@ -410,6 +423,7 @@ class FightBattleView(discord.ui.View):
         super().__init__()
 
         self.add_item(AttackButton(fight=fight))
+        self.add_item(HeavyAttackButton(fight=fight))
         self.add_item(HealButton(fight=fight))
         self.add_item(DodgeButton(fight=fight))
         #self.add_item(InstaKillButton(fight=fight))

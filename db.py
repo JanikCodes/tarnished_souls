@@ -37,7 +37,8 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f"INSERT INTO user VALUE({userId}, '{userName}', 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1)"
+    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1);'
+    sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
 
