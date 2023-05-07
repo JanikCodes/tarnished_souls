@@ -47,7 +47,8 @@ class Fight:
     def check_phase_change(self, enemy):
         enemy_logic = enemy.get_logic()
 
-        if enemy.get_phase() == 1:
+        # cuz phase 2 is maximum right now
+        if enemy.get_phase() == 2:
             return
 
         match enemy_logic.get_id():

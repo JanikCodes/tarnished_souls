@@ -19,7 +19,7 @@ class Enemy:
             self.item_rewards = db.get_items_from_enemy_id(idEnemy=idEnemy)
 
             self.health = self.get_max_health()
-            self.phase = 0
+            self.phase = 1
             self.last_move = None
             self.dodge_next = False
             self.last_move_text = str()
@@ -87,8 +87,7 @@ class Enemy:
             move.overwrite_name_in_description(name)
 
     def get_move(self, phase):
-        available_moves = [move for move in self.moves if
-                           move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0)]
+        available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0)]
         if available_moves:
             selected_move = random.choice(available_moves)
             self.last_move = selected_move
