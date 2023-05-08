@@ -149,6 +149,8 @@ async def view_inventory_page(interaction, label, user, page):
                         interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                         name=item.get_iconCategory())
 
+                    new_embed.description = "Below are your items sorted by their value."
+
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
                         value=f"**Used for upgrading weapons** \n", inline=False)
