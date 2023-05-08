@@ -1171,3 +1171,9 @@ def get_all_user_ids_from_location(location, himself):
             idUsers.append(row[0])
 
     return idUsers
+
+def update_enemy_move_damage(idMove, new_damage):
+    sql = f"UPDATE enemy_moves SET damage={new_damage} WHERE idMove = {idMove} ;"
+    cursor.execute(sql)
+    mydb.commit()
+
