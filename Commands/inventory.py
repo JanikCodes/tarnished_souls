@@ -97,7 +97,7 @@ class InventoryCategoryButton(discord.ui.Button):
 
 async def view_inventory_page(interaction, label, user, page):
     new_embed = discord.Embed(title=f"Inventory '{label}'",
-                              description="Below are your items sorted by their value (*damage/armor*).")
+                              description="Below are your items sorted by their value.")
     new_embed.colour = discord.Color.light_embed()
 
     items = db.get_items_from_user_id_with_type_at_page(idUser=user.get_userId(), type=label, page=page,

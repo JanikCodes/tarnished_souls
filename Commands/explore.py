@@ -11,7 +11,7 @@ import db
 from Classes.user import User
 from Utils.classes import class_selection
 
-STONE_DROP_CHANCE = 20
+STONE_DROP_CHANCE = 15
 EXPLORE_TIME = 60 * 15
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
@@ -50,8 +50,6 @@ class Explore(commands.Cog):
         embed = discord.Embed(title=f"**Exploring {user.get_current_location().get_name()}: {percentage:.1f}%**")
         embed.description = "You can find items, encounter events and explore the world."
         embed.colour = discord.Color.green() if finished else discord.Color.orange()
-
-        total_runes = 0
 
         seconds = EXPLORE_TIME * percentage / 100
         required_encounters = int((seconds / EXPLORE_TIME * ENCOUNTER_AMOUNT))

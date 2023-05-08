@@ -41,7 +41,7 @@ class BalanceCommand(commands.Cog):
                                 move_damage += random.randint(-4, 4)
                                 db.update_enemy_move_damage(move.get_id(), move_damage)
 
-                    await interaction.followup.send(f"Auto balanced all enemies with AVG {avg_damage} damage at location ID {id_location}!")
+                    await interaction.followup.send(f"Auto balanced all enemies with `AVG {avg_damage}` (Boss: +{boss_extra_dmg}) \ndamage at location `ID {id_location}`")
                 else:
                     await interaction.followup.send("You're not a developer!", ephemeral=True)
             else:
