@@ -6,7 +6,7 @@ import traceback
 import config
 import discord
 from colorama import Back, Fore, Style
-from discord.ext import commands
+from discord.ext import commands, tasks
 import db
 
 MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
@@ -44,6 +44,12 @@ class Client(commands.Bot):
         if FILL_FIRST_TIME_DATA:
             db.fill_db_init()
             print("Added init data..")
+
+        self.printer.start()
+
+    @tasks.loop(hours=12)
+    async def printer(self):
+        await db.update_usernames(self)
 
     async def send_error_message(self, error):
         channel = client.get_channel(config.botConfig["error-channel-id"])

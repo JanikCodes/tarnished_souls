@@ -1,3 +1,4 @@
+import asyncio
 import json
 import random
 
@@ -1177,3 +1178,29 @@ def update_enemy_move_damage(idMove, new_damage):
     cursor.execute(sql)
     mydb.commit()
 
+
+async def update_usernames(client):
+    idUsers = []
+    sql = f"SELECT idUser from user;"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+    print(f"SIZE: {len(idUsers)}")
+
+    for id in idUsers:
+        user = await client.fetch_user(id)
+        if user:
+            print(f"UPDATE user SET username = {user.name} WHERE idUser = {id};")
+            sql = "UPDATE user SET username = %s WHERE idUser = %s;"
+            cursor.execute(sql, (user.name, id))
+            mydb.commit()
+            print("Updated username!")
+        else:
+            print("Couldnt find user..")
+
+        # add a delay of 1 second between API requests
+        await asyncio.sleep(1)
+    print("FINISHED!!!")
