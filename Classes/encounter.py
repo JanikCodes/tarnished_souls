@@ -8,10 +8,14 @@ class Encounter:
             self.description = description
             self.drop_rate = drop_rate
             self.location = db.get_location_from_id(idLocation=idLocation)
+            self.item_rewards = []
 
         else:
             # empty constructor
-            self.location = []
+            self.location = None
+            self.item_rewards = []
+
+
     def get_id(self):
         return self.id
 
@@ -34,4 +38,10 @@ class Encounter:
         self.drop_rate = drop_rate
 
     def set_location(self, location):
-        self.location.append(location)
+        self.location = location
+
+    def set_item_rewards(self, item):
+        self.item_rewards.append(item)
+
+    def get_item_rewards(self):
+        return self.item_rewards

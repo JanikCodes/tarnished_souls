@@ -26,7 +26,8 @@ class Enemy:
             self.is_player = None
         else:
             # empty constructor
-            self.location = []
+            self.location = None
+            self.moves = None
             self.item_rewards = []
             pass
 
@@ -119,7 +120,7 @@ class Enemy:
     def get_location(self):
         return self.location
 
-    def set_id (self, id):
+    def set_id(self, id):
         self.id = id
 
     def set_name(self, name):
@@ -138,11 +139,11 @@ class Enemy:
         self.moves = db.get_enemy_moves_with_enemy_id(enemy_id)
 
     def set_location(self, location):
-        self.location.append(location)
+        self.location = location
 
     def set_phase(self, phase):
         self.phase = phase
-        
+
     def get_item_rewards_random(self):
         items = []
         for item in self.item_rewards:
@@ -159,3 +160,6 @@ class Enemy:
 
     def set_item_rewards(self, item_reward):
         self.item_rewards.append(item_reward)
+
+    def get_moves(self):
+        return self.moves
