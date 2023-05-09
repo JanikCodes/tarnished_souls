@@ -22,9 +22,11 @@ class Invite(commands.Cog):
 
     @app_commands.command(name="invite", description="Invite this bot to your server!")
     async def invite(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-
         try:
+            await interaction.response.defer()
+
+            self.client.add_to_activity()
+
             embed = discord.Embed(title=f"Invite TarnishedSouls",
                                   description=f"Thanks in case you want to invite me to your server! 💕\n"
                                               f"*Don't worry!* your progress is universal!")

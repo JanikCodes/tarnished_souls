@@ -514,25 +514,29 @@ class FightCommand(commands.Cog):
         app_commands.Choice(name="More soon..", value="public")
     ])
     async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str] = None):
-        await interaction.response.defer()
+        try:
+            await interaction.response.defer()
 
-        if db.validate_user(interaction.user.id):
+            self.client.add_to_activity()
 
-            user = User(interaction.user.id)
-            selected_visibility = None
+            if db.validate_user(interaction.user.id):
 
-            if visibility:
-                selected_visibility = visibility.value
+                user = User(interaction.user.id)
+                selected_visibility = None
 
-            embed = discord.Embed(title=f" {user.get_userName()} is choosing an enemy to fight..",
-                                  description=f"The enemies below are all from `{user.get_current_location().get_name()}`\n"
-                                              f"*You can fight different enemies if you change your location with* `/travel`",
-                                  colour=discord.Color.orange())
+                if visibility:
+                    selected_visibility = visibility.value
 
-            await interaction.followup.send(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
-        else:
-            await class_selection(interaction=interaction)
+                embed = discord.Embed(title=f" {user.get_userName()} is choosing an enemy to fight..",
+                                      description=f"The enemies below are all from `{user.get_current_location().get_name()}`\n"
+                                                  f"*You can fight different enemies if you change your location with* `/travel`",
+                                      colour=discord.Color.orange())
 
+                await interaction.followup.send(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
+            else:
+                await class_selection(interaction=interaction)
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(FightCommand(client))

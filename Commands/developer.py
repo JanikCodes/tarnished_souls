@@ -1114,9 +1114,9 @@ class Developer(commands.Cog):
         app_commands.Choice(name="balancing", value="balancing")
     ])
     async def developer(self, interaction: discord.Interaction, tool: app_commands.Choice[str] = None):
-        await interaction.response.defer()
-
         try:
+            await interaction.response.defer()
+
             if db.validate_user(interaction.user.id):
 
                 user = User(interaction.user.id)

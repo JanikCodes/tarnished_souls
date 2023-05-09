@@ -3,6 +3,8 @@ import os
 import platform
 import time
 import traceback
+from datetime import datetime
+
 import config
 import discord
 from colorama import Back, Fore, Style
@@ -16,6 +18,7 @@ FILL_FIRST_TIME_DATA = False
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='!-&%', intents=discord.Intents().all())
+        self.activity_list = {i: 0 for i in range(24)}
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
             if fileName.endswith('.py'):
@@ -45,10 +48,10 @@ class Client(commands.Bot):
             db.fill_db_init()
             print("Added init data..")
 
-        self.printer.start()
+        self.username_upd_task.start()
 
     @tasks.loop(hours=12)
-    async def printer(self):
+    async def username_upd_task(self):
         await db.update_usernames(self)
 
     async def send_error_message(self, error):
@@ -57,6 +60,10 @@ class Client(commands.Bot):
         await channel.send(error_message)
     async def on_error(self, event, *args, **kwargs):
         await self.send_error_message(traceback.format_exc())
+
+    def add_to_activity(self):
+        hour = datetime.now().hour
+        self.activity_list[hour] += 1
 
 client = Client()
 client.run(config.botConfig["token"])

@@ -16,9 +16,9 @@ class BalanceCommand(commands.Cog):
 
     @app_commands.command(name="balance", description="Developer only.. sorry")
     async def balance(self, interaction: discord.Interaction, id_location: int, avg_damage: int, boss_extra_dmg: int):
-        await interaction.response.defer()
-
         try:
+            await interaction.response.defer()
+
             if db.validate_user(interaction.user.id):
 
                 if interaction.user.id in config.botConfig["developer-ids"]:

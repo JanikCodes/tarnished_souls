@@ -26,6 +26,9 @@ class Explore(commands.Cog):
     async def explore(self, interaction: discord.Interaction):
         try:
             await interaction.response.defer()
+
+            self.client.add_to_activity()
+
             if db.validate_user(interaction.user.id):
 
                 user = User(interaction.user.id)

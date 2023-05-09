@@ -57,9 +57,11 @@ class Equip(commands.Cog):
     )
     @app_commands.rename(item_id='id')
     async def equip(self, interaction: discord.Interaction, item_id: int):
-        await interaction.response.defer()
-
         try:
+            await interaction.response.defer()
+
+            self.client.add_to_activity()
+
             if db.validate_user(interaction.user.id):
 
                 user = User(interaction.user.id)
