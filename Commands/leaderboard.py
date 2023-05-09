@@ -50,9 +50,11 @@ class LeaderboardCommand(commands.Cog):
         app_commands.Choice(name="Horde-mode", value="wave"),
     ])
     async def leaderboard(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
-        await interaction.response.defer()
-
         try:
+            await interaction.response.defer()
+
+            self.client.add_to_activity()
+
             if db.validate_user(interaction.user.id):
 
                 selected_choice = choices.value

@@ -22,9 +22,11 @@ class VoteCommand(commands.Cog):
 
     @app_commands.command(name="vote", description="Use this to vote our bot on top.gg!")
     async def vote(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-
         try:
+            await interaction.response.defer()
+
+            self.client.add_to_activity()
+
             embed = discord.Embed(title=f"Vote for TarnishedSouls",
                                   description=f"Thanks! You can vote the bot with the button below \nand you can also write a review! 💕\n"
                                               f"Thanks")

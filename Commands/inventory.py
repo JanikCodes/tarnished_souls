@@ -180,8 +180,11 @@ class Inventory(commands.Cog):
 
     @app_commands.command(name="inventory", description="Display your inventory")
     async def inventory(self, interaction: discord.Interaction):
-        await interaction.response.defer()
         try:
+            await interaction.response.defer()
+
+            self.client.add_to_activity()
+
             if db.validate_user(interaction.user.id):
 
                 user = User(interaction.user.id)
