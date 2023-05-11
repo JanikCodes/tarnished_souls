@@ -1,0 +1,9 @@
+INSERT INTO item values(1001, 'Smithing Stone [1]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f69c09b3fl0i1z5i8s4czdm29hd.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1002, 'Smithing Stone [2]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f695e1877l0i1z2esul0ltnftrn.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1003, 'Smithing Stone [3]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f69ac860fl0i1z2dnysa6pbi4pu.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1004, 'Smithing Stone [4]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f69bee3a7l0i1z2fc6lkodwqn7x3.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1005, 'Smithing Stone [5]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f695d4f2el0i1z2y303232bvbqcsm.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1006, 'Smithing Stone [6]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f697b82e2l0i1z2zbvgg37zujx7h.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1007, 'Smithing Stone [7]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f6973188al0i1z2yq2dinoi6bw1s.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1008, 'Smithing Stone [8]', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f69ce5a34l0i1z3ghagihivxr1l8.png',0,0,0,0,0,0,0,0);
+INSERT INTO item values(1009, 'Ancient Dragon Smithing Stone', 250, 300, 'smithing_stone', 'items', 0,0,0,0,0,0,0,0,0,0,'https://eldenring.fanapis.com/images/items/17f69575078l0i1z3hvssftszqfcdc.png',0,0,0,0,0,0,0,0);

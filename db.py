@@ -1193,14 +1193,22 @@ async def update_usernames(client):
     for id in idUsers:
         user = await client.fetch_user(id)
         if user:
-            print(f"UPDATE user SET username = {user.name} WHERE idUser = {id};")
             sql = "UPDATE user SET username = %s WHERE idUser = %s;"
             cursor.execute(sql, (user.name, id))
             mydb.commit()
-            print("Updated username!")
-        else:
-            print("Couldnt find user..")
 
         # add a delay of 1 second between API requests
         await asyncio.sleep(1)
     print("FINISHED!!!")
+
+
+def has_user_enough_items(idUser, idItem, reqcount):
+    sql = f"SELECT COUNT(idUser) FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()[0]
+    if res:
+        count = int(res)
+        if count >= reqcount:
+            return True
+        else:
+            return False

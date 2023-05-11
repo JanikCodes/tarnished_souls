@@ -2,7 +2,7 @@ import db
 
 BASE_DAMAGE = 25
 
-lookup_table = {
+VIGOR_TABLE = {
     1: 300, 2: 304, 3: 312, 4: 322, 5: 334, 6: 347, 7: 362, 8: 378, 9: 396, 10: 414,
     11: 434, 12: 455, 13: 476, 14: 499, 15: 522, 16: 547, 17: 572, 18: 598, 19: 624, 20: 652,
     21: 680, 22: 709, 23: 738, 24: 769, 25: 800, 26: 833, 27: 870, 28: 910, 29: 951, 30: 994,
@@ -14,7 +14,6 @@ lookup_table = {
     81: 2020, 82: 2026, 83: 2031, 84: 2036, 85: 2041, 86: 2046, 87: 2051, 88: 2056, 89: 2060, 90: 2065,
     91: 2070, 92: 2074, 93: 2078, 94: 2082, 95: 2086, 96: 2090, 97: 2094, 98: 2097, 99: 2100
 }
-
 
 class User:
     def __init__(self, userId=None):
@@ -236,7 +235,7 @@ class User:
         return self.remaining_flasks
 
     def get_max_health(self):
-        return lookup_table[self.vigor] if self.vigor in lookup_table else None
+        return VIGOR_TABLE[self.vigor] if self.vigor in VIGOR_TABLE else None
 
     def reduce_health(self, amount):
         absorb = int((self.get_total_armor() / 8))

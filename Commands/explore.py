@@ -100,17 +100,18 @@ class Explore(commands.Cog):
                     loot_sentence = f"\n **:grey_exclamation:Found:** {emoji} `{item.get_name()}` {item.get_extra_value_text()}"
 
                 if STONE_DROP_CHANCE >= random.randint(0, 100):
-                    stone_item = random.choice(new_encounter.get_location().get_item_rewards())
-                    new_encounter.set_item_rewards(stone_item)
+                    extra_items = new_encounter.get_location().get_item_rewards()
+                    if len(extra_items) > 0:
+                        stone_item = random.choice()
+                        new_encounter.set_item_rewards(stone_item)
 
-                    emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis,
-                                              name=stone_item.get_iconCategory())
+                        emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis,
+                                                  name=stone_item.get_iconCategory())
 
-                    db.add_item_to_user(idUser=user.get_userId(), item=stone_item)
-                    db.add_item_to_encounter_has_item(idEncounter=new_encounter.get_id(), item=stone_item)
+                        db.add_item_to_user(idUser=user.get_userId(), item=stone_item)
+                        db.add_item_to_encounter_has_item(idEncounter=new_encounter.get_id(), item=stone_item)
 
-                    loot_sentence += f"\n **:grey_exclamation:Found:** {emoji} `{stone_item.get_name()}`"
-
+                        loot_sentence += f"\n **:grey_exclamation:Found:** {emoji} `{stone_item.get_name()}`"
                 else:
                     pass
 

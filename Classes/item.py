@@ -10,6 +10,8 @@ SCALING_VALUES = {
     'S': 1.75,
 }
 
+WEAPON_DMG_INCREASE_PER_UPGRADE = 6
+
 class Item:
     def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength,
                  reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl, sclVigor, sclMind, sclEndurance, sclStrength, sclDexterity, sclIntelligence, sclFaith, sclArcane):
@@ -74,7 +76,10 @@ class Item:
         return val
 
     def get_total_value(self, user):
-        return self.get_value_with_scaling(user) + self.extra_value
+        return self.get_value_with_scaling(user) + self.extra_value + self.get_level_value()
+
+    def get_level_value(self):
+        return self.level * WEAPON_DMG_INCREASE_PER_UPGRADE
 
     def get_value_with_scaling(self, user):
         return self.value + self.get_total_scaling_value(user)
@@ -90,7 +95,6 @@ class Item:
         total_value += self.get_scaling_value(self.sclFaith, user.get_faith())
         total_value += self.get_scaling_value(self.sclArcane, user.get_arcane())
         return int(total_value)
-
 
     def get_iconCategory(self):
         return self.iconCategory

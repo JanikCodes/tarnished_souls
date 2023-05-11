@@ -50,7 +50,7 @@ class Client(commands.Bot):
 
         self.username_upd_task.start()
 
-    @tasks.loop(hours=12)
+    @tasks.loop(hours=24)
     async def username_upd_task(self):
         await db.update_usernames(self)
 
