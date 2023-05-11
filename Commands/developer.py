@@ -1107,25 +1107,15 @@ class Developer(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    tools: ["balancing", "test_tool"]
 
     @app_commands.command(name="developer", description="Developer only.. sorry")
-    @app_commands.choices(tool=[
-        app_commands.Choice(name="balancing", value="balancing")
-    ])
-    async def developer(self, interaction: discord.Interaction, tool: app_commands.Choice[str] = None):
+    async def developer(self, interaction: discord.Interaction):
         try:
             await interaction.response.defer()
 
             if db.validate_user(interaction.user.id):
 
                 user = User(interaction.user.id)
-
-                if tool:
-                    match tool:
-                        case "balancing":
-                            await interaction.followup.send("this is a test.", ephemeral=True)
-                    return
 
                 if interaction.user.id in config.botConfig["developer-ids"]:
 
