@@ -12,7 +12,7 @@ from Classes.user import User
 from Utils.classes import class_selection
 
 STONE_DROP_CHANCE = 15
-EXPLORE_TIME = 60 * 15
+EXPLORE_TIME = 20
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 
@@ -102,7 +102,7 @@ class Explore(commands.Cog):
                 if STONE_DROP_CHANCE >= random.randint(0, 100):
                     extra_items = new_encounter.get_location().get_item_rewards()
                     if len(extra_items) > 0:
-                        stone_item = random.choice()
+                        stone_item = random.choice(extra_items)
                         new_encounter.set_item_rewards(stone_item)
 
                         emoji = discord.utils.get(self.client.get_guild(763425801391308901).emojis,

@@ -104,12 +104,13 @@ class Sell(commands.Cog):
 
                     match item.get_item_type():
                         case 'Weapon':
-                            value_name = "Damage"
+                            embed.add_field(name="", value=f"**Statistics:** \n"
+                                                           f"`Damage:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**",
+                                            inline=False)
                         case 'Armor':
-                            value_name = "Armor"
-
-                    embed.add_field(name="", value=f"**Statistics:** \n"
-                                                   f"`{value_name}:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**", inline=False)
+                            embed.add_field(name="", value=f"**Statistics:** \n"
+                                                           f"`Armor:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**",
+                                            inline=False)
 
                     embed.colour = discord.Color.orange()
 

@@ -92,7 +92,7 @@ class SmithingCommand(commands.Cog):
                 embed.colour = discord.Color.orange()
 
                 disabled = not db.has_user_enough_items(idUser=user.get_userId(), idItem=req_material.get_idItem(), reqcount=new_level * 2)
-
+                print(disabled)
                 await interaction.followup.send(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled))
             else:
                 await class_selection(interaction=interaction)
