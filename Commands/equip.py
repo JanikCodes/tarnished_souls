@@ -72,6 +72,12 @@ class Equip(commands.Cog):
                                           colour=discord.Color.red())
                     await interaction.followup.send(embed=embed, ephemeral=True)
                 else:
+                    if item.get_item_type() == "items":
+                        embed = discord.Embed(title=f"This.. doesn't seem like something you would equip..",
+                                              description=f"Nice try tho.",
+                                              colour=discord.Color.red())
+                        return await interaction.followup.send(embed=embed, ephemeral=True)
+
                     embed = discord.Embed(title=f"**{item.get_name()}** `id: {item.get_idRel()}`",
                                           description=f"Do you want to equip this item?")
 
