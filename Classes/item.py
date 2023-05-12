@@ -156,7 +156,7 @@ class Item:
             return f"with **__{self.extra_value}__ bonus** armor! :star2:"
 
     def set_level(self, level):
-        self.dexterity = level
+        self.level = level
 
     def set_drop_rate(self, val):
         self.drop_rate = val

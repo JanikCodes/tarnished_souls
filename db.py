@@ -495,11 +495,20 @@ def add_item_to_user(idUser, item):
         sql = f"UPDATE user_has_item r SET r.count = r.count + {item.get_count()} WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
         cursor.execute(sql)
         mydb.commit()
+
+        sql = f"SELECT idRel FROM user_has_item WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND level = {item.get_level()} AND value = {item.get_extra_value()};"
+        cursor.execute(sql)
+        # Retrieve the primary key value from the fetched row
+        res = cursor.fetchone()
+        if res:
+            return res[0]
     else:
         # add new item to table
         sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
         cursor.execute(sql)
         mydb.commit()
+        return cursor.lastrowid
+
 
 
 def add_item_to_user_with_item_name(idUser, item_name):
@@ -1188,7 +1197,6 @@ async def update_usernames(client):
     if res:
         for row in res:
             idUsers.append(row[0])
-    print(f"SIZE: {len(idUsers)}")
 
     for id in idUsers:
         user = await client.fetch_user(id)
@@ -1199,11 +1207,10 @@ async def update_usernames(client):
 
         # add a delay of 1 second between API requests
         await asyncio.sleep(1)
-    print("FINISHED!!!")
 
 
 def has_user_enough_items(idUser, idItem, reqcount):
-    sql = f"SELECT COUNT(idUser) FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
+    sql = f"SELECT count FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()[0]
     if res:
