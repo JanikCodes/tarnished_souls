@@ -501,6 +501,7 @@ def add_item_to_user(idUser, item):
         # Retrieve the primary key value from the fetched row
         res = cursor.fetchone()
         if res:
+            print(f"NEW REL ID: {res[0]}")
             return res[0]
     else:
         # add new item to table

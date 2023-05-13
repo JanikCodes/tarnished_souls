@@ -98,9 +98,16 @@ class UpgradeButton(discord.ui.Button):
 
                     await update_item(interaction=interaction, user=self.user, edit=True)
                 else:
-                    pass
-                    # remove that item and increase count if identical rel exist
+                    # TODO: It doesnt go in here yet, so I need to do some checks..
+                    print("Identical exist! Removing old item and increasing count")
+
+                    # remove that item
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    # and increase count of identical rel
+                    existing_item.count = 1
+                    db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
                     # equip that rel ID where we increased count
+                    db.equip_item(idUser=self.user.get_userId(), item=existing_item)
             else:
                 pass
 
