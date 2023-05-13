@@ -98,9 +98,6 @@ class UpgradeButton(discord.ui.Button):
 
                     await update_item(interaction=interaction, user=self.user, edit=True)
                 else:
-                    # TODO: It doesnt go in here yet, so I need to do some checks..
-                    print("Identical exist! Removing old item and increasing count")
-
                     # remove that item
                     db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
                     # and increase count of identical rel
@@ -108,17 +105,32 @@ class UpgradeButton(discord.ui.Button):
                     db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
                     # equip that rel ID where we increased count
                     db.equip_item(idUser=self.user.get_userId(), item=existing_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
             else:
-                pass
-
                 # item count is greater than 1
-                    # check if identical +1 rel exist
-                        # reduce count from old rel and increase count in new rel
-                        # equip that new rel
-                    # no identical rel exist
-                        # create new item
-                        # equip that
-                        # reduce count from old rel
+
+                real_item.level += 1
+                existing_item = db.does_item_exist_for_user(idUser=self.user.get_userId(), item=real_item)
+
+                # check if identical +1 rel exist
+                if not existing_item:
+                    # reduce count from old rel
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    # create new item
+                    real_item.count = 1
+                    new_id_rel = db.add_item_to_user(idUser=self.user.get_userId(), item=real_item)
+                    real_item.set_idRel(new_id_rel)
+                    # equip that
+                    db.equip_item(idUser=self.user.get_userId(), item=real_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
+                else:
+                    # reduce count from old rel and increase count in new rel
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    existing_item.count = 1
+                    db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
+                    # equip that new rel
+                    db.equip_item(idUser=self.user.get_userId(), item=existing_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
 
         except discord.errors.NotFound:
             pass

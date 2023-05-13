@@ -1226,7 +1226,7 @@ def does_item_exist_for_user(idUser, item):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        return db.get_item_from_user_with_id_rel(idUser=idUser, idRel=res)
+        return db.get_item_from_user_with_id_rel(idUser=idUser, idRel=res[0])
 
     return None
 
