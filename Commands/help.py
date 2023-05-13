@@ -37,10 +37,16 @@ class Help(commands.Cog):
                     embed.colour = discord.Color.light_embed()
                     await interaction.followup.send(embed=embed)
                 case 'cmds':
+                    count = 0
                     all_cmds = str()
                     for fileName in os.listdir('./Commands'):
                         if fileName.endswith('.py'):
-                            all_cmds += f"`{fileName[:-3]}` \n"
+                            count += 1
+                            if count == 3:
+                                count = 0
+                                all_cmds += f"`{fileName[:-3]}`\n"
+                            else:
+                                all_cmds += f"`{fileName[:-3]}` "
 
                     embed = discord.Embed(title=f"Information about `Commands`",
                                           description=all_cmds)

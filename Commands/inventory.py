@@ -118,8 +118,6 @@ async def view_inventory_page(interaction, label, user, page):
 
                     extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
 
-                    level_val_text = str() if item.get_level_value() == 0 else f"(**+{item.get_level_value()}**)"
-
                     level_text = str()
                     if item.get_level() > 0:
                         level_text = f"+{item.get_level()}"
@@ -127,7 +125,7 @@ async def view_inventory_page(interaction, label, user, page):
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ {level_text} `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text} {level_val_text}`Weight:` **{item.get_weight()}**\n"
+                              f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text}`Weight:` **{item.get_weight()}**\n"
                               f"**Requirements:** \n"
                               f"{item.get_requirement_text()}\n"
                               f"**Scaling:** \n"
