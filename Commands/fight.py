@@ -143,7 +143,7 @@ class Fight:
         else:
             await self.interaction.edit_original_response(embed=embed, view=None)
 
-    async def update_fight_battle_view(self):
+    async def update_fight_battle_view(self, force_idle_move = False):
 
         # Check for phase change
         self.check_phase_change(self.get_current_enemy())
@@ -152,13 +152,20 @@ class Fight:
         if self.get_is_horde_mode():
             if self.get_current_enemy().get_health() <= 0 and self.enemy_index + 1 < len(self.enemy_list):
                 self.enemy_index = self.enemy_index + 1
+                force_idle_move = True
 
         # reset enemy dodge state
         self.get_current_enemy().reset_dodge()
 
         # get move from enemy
         enemy_phase = self.get_current_enemy().get_phase()
-        enemy_move = self.get_current_enemy().get_move(phase=enemy_phase)
+
+        # if we force idle, choose idle
+        if force_idle_move:
+            enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=5)
+        else:
+            enemy_move = self.get_current_enemy().get_move(phase=enemy_phase)
+
         enemy, users = enemy_move.execute(enemy=self.get_current_enemy(), users=self.users)
         self.turn_index = turn_index = self.cycle_turn_index(turn_index=self.turn_index, users=users)
 
@@ -326,7 +333,7 @@ class StartButton(discord.ui.Button):
 
             fight = Fight(enemy_list=[self.enemy], users=self.users, interaction=interaction, turn_index=0,
                           enemy_index=0)
-            await fight.update_fight_battle_view()
+            await fight.update_fight_battle_view(force_idle_move=True)
 
         # horde mode ?
         elif self.enemy_list:
@@ -339,7 +346,7 @@ class StartButton(discord.ui.Button):
 
             fight = Fight(users=self.users, interaction=interaction, turn_index=0, enemy_index=0,
                           enemy_list=self.enemy_list, horde_mode=True)
-            await fight.update_fight_battle_view()
+            await fight.update_fight_battle_view(force_idle_move=True)
 
 
 class FightSelectView(discord.ui.View):
@@ -482,7 +489,7 @@ class FightEnemySelect(discord.ui.Select):
             selected_enemy.overwrite_alL_move_descriptions(selected_enemy.get_name())
 
             fight = Fight(enemy_list=[selected_enemy], users=self.users, interaction=interaction, turn_index=0, enemy_index=0)
-            await fight.update_fight_battle_view()
+            await fight.update_fight_battle_view(force_idle_move=True)
             return
 
         # If not solo lobby

@@ -15,7 +15,7 @@ class BalanceCommand(commands.Cog):
         self.client = client
 
     @app_commands.command(name="balance", description="Developer only.. sorry")
-    async def balance(self, interaction: discord.Interaction, id_location: int, avg_damage: int, boss_extra_dmg: int):
+    async def balance(self, interaction: discord.Interaction, id_location: int, avg_min_damage: int, avg_max_damage: int, boss_extra_dmg: int):
         try:
             await interaction.response.defer()
 
@@ -27,7 +27,7 @@ class BalanceCommand(commands.Cog):
 
                     for enemy in enemy_list:
                         total_moves = len(enemy.moves)
-                        enemy_average_damage_per_turn = avg_damage
+                        enemy_average_damage_per_turn = random.randint(avg_min_damage, avg_max_damage)
 
                         if enemy.description.upper() == "BOSS":
                             print("Adjusted boss dmg..")
@@ -41,7 +41,7 @@ class BalanceCommand(commands.Cog):
                                 move_damage += random.randint(-4, 4)
                                 db.update_enemy_move_damage(move.get_id(), move_damage)
 
-                    await interaction.followup.send(f"Auto balanced all enemies with `AVG {avg_damage}` (Boss: +{boss_extra_dmg}) \ndamage at location `ID {id_location}`")
+                    await interaction.followup.send(f"Auto balanced all enemies with `AVG {avg_min_damage} - {avg_max_damage}` (Boss: +{boss_extra_dmg}) damage at location `ID {id_location}`")
                 else:
                     await interaction.followup.send("You're not a developer!", ephemeral=True)
             else:

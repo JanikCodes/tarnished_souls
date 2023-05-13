@@ -322,7 +322,7 @@ def fill_db_weapons():
         scl_faith = get_json_scale_attribute(weapon, "Fai")
         scl_arcane = get_json_scale_attribute(weapon, "Arc")
 
-        total_dmg = sum(attack['amount'] for attack in weapon['attack'])
+        total_dmg = sum(attack['amount'] for attack in weapon['attack'] if attack['name'] != 'Crit')
 
         sql = f"SELECT * FROM item WHERE name = '{weapon_name}';"
         cursor.execute(sql)
