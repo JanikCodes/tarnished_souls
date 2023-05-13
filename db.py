@@ -39,8 +39,12 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1);'
+    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 2, 1);'
     sql.replace('"', '\"')
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f'INSERT INTO user_has_item_equipped VALUE(null, {userId}, null, null, null, null, null);'
     cursor.execute(sql)
     mydb.commit()
 
@@ -635,7 +639,7 @@ def equip_item(idUser, item):
 
     res = cursor.fetchone()
     if res:
-        sql = f"UPDATE user u SET u.{equip_slot_name} = {item.get_idRel()} WHERE u.idUser = {idUser};"
+        sql = f"UPDATE user_has_item_equipped u SET u.{equip_slot_name} = {item.get_idRel()} WHERE u.idUser = {idUser};"
         cursor.execute(sql)
         mydb.commit()
 
