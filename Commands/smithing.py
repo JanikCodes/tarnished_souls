@@ -14,6 +14,7 @@ MATERIAL_TABLE = {
 }
 
 async def update_item(interaction, user, edit):
+    user = user.update_user()
     weapon = user.get_weapon()
     item = db.get_item_from_user_with_id_rel(idRel=weapon.get_idRel(), idUser=user.get_userId())
 
@@ -72,6 +73,45 @@ class UpgradeButton(discord.ui.Button):
                 return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
             await interaction.response.defer()
+
+            message = interaction.message
+            edited_embed = message.embeds[0]
+
+            real_item = db.get_item_from_user_with_id_rel(idUser=self.user.get_userId(), idRel=self.item.get_idRel())
+            # check if item even exists anymore
+            if not real_item:
+                edited_embed.colour = discord.Color.red()
+                edited_embed.set_footer(text="This item no longer exists..")
+                return await interaction.message.edit(embed=edited_embed, view=None)
+
+            item_count = real_item.get_count()
+
+            # check item count
+            if item_count == 1:
+                # item count is simply 1
+                real_item.level += 1
+                existing_item = db.does_item_exist_for_user(idUser=self.user.get_userId(), item=real_item)
+
+                # +1 that item if no identical rel's exist
+                if not existing_item:
+                    db.update_item_from_user(idUser=self.user.get_userId(), item=real_item)
+
+                    await update_item(interaction=interaction, user=self.user, edit=True)
+                else:
+                    pass
+                    # remove that item and increase count if identical rel exist
+                    # equip that rel ID where we increased count
+            else:
+                pass
+
+                # item count is greater than 1
+                    # check if identical +1 rel exist
+                        # reduce count from old rel and increase count in new rel
+                        # equip that new rel
+                    # no identical rel exist
+                        # create new item
+                        # equip that
+                        # reduce count from old rel
 
         except discord.errors.NotFound:
             pass

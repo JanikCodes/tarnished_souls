@@ -1212,10 +1212,25 @@ async def update_usernames(client):
 def has_user_enough_items(idUser, idItem, reqcount):
     sql = f"SELECT count FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
     cursor.execute(sql)
-    res = cursor.fetchone()[0]
+    res = cursor.fetchone()
     if res:
-        count = int(res)
-        if count >= reqcount:
+        if int(res[0]) >= reqcount:
             return True
         else:
             return False
+
+
+def does_item_exist_for_user(idUser, item):
+    sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return db.get_item_from_user_with_id_rel(idUser=idUser, idRel=res)
+
+    return None
+
+
+def update_item_from_user(idUser, item):
+    sql = f"UPDATE user_has_item SET level = {item.get_level()} WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND idRel = {item.get_idRel()}"
+    cursor.execute(sql)
+    mydb.commit()
