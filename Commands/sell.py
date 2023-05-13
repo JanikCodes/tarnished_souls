@@ -2,14 +2,16 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils.classes import class_selection
 
 
 class SellButton(discord.ui.Button):
-    def __init__(self, user, item, amount, disabled = False):
-        super().__init__(label=f"Sell {amount}x ({item.get_price() * amount} runes)", style=discord.ButtonStyle.danger, disabled=disabled)
+    def __init__(self, user, item, amount, disabled=False):
+        super().__init__(label=f"Sell {amount}x ({item.get_price() * amount} runes)", style=discord.ButtonStyle.danger,
+                         disabled=disabled)
         self.user = user
         self.item = item
         self.amount = amount
@@ -27,7 +29,8 @@ class SellButton(discord.ui.Button):
             sell_item = db.get_item_from_user_with_id_rel(idUser=self.user.get_userId(), idRel=self.item.get_idRel())
             if sell_item:
                 if sell_item.get_count() >= self.amount:
-                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(), amount=self.amount)
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(),
+                                               amount=self.amount)
                     db.increase_runes_from_user_with_id(self.user.get_userId(), self.item.get_price() * self.amount)
                     db.check_for_quest_update(idUser=self.user.get_userId(), runes=self.item.get_price() * self.amount)
                     message = interaction.message
@@ -36,7 +39,8 @@ class SellButton(discord.ui.Button):
 
                     if sell_item.get_count() - self.amount > 0:
                         edited_embed.title = f"**{sell_item.get_name()}** {sell_item.get_count() - self.amount}x `id: {sell_item.get_idRel()}`"
-                        await interaction.message.edit(embed=edited_embed, view=SellView(user=self.user, item=self.item))
+                        await interaction.message.edit(embed=edited_embed,
+                                                       view=SellView(user=self.user, item=self.item))
                     else:
                         # completely sold
                         edited_embed.title = f"**{sell_item.get_name()}**"
@@ -59,6 +63,7 @@ class SellButton(discord.ui.Button):
         except discord.errors.NotFound:
             pass
 
+
 class SellView(discord.ui.View):
 
     def __init__(self, user, item):
@@ -74,18 +79,15 @@ class Sell(commands.Cog):
         self.client = client
 
     @app_commands.command(name="sell", description="Sell one of your items")
-    @app_commands.describe(
-        item_id="Enter an item id",
-    )
+    @app_commands.describe(item_id="Enter an item id")
     @app_commands.rename(item_id='id')
-    async def sell(self, interaction: discord.Interaction, item_id: int):
+    async def sell(self, interaction: discord.Interaction, item_id: int = None):
         try:
             await interaction.response.defer()
 
             self.client.add_to_activity()
 
             if db.validate_user(interaction.user.id):
-
                 user = User(interaction.user.id)
                 item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
                 if item is None:
@@ -120,5 +122,49 @@ class Sell(commands.Cog):
         except Exception as e:
             await self.client.send_error_message(e)
 
+    @app_commands.command(name="sell_all", description="Sell all except equipped of your items")
+    @app_commands.choices(choices=[
+        app_commands.Choice(name="Weapons", value="weapons"),
+        app_commands.Choice(name="Armor", value="armor"),
+        app_commands.Choice(name="Items", value="items")
+    ])
+    async def sell_all(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        match choices.value:
+            case "weapons":
+                print("test")
+                return
+        embed = discord.Embed(title="Sell all items")
+        embed.description = "Below are your equipped items listed"
+
+        user = User(userId=interaction.user.id)
+        items = []
+        if user.get_weapon(): items.append(user.get_weapon())
+        if user.get_head(): items.append(user.get_head())
+        if user.get_chest(): items.append(user.get_chest())
+        if user.get_gauntlet(): items.append(user.get_gauntlet())
+        if user.get_legs(): items.append(user.get_legs())
+
+        for item in items:
+            level_text = str()
+            if item.get_level() > 0:
+                level_text = f"+{item.get_level()}"
+
+            extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
+            level_val_text = str() if item.get_level_value() == 0 else f"(**+{item.get_level_value()}**)"
+            if item.get_item_type() == "weapon":
+                embed.add_field(name=f"{item.get_name()} {level_text} `id: {item.get_idRel()}`",
+                                value=f"**Statistics:** \n"
+                                      f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text} {level_val_text}`Weight:` **{item.get_weight()}**\n"
+                                      f"**Requirements:** \n"
+                                      f"{item.get_requirement_text()}\n"
+                                      f"**Scaling:** \n"
+                                      f"{item.get_scaling_text()}")
+            else:
+                embed.add_field(name=f"{item.get_name()} {level_text} `id: {item.get_idRel()}`",)
+
+        await interaction.response.send_message(embed=embed)
+
+
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(Sell(client))
+    await client.add_cog(Sell(client), guild=discord.Object(id=config.botConfig["hub-server-guild-id"]))
