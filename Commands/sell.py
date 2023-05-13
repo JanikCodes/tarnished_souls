@@ -100,8 +100,6 @@ class Sell(commands.Cog):
                     if item.get_icon_url() is not None and item.get_icon_url() != 'None':
                         embed.set_thumbnail(url=f"{item.get_icon_url()}")
 
-                    value_name = str()
-
                     match item.get_item_type():
                         case 'Weapon':
                             embed.add_field(name="", value=f"**Statistics:** \n"
@@ -110,6 +108,10 @@ class Sell(commands.Cog):
                         case 'Armor':
                             embed.add_field(name="", value=f"**Statistics:** \n"
                                                            f"`Armor:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**",
+                                            inline=False)
+                        case 'Item':
+                            embed.add_field(name="", value=f"**Information:** \n"
+                                                           f"It's a material that is used for smithing weapons..",
                                             inline=False)
 
                     embed.colour = discord.Color.orange()

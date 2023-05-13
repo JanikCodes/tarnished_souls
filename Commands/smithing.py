@@ -16,6 +16,13 @@ MATERIAL_TABLE = {
 async def update_item(interaction, user, edit):
     user = user.update_user()
     weapon = user.get_weapon()
+
+    if not weapon:
+        embed = discord.Embed(title=f"You don't have a weapon equipped..",
+                              description="Equip one with `/equip`",
+                              colour=discord.Color.red())
+        return await interaction.followup.send(embed=embed, ephemeral=True)
+
     item = db.get_item_from_user_with_id_rel(idRel=weapon.get_idRel(), idUser=user.get_userId())
 
     if not item:
