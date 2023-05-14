@@ -128,42 +128,74 @@ class Sell(commands.Cog):
         app_commands.Choice(name="Armor", value="armor"),
         app_commands.Choice(name="Items", value="items")
     ])
-    async def sell_all(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+    @app_commands.describe(duplicates="Select True if you want to sell duplicates ONLY. False if ALL.")
+    async def sell_all(self, interaction: discord.Interaction, choices: app_commands.Choice[str], duplicates: bool=None):
+        user = User(userId=interaction.user.id)
         match choices.value:
             case "weapons":
-                print("test")
-                return
-        embed = discord.Embed(title="Sell all items")
-        embed.description = "Below are your equipped items listed"
+                embed = discord.Embed(title=f"Sell all {choices.value.capitalize()}")
+                embed.color = discord.Color.orange()
+                embed.description = "Sell all your items except your currently equipped ones.\nAll listed below."
+                embed.set_footer(text="This will sell ALL items")
+                match duplicates:
+                    case True:
+                        embed.color = discord.Color.yellow()
+                        embed.set_footer(text="This will sell ONLY duplicates!")
 
-        user = User(userId=interaction.user.id)
-        items = []
-        if user.get_weapon(): items.append(user.get_weapon())
-        if user.get_head(): items.append(user.get_head())
-        if user.get_chest(): items.append(user.get_chest())
-        if user.get_gauntlet(): items.append(user.get_gauntlet())
-        if user.get_legs(): items.append(user.get_legs())
+                if user.get_weapon(): weapon = user.get_weapon()
 
-        for item in items:
-            level_text = str()
-            if item.get_level() > 0:
-                level_text = f"+{item.get_level()}"
+                category_emoji = discord.utils.get(
+                    interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                    name=weapon.get_iconCategory())
 
-            extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+                level_text = str()
+                if weapon.get_level() > 0:
+                    level_text = f"+{weapon.get_level()}"
 
-            level_val_text = str() if item.get_level_value() == 0 else f"(**+{item.get_level_value()}**)"
-            if item.get_item_type() == "weapon":
-                embed.add_field(name=f"{item.get_name()} {level_text} `id: {item.get_idRel()}`",
+                extra_val_text = str() if weapon.get_extra_value() == 0 else f"(*+{weapon.get_extra_value()}*)"
+
+                level_val_text = str() if weapon.get_level_value() == 0 else f"(**+{weapon.get_level_value()}**)"
+
+                embed.add_field(name=f"{category_emoji} {weapon.get_name()} {level_text} `id: {weapon.get_idRel()}`",
                                 value=f"**Statistics:** \n"
-                                      f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text} {level_val_text}`Weight:` **{item.get_weight()}**\n"
+                                      f"`Damage:` **{weapon.get_value_with_scaling(user)}** {extra_val_text} {level_val_text}`Weight:` **{weapon.get_weight()}**\n"
                                       f"**Requirements:** \n"
-                                      f"{item.get_requirement_text()}\n"
+                                      f"{weapon.get_requirement_text()}\n"
                                       f"**Scaling:** \n"
-                                      f"{item.get_scaling_text()}")
-            else:
-                embed.add_field(name=f"{item.get_name()} {level_text} `id: {item.get_idRel()}`",)
+                                      f"{weapon.get_scaling_text()}")
+                await interaction.response.send_message(embed=embed)
+                return
 
-        await interaction.response.send_message(embed=embed)
+            case "armor":
+                embed = discord.Embed(title=f"Sell all {choices.value.capitalize()}")
+                embed.color = discord.Color.orange()
+                embed.description = "Sell all your items except your currently equipped ones.\nAll listed below."
+                embed.set_footer(text="This will sell ALL items")
+
+                if duplicates:
+                    embed.color = discord.Color.yellow()
+                    embed.set_footer(text="This will sell ONLY duplicates!")
+
+                items = []
+                if user.get_head(): items.append(user.get_head())
+                if user.get_chest(): items.append(user.get_chest())
+                if user.get_gauntlet(): items.append(user.get_gauntlet())
+                if user.get_legs(): items.append(user.get_legs())
+
+                for item in items:
+                    category_emoji = discord.utils.get(
+                        interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                        name=item.get_iconCategory())
+
+                    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+                    embed.add_field(
+                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
+                        value=f"**Statistics:** \n"
+                              f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n")
+
+                await interaction.response.send_message(embed=embed)
+                return
+
 
 
 async def setup(client: commands.Bot) -> None:
