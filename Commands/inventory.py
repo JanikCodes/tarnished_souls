@@ -12,7 +12,7 @@ MAX_ITEM_FOR_PAGE = 3
 
 class InventoryPageButton(discord.ui.Button):
     def __init__(self, text, direction, user, func, last_page, total_page_count, last_filter):
-        super().__init__(label=text, style=discord.ButtonStyle.secondary, disabled=False)
+        super().__init__(label=text, style=discord.ButtonStyle.primary, disabled=False)
         self.direction = direction
         self.user = user
         self.func = func
@@ -66,7 +66,7 @@ class InventoryReturnButton(discord.ui.Button):
 
 
 class ItemInventoryView(discord.ui.View):
-    def __init__(self, user, func, current_page, total_page_count, last_filter, last_active):
+    def __init__(self, user, func, current_page, total_page_count, last_filter):
         super().__init__()
         self.user = user.update_user()
         self.add_item(InventoryReturnButton(text="Return", user=user))
@@ -74,11 +74,13 @@ class ItemInventoryView(discord.ui.View):
             InventoryPageButton(text="Previous", direction="prev", user=user, func=func, last_page=current_page,
                                 total_page_count=total_page_count, last_filter=last_filter))
         self.add_item(InventoryPageButton(text="Next", direction="next", user=user, func=func, last_page=current_page,total_page_count=total_page_count, last_filter=last_filter))
-        # categories
-        self.add_item(InventorySubCategoryButton(text="Helmet", value="helm", row=1, user=user, func=func, last_page=current_page))
-        self.add_item(InventorySubCategoryButton(text="Chestplate", value="chest_armor", row=1, user=user, func=func, last_page=current_page))
-        self.add_item(InventorySubCategoryButton(text="Greaves", value="leg_armor", row=1, user=user, func=func, last_page=current_page))
-        self.add_item(InventorySubCategoryButton(text="Gauntlet", value="gauntlets", row=1, user=user, func=func, last_page=current_page))
+
+        if func == 'armor':
+            # categories
+            self.add_item(InventorySubCategoryButton(text="Helmet", value="helm", row=1, user=user, func=func, last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Chestplate", value="chest_armor", row=1, user=user, func=func, last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Greaves", value="leg_armor", row=1, user=user, func=func, last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Gauntlet", value="gauntlets", row=1, user=user, func=func, last_page=current_page))
 
 class InventorySubCategoryButton(discord.ui.Button):
     def __init__(self, text, value, row, user, last_page, func):
@@ -196,7 +198,7 @@ class DefaultInventoryView(discord.ui.View):
         self.add_item(
             InventoryCategoryButton(text="Weapons", button_style=discord.ButtonStyle.danger, func="weapon", user=user))
         self.add_item(
-            InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.secondary, func="armor", user=user))
+            InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.primary, func="armor", user=user))
         self.add_item(
             InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="items", user=user))
 
