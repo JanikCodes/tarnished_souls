@@ -12,7 +12,7 @@ from Classes.user import User
 from Utils.classes import class_selection
 
 STONE_DROP_CHANCE = 15
-EXPLORE_TIME = 20
+EXPLORE_TIME = 10
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 

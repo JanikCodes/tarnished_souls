@@ -486,29 +486,45 @@ def get_all_item_ids(obtainable_only, item_type):
 
 
 def add_item_to_user(idUser, item):
-    sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
-    cursor.execute(sql)
+    try:
+        # Start a transaction
+        cursor.execute("START TRANSACTION")
 
-    res = cursor.fetchone()
-    if res:
-        # update count
-        sql = f"UPDATE user_has_item r SET r.count = r.count + {item.get_count()} WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
+        # Perform a SELECT query with locking to prevent concurrent access
+        sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()} FOR UPDATE;"
         cursor.execute(sql)
-        mydb.commit()
 
-        sql = f"SELECT idRel FROM user_has_item WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND level = {item.get_level()} AND value = {item.get_extra_value()};"
-        cursor.execute(sql)
-        # Retrieve the primary key value from the fetched row
         res = cursor.fetchone()
         if res:
-            print(f"NEW REL ID: {res[0]}")
-            return res[0]
-    else:
-        # add new item to table
-        sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
-        cursor.execute(sql)
-        mydb.commit()
-        return cursor.lastrowid
+            # update count
+            sql = f"UPDATE user_has_item r SET r.count = r.count + {item.get_count()} WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
+            cursor.execute(sql)
+
+            sql = f"SELECT idRel FROM user_has_item WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND level = {item.get_level()} AND value = {item.get_extra_value()};"
+            cursor.execute(sql)
+            # Retrieve the primary key value from the fetched row
+            res = cursor.fetchone()
+            if res:
+                return res[0]
+        else:
+            # get free index
+            sql = "SELECT MIN(t1.idRel + 1) AS free_index FROM user_has_item t1 WHERE NOT EXISTS (SELECT * FROM user_has_item t2 WHERE t2.idRel = t1.idRel + 1) FOR UPDATE;"
+            cursor.execute(sql)
+            free_index = cursor.fetchone()[0]
+            if free_index:
+                print(free_index)
+                # add new item to table
+                sql = f"INSERT INTO user_has_item VALUE({free_index}, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
+                cursor.execute(sql)
+                return cursor.lastrowid
+
+        # Commit the transaction
+        cursor.execute("COMMIT")
+    except Exception as e:
+        # Rollback the transaction in case of any error
+        cursor.execute("ROLLBACK")
+        print(f"TRANSACTION ERROR: The transaction got rollbacked.. because: {e}")
+        raise e
 
 
 
@@ -570,7 +586,6 @@ def add_item_to_encounter_has_item(idEncounter, item):
     sql = f"INSERT INTO encounter_has_item VALUE(null, {idEncounter}, {item.get_idItem()}, {item.get_extra_value()}, {item.get_count()});"
     cursor.execute(sql)
     mydb.commit()
-
 
 def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page, filter):
     filter_txt = str()
