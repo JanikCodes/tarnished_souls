@@ -572,9 +572,13 @@ def add_item_to_encounter_has_item(idEncounter, item):
     mydb.commit()
 
 
-def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page):
+def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page, filter):
+    filter_txt = str()
+    if filter:
+        filter_txt = f"AND i.iconCategory = '{filter}'"
+
     items = []
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -644,8 +648,12 @@ def equip_item(idUser, item):
     return False
 
 
-def get_item_count_from_user(idUser, type):
-    sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}';"
+def get_item_count_from_user(idUser, type, filter):
+    filter_txt = str()
+    if filter:
+        filter_txt = f"AND i.iconCategory = '{filter}'"
+
+    sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' {filter_txt};"
     cursor.execute(sql)
     res = str(cursor.fetchone()).strip("(,)")
     if res:
