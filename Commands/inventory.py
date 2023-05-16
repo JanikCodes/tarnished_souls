@@ -127,7 +127,7 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
 
     items = db.get_items_from_user_id_with_type_at_page(idUser=user.get_userId(), type=label, page=page,
                                                         max_page=MAX_ITEM_FOR_PAGE, filter=filter)
-    item_count = db.get_item_count_from_user(idUser=user.get_userId(), type=label, filter=filter)
+    item_count = db.get_total_item_count_from_user(idUser=user.get_userId(), type=label, filter=filter)
     total_page_count = (int(item_count) + MAX_ITEM_FOR_PAGE - 1) // MAX_ITEM_FOR_PAGE
 
     if items:
@@ -172,7 +172,7 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                         value=f"**Statistics:** \n"
                               f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n",
                         inline=False)
-            case "items":
+            case "item":
                 for item in items:
                     category_emoji = discord.utils.get(
                         interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
@@ -200,7 +200,7 @@ class DefaultInventoryView(discord.ui.View):
         self.add_item(
             InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.primary, func="armor", user=user))
         self.add_item(
-            InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="items", user=user))
+            InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="item", user=user))
 
 
 class Inventory(commands.Cog):

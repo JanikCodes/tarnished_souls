@@ -4,7 +4,7 @@ from discord.ext import commands
 
 class LinkButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(label='Invite me!', style=discord.ButtonStyle.link, url="https://discord.com/api/oauth2/authorize?client_id=1088961569431502932&permissions=2147822592&scope=bot")
+        super().__init__(label='Invite me!', style=discord.ButtonStyle.link, url="https://discord.com/api/oauth2/authorize?client_id=1088961569431502932&permissions=2147839040&scope=bot")
 
     async def callback(self, interaction: discord.Interaction):
 

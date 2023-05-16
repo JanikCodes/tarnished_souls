@@ -47,7 +47,14 @@ async def update_item(interaction, user, edit):
     material_item_id = MATERIAL_TABLE[new_level]
     req_material = db.get_item_from_item_id(material_item_id)
     category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name="smithing_stone")
-    req_material_text = f"• {category_emoji} `{req_material.get_name()}` **{new_level * 2}**x\n"
+
+    # Get user material count for UI and disable check
+    material_count = db.get_item_count_from_user(idUser=user.get_userId(), idItem=req_material.get_idItem())
+
+    req_material_text = f"• {category_emoji} `{req_material.get_name()}` {material_count}/**{new_level * 2}**\n"
+
+    # Check if we disable the button
+    disabled = material_count < new_level * 2
 
     embed.add_field(name="", value=f"**Requires Materials:** \n"
                                    f"{req_material_text}", inline=False)
@@ -56,9 +63,6 @@ async def update_item(interaction, user, edit):
                                    f"`Damage:` **{old_dmg}** -> `Damage:` **{new_dmg}**", inline=False)
 
     embed.colour = discord.Color.orange()
-
-    disabled = not db.has_user_enough_items(idUser=user.get_userId(), idItem=req_material.get_idItem(),
-                                            reqcount=new_level * 2)
 
     if edit:
         await interaction.message.edit(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled))

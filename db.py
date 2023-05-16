@@ -512,7 +512,6 @@ def add_item_to_user(idUser, item):
             cursor.execute(sql)
             free_index = cursor.fetchone()[0]
             if free_index:
-                print(free_index)
                 # add new item to table
                 sql = f"INSERT INTO user_has_item VALUE({free_index}, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
                 cursor.execute(sql)
@@ -663,7 +662,7 @@ def equip_item(idUser, item):
     return False
 
 
-def get_item_count_from_user(idUser, type, filter):
+def get_total_item_count_from_user(idUser, type, filter):
     filter_txt = str()
     if filter:
         filter_txt = f"AND i.iconCategory = '{filter}'"
@@ -1233,16 +1232,14 @@ async def update_usernames(client):
         await asyncio.sleep(1)
 
 
-def has_user_enough_items(idUser, idItem, reqcount):
+def get_item_count_from_user(idUser, idItem):
     sql = f"SELECT count FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        if int(res[0]) >= reqcount:
-            return True
-        else:
-            return False
+        return int(res[0])
 
+    return 0
 
 def does_item_exist_for_user(idUser, item):
     sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
