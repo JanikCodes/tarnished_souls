@@ -198,10 +198,10 @@ class Sell(commands.Cog):
                         count = abs(item.get_count()-1)
                         value += item.get_price() * count
                         item.set_count(count)
+                        amount += item.get_count()
                     else:
                         items.remove(item)
                         continue
-                    amount += 1
 
                 embed.color = discord.Color.yellow()
                 embed.add_field(name="Amount of items:", value=amount)
@@ -211,10 +211,10 @@ class Sell(commands.Cog):
                 for item in items:
                     if item.get_count() > 1:
                         value += item.get_price() * item.get_count()
-                        
                     else:
                         value += item.get_price()
-                    amount += 1
+                    amount += item.get_count()
+                    
                 embed.add_field(name="Amount of items:", value=amount)
                 await interaction.response.send_message(embed=embed, view=SellAllView(user=user, label=choices.name, items=items, amount=amount, value=value))
         else:
