@@ -595,6 +595,18 @@ def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page):
         return None
 
 
+def get_all_items_from_user(idUser, type):
+    items = []
+    sql = f"SELECT idRel FROM user_has_item uhi, user u, item i WHERE i.type = '{type}' AND i.idItem = uhi.idItem AND NOT EXISTS (SELECT 1 FROM user u WHERE u.e_weapon = uhi.idRel OR u.e_head = uhi.idRel OR u.e_chest = uhi.idRel OR u.e_legs = uhi.idRel OR u.e_gauntlet = uhi.idRel) AND u.idUser = {idUser} AND uhi.idUser = u.idUser GROUP BY idRel;"
+    cursor.execute(sql)
+
+    res = cursor.fetchall()
+    if res:
+        for id in res:
+            items.append(get_item_from_user_with_id_rel(idUser, id[0]))
+    return items
+
+
 def get_item_from_user_with_id_rel(idUser, idRel):
     sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.idRel = '{idRel}';"
     cursor.execute(sql)
