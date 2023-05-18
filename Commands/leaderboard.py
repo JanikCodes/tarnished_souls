@@ -48,6 +48,7 @@ class LeaderboardCommand(commands.Cog):
         app_commands.Choice(name="Runes", value="runes"),
         app_commands.Choice(name="Level", value="level"),
         app_commands.Choice(name="Horde-mode", value="wave"),
+        app_commands.Choice(name="Invasion KDR", value="invasion"),
     ])
     async def leaderboard(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         try:

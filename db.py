@@ -386,7 +386,7 @@ def get_json_req_attribute(item, attribute_name):
 
 
 def get_json_scale_attribute(item, attribute_name):
-    req_value = "-"
+    req_value = 0
     for attribute in item['scalesWith']:
         if attribute['name'] == attribute_name and 'scaling' in attribute:
             req_value = attribute['scaling']
