@@ -182,64 +182,86 @@ class Sell(commands.Cog):
     @app_commands.choices(choices=[
         app_commands.Choice(name="Weapons", value="Weapon"),
         app_commands.Choice(name="Armor", value="Armor"),
-        app_commands.Choice(name="Items", value="Items")
+        app_commands.Choice(name="Item", value="Item")
     ])
     @app_commands.describe(duplicates="Select True if you want to sell duplicates ONLY. False if ALL.")
     async def sell_all(self, interaction: discord.Interaction, choices: app_commands.Choice[str], duplicates: bool=None):
-        user = User(userId=interaction.user.id)
-        items = db.get_all_items_from_user(user.get_userId(), choices.value)
-        if items:
-            embed = discord.Embed(title=f"Sell all {choices.name}")
-            match choices.value:
-                case "Weapon":
-                    embed.set_thumbnail(url=db.get_item_from_item_id(5).get_icon_url())
-                case "Armor":
-                    embed.set_thumbnail(url=db.get_item_from_item_id(308).get_icon_url())
-                case "Items":
-                    embed.set_thumbnail(url=db.get_item_from_item_id(851).get_icon_url())
-            embed.color = discord.Color.orange()
-            if choices.value == "Items":
-                embed.description = "Sell all your items."
-            else:
-                embed.description = f"This action __will sell **ALL**__ your {choices.name}."
-            embed.set_footer(text="Except your currently equipped ones.")
+        try:
+            await interaction.response.defer()
 
-            value = int()
-            amount = int()
+            self.client.add_to_activity()
 
-            if duplicates:
-                for item in items:
-                    if item.get_count() > 1:
-                        count = abs(item.get_count()-1)
-                        value += item.get_price() * count
-                        item.set_count(count)
-                        amount += item.get_count()
+            if db.validate_user(interaction.user.id):
+                user = User(userId=interaction.user.id)
+                items = db.get_all_items_from_user(user.get_userId(), choices.value)
+                if items:
+                    embed = discord.Embed(title=f"Sell all {choices.name}")
+                    match choices.value:
+                        case "Weapon":
+                            embed.set_thumbnail(url=db.get_item_from_item_id(5).get_icon_url())
+                        case "Armor":
+                            embed.set_thumbnail(url=db.get_item_from_item_id(308).get_icon_url())
+                        case "Item":
+                            embed.set_thumbnail(url=db.get_item_from_item_id(851).get_icon_url())
+                    embed.color = discord.Color.orange()
+                    if choices.value == "Item":
+                        embed.description = "Sell all your items."
                     else:
-                        items.remove(item)
-                        continue
-                if len(items) != 0:
-                    embed.color = discord.Color.yellow()
-                    embed.add_field(name="Amount of items:", value=amount)
-                    embed.description = f"This action __will sell **ALL**__ your {choices.name}.\n***Only __duplicates__***"
+                        embed.description = f"This action __will sell **ALL**__ your {choices.name}."
                     embed.set_footer(text="Except your currently equipped ones.")
-                    await interaction.response.send_message(embed=embed, view=SellAllView(user=user, label=choices.name, items=items, amount=amount, value=value))
-                else:
-                    await interaction.response.send_message(embed=discord.Embed(title="You don't have any duplicates..", description="", colour=discord.Color.red()))
-            else:
-                for item in items:
-                    if item.get_count() > 1:
-                        value += item.get_price() * item.get_count()
-                    else:
-                        value += item.get_price()
-                    amount += item.get_count()
 
-                embed.add_field(name="Amount of items:", value=amount)
-                await interaction.response.send_message(embed=embed, view=SellAllView(user=user, label=choices.name, items=items, amount=amount, value=value))
-        else:
-            embed = discord.Embed(title=f"You don't have any {choices.name} to sell..")
-            embed.color = discord.Color.red()
-            embed.description = ""
-            await interaction.response.send_message(embed=embed, delete_after=3)
+                    value = int()
+                    amount = int()
+
+                    if duplicates:
+                        i = 0
+                        while i < len(items):
+                            item = items[i]
+                            if item.get_count() > 1:
+                                count = abs(item.get_count() - 1)
+                                value += item.get_price() * count
+                                item.set_count(count)
+                                amount += item.get_count()
+                                i += 1
+                            else:
+                                items.remove(item)
+
+                        if len(items) != 0:
+                            embed.color = discord.Color.yellow()
+                            embed.add_field(name="Amount of items:", value=amount)
+                            embed.description = f"This action __will sell **ALL**__ your {choices.name}.\n***Only __duplicates__***"
+                            embed.set_footer(text="Except your currently equipped ones.")
+                            await interaction.followup.send(embed=embed,
+                                                                    view=SellAllView(user=user, label=choices.name,
+                                                                                     items=items, amount=amount,
+                                                                                     value=value))
+                        else:
+                            await interaction.followup.send(
+                                embed=discord.Embed(title="You don't have any duplicates..", description="",
+                                                    colour=discord.Color.red()))
+                    else:
+                        for item in items:
+                            if item.get_count() > 1:
+                                value += item.get_price() * item.get_count()
+                            else:
+                                value += item.get_price()
+                            amount += item.get_count()
+
+                        embed.add_field(name="Amount of items:", value=amount)
+                        await interaction.followup.send(embed=embed,
+                                                                view=SellAllView(user=user, label=choices.name,
+                                                                                 items=items, amount=amount,
+                                                                                 value=value))
+                else:
+                    embed = discord.Embed(title=f"You don't have any {choices.name} to sell..")
+                    embed.color = discord.Color.red()
+                    embed.description = ""
+                    await interaction.followup.send(embed=embed)
+            else:
+                await class_selection(interaction=interaction)
+                return
+        except Exception as e:
+            await self.client.send_error_message(e)
 
 
 async def setup(client: commands.Bot) -> None:
