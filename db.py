@@ -150,10 +150,12 @@ def get_enemies_from_location(location_id):
 
 
 def get_enemy_id_from_name(name):
-    sql = f"SELECT idenemy FROM enemy WHERE name='{name}'"
+    sql = f"SELECT idEnemy FROM enemy WHERE name='{name}'"
     cursor.execute(sql)
-    return cursor.fetchone()
-
+    res = cursor.fetchone()[0]
+    if res:
+        return res
+    return None
 
 # data insertion
 def get_enemy_count():

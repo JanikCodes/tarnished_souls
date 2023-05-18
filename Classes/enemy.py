@@ -59,8 +59,14 @@ class Enemy:
         return self.phase
 
     def reduce_health(self, amount):
-        self.health = max(self.health - amount, 0)
-        self.last_move_text = f"`-{amount}`"
+        if self.is_player:
+            absorb = int((self.is_player.get_total_armor() / 8))
+            calc_dmg = max((amount - absorb), 0)
+            self.health = max(self.health - calc_dmg, 0)
+            self.last_move_text = f"`-{calc_dmg}`"
+        else:
+            self.health = max(self.health - amount, 0)
+            self.last_move_text = f"`-{amount}`"
 
     def increase_health(self, amount):
         self.health = min(self.health + amount, self.max_health)

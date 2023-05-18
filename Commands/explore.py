@@ -19,7 +19,7 @@ BASE_RUNE_REWARD = 200
 
 COOLDOWN_DURATION = 3
 
-cooldowns = {}  # Dictionary to store the cooldown timestamps for each user
+cooldown = {}  # Dictionary to store the cooldown timestamps for each user
 lock = asyncio.Lock()  # Lock object for synchronization
 
 class Explore(commands.Cog):
@@ -41,9 +41,9 @@ class Explore(commands.Cog):
                 current_time = round(time.time())
                 last_time = user.get_last_explore()
 
-                if interaction.user.id in cooldowns and current_time < cooldowns[interaction.user.id]:
+                if interaction.user.id in cooldown and current_time < cooldown[interaction.user.id]:
                     # User is still on cooldown, skip the exploration
-                    remaining_time = cooldowns[interaction.user.id] - current_time
+                    remaining_time = cooldown[interaction.user.id] - current_time
 
                     embed = discord.Embed(title=f"Warning", description=f"You're on cooldown for {remaining_time} seconds...")
                     embed.colour = discord.Color.orange()
@@ -59,7 +59,7 @@ class Explore(commands.Cog):
                                                                            current_time=current_time)
 
                             # Set the cooldown for the user
-                            cooldowns[interaction.user.id] = current_time + COOLDOWN_DURATION
+                            cooldown[interaction.user.id] = current_time + COOLDOWN_DURATION
                         else:
                             await self.explore_status(interaction,
                                                       percentage=(current_time - last_time) / EXPLORE_TIME * 100,

@@ -243,8 +243,9 @@ class User:
 
     def reduce_health(self, amount):
         absorb = int((self.get_total_armor() / 8))
-        self.health = max(self.health - (amount - absorb), 0)
-        self.last_move_text = f"`-{amount - absorb}`"
+        calc_dmg = max((amount - absorb), 0)
+        self.health = max(self.health - calc_dmg, 0)
+        self.last_move_text = f"`-{calc_dmg}`"
 
     def increase_health(self, amount):
         if self.remaining_flasks > 0:

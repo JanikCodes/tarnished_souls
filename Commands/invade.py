@@ -23,9 +23,20 @@ class InvadeCommand(commands.Cog):
                 user = User(interaction.user.id)
 
                 enemy_user = User(random.choice(db.get_all_user_ids_from_location(location=user.get_current_location(), himself=user.get_userId())))
+                invasionIdEnemy = None
 
-                # TODO: Get enemy template from user weapon iconCategory
-                enemy_template = Enemy(idEnemy=26)
+                # Check if user has weapon equipped
+                if not enemy_user.get_weapon():
+                    invasionIdEnemy = db.get_enemy_id_from_name(f"invasion_unarmed")
+                else:
+                    # Get enemy template from weapon name
+                    invasionIdEnemy = db.get_enemy_id_from_name(f"invasion_{enemy_user.get_weapon().get_iconCategory()}")
+
+                if not invasionIdEnemy:
+                    print(f"Couldn't find the invasion enemy with name: (invasion_{enemy_user.get_weapon().get_iconCategory()})")
+                    return
+
+                enemy_template = Enemy(idEnemy=invasionIdEnemy)
                 enemy_template.is_player = enemy_user
                 enemy_template.overwrite_moves_with_damage()
                 enemy_template.overwrite_alL_move_descriptions(enemy_user.get_userName())
