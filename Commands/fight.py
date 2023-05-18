@@ -160,7 +160,6 @@ class Fight:
         enemy_phase = self.get_current_enemy().get_phase()
 
         # if we force idle, choose idle
-        enemy_move = None
         if force_idle_move:
             enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[5])
         else:
@@ -170,6 +169,8 @@ class Fight:
                     enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 4, 5])
                 else:
                     enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
+            else:
+                enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
 
         enemy, users = enemy_move.execute(enemy=self.get_current_enemy(), users=self.users)
         self.turn_index = turn_index = self.cycle_turn_index(turn_index=self.turn_index, users=users)
