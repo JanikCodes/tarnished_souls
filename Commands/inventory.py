@@ -11,13 +11,14 @@ MAX_ITEM_FOR_PAGE = 3
 
 
 class InventoryPageButton(discord.ui.Button):
-    def __init__(self, text, direction, user, func, last_page, total_page_count):
-        super().__init__(label=text, style=discord.ButtonStyle.secondary, disabled=False)
+    def __init__(self, text, direction, user, func, last_page, total_page_count, last_filter):
+        super().__init__(label=text, style=discord.ButtonStyle.primary, disabled=False)
         self.direction = direction
         self.user = user
         self.func = func
         self.last_page = last_page
         self.total_page_count = total_page_count
+        self.last_filter = last_filter
 
         if direction == 'prev':
             if last_page == 1:
@@ -36,9 +37,9 @@ class InventoryPageButton(discord.ui.Button):
         await interaction.response.defer()
 
         if self.direction == 'next':
-            await view_inventory_page(interaction=interaction, user=self.user, page=self.last_page + 1, label=self.func)
+            await view_inventory_page(interaction=interaction, user=self.user, page=self.last_page + 1, label=self.func, filter=self.last_filter)
         elif self.direction == 'prev':
-            await view_inventory_page(interaction=interaction, user=self.user, page=self.last_page - 1, label=self.func)
+            await view_inventory_page(interaction=interaction, user=self.user, page=self.last_page - 1, label=self.func, filter=self.last_filter)
             pass
 
 
@@ -65,16 +66,40 @@ class InventoryReturnButton(discord.ui.Button):
 
 
 class ItemInventoryView(discord.ui.View):
-    def __init__(self, user, func, current_page, total_page_count):
+    def __init__(self, user, func, current_page, total_page_count, last_filter):
         super().__init__()
         self.user = user.update_user()
         self.add_item(InventoryReturnButton(text="Return", user=user))
         self.add_item(
             InventoryPageButton(text="Previous", direction="prev", user=user, func=func, last_page=current_page,
-                                total_page_count=total_page_count))
-        self.add_item(InventoryPageButton(text="Next", direction="next", user=user, func=func, last_page=current_page,
-                                          total_page_count=total_page_count))
+                                total_page_count=total_page_count, last_filter=last_filter))
+        self.add_item(InventoryPageButton(text="Next", direction="next", user=user, func=func, last_page=current_page,total_page_count=total_page_count, last_filter=last_filter))
 
+        if func == 'armor':
+            # categories
+            self.add_item(InventorySubCategoryButton(text="Helmet", value="helm", row=1, user=user, func=func, last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Chestplate", value="chest_armor", row=1, user=user, func=func, last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Greaves", value="leg_armor", row=1, user=user, func=func, last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Gauntlet", value="gauntlets", row=1, user=user, func=func, last_page=current_page))
+
+class InventorySubCategoryButton(discord.ui.Button):
+    def __init__(self, text, value, row, user, last_page, func):
+        super().__init__(label=text, row=row)
+        self.value = value
+        self.user = user
+        self.func = func
+        self.last_page = last_page
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != int(self.user.get_userId()):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        await interaction.response.defer()
+
+        await view_inventory_page(interaction=interaction, label=self.func, user=self.user, page=1, filter=self.value)  # default is always page 1, that's why page=1
 
 class InventoryCategoryButton(discord.ui.Button):
     def __init__(self, text, button_style, func, user):
@@ -95,14 +120,14 @@ class InventoryCategoryButton(discord.ui.Button):
                                   page=1)  # default is always page 1, that's why page=1
 
 
-async def view_inventory_page(interaction, label, user, page):
+async def view_inventory_page(interaction, label, user, page, filter = None):
     new_embed = discord.Embed(title=f"Inventory '{label}'",
                               description="Below are your items sorted by their value.")
     new_embed.colour = discord.Color.light_embed()
 
     items = db.get_items_from_user_id_with_type_at_page(idUser=user.get_userId(), type=label, page=page,
-                                                        max_page=MAX_ITEM_FOR_PAGE)
-    item_count = db.get_item_count_from_user(idUser=user.get_userId(), type=label)
+                                                        max_page=MAX_ITEM_FOR_PAGE, filter=filter)
+    item_count = db.get_total_item_count_from_user(idUser=user.get_userId(), type=label, filter=filter)
     total_page_count = (int(item_count) + MAX_ITEM_FOR_PAGE - 1) // MAX_ITEM_FOR_PAGE
 
     if items:
@@ -118,8 +143,6 @@ async def view_inventory_page(interaction, label, user, page):
 
                     extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
 
-                    level_val_text = str() if item.get_level_value() == 0 else f"(**+{item.get_level_value()}**)"
-
                     level_text = str()
                     if item.get_level() > 0:
                         level_text = f"+{item.get_level()}"
@@ -127,7 +150,7 @@ async def view_inventory_page(interaction, label, user, page):
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ {level_text} `id: {item.get_idRel()}` {eq_text}",
                         value=f"**Statistics:** \n"
-                              f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text} {level_val_text}`Weight:` **{item.get_weight()}**\n"
+                              f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text}`Weight:` **{item.get_weight()}**\n"
                               f"**Requirements:** \n"
                               f"{item.get_requirement_text()}\n"
                               f"**Scaling:** \n"
@@ -149,7 +172,7 @@ async def view_inventory_page(interaction, label, user, page):
                         value=f"**Statistics:** \n"
                               f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n",
                         inline=False)
-            case "items":
+            case "item":
                 for item in items:
                     category_emoji = discord.utils.get(
                         interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
@@ -159,12 +182,12 @@ async def view_inventory_page(interaction, label, user, page):
 
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
-                        value=f"**Used for upgrading weapons** \n", inline=False)
+                        value=f"*Material* \n", inline=False)
 
     new_embed.set_footer(text=f"Page {page}/{str(total_page_count)}")
 
     await interaction.message.edit(embed=new_embed, view=ItemInventoryView(user=user, func=label, current_page=page,
-                                                                           total_page_count=total_page_count))
+                                                                           total_page_count=total_page_count, last_filter=filter))
 
 
 class DefaultInventoryView(discord.ui.View):
@@ -175,9 +198,9 @@ class DefaultInventoryView(discord.ui.View):
         self.add_item(
             InventoryCategoryButton(text="Weapons", button_style=discord.ButtonStyle.danger, func="weapon", user=user))
         self.add_item(
-            InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.secondary, func="armor", user=user))
+            InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.primary, func="armor", user=user))
         self.add_item(
-            InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="items", user=user))
+            InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="item", user=user))
 
 
 class Inventory(commands.Cog):

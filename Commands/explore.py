@@ -11,8 +11,8 @@ import db
 from Classes.user import User
 from Utils.classes import class_selection
 
-STONE_DROP_CHANCE = 15
-EXPLORE_TIME = 20
+STONE_DROP_CHANCE = 100
+EXPLORE_TIME = 10
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 
@@ -101,7 +101,7 @@ class Explore(commands.Cog):
 
                 if STONE_DROP_CHANCE >= random.randint(0, 100):
                     extra_items = new_encounter.get_location().get_item_rewards()
-                    if len(extra_items) > 0:
+                    if extra_items and len(extra_items) > 0:
                         stone_item = random.choice(extra_items)
                         new_encounter.set_item_rewards(stone_item)
 

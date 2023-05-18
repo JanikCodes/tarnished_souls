@@ -16,6 +16,13 @@ MATERIAL_TABLE = {
 async def update_item(interaction, user, edit):
     user = user.update_user()
     weapon = user.get_weapon()
+
+    if not weapon:
+        embed = discord.Embed(title=f"You don't have a weapon equipped..",
+                              description="Equip one with `/equip`",
+                              colour=discord.Color.red())
+        return await interaction.followup.send(embed=embed, ephemeral=True)
+
     item = db.get_item_from_user_with_id_rel(idRel=weapon.get_idRel(), idUser=user.get_userId())
 
     if not item:
@@ -40,7 +47,14 @@ async def update_item(interaction, user, edit):
     material_item_id = MATERIAL_TABLE[new_level]
     req_material = db.get_item_from_item_id(material_item_id)
     category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name="smithing_stone")
-    req_material_text = f"• {category_emoji} `{req_material.get_name()}` **{new_level * 2}**x\n"
+
+    # Get user material count for UI and disable check
+    material_count = db.get_item_count_from_user(idUser=user.get_userId(), idItem=req_material.get_idItem())
+
+    req_material_text = f"• {category_emoji} `{req_material.get_name()}` {material_count}/**{new_level * 2}**\n"
+
+    # Check if we disable the button
+    disabled = material_count < new_level * 2
 
     embed.add_field(name="", value=f"**Requires Materials:** \n"
                                    f"{req_material_text}", inline=False)
@@ -49,9 +63,6 @@ async def update_item(interaction, user, edit):
                                    f"`Damage:` **{old_dmg}** -> `Damage:` **{new_dmg}**", inline=False)
 
     embed.colour = discord.Color.orange()
-
-    disabled = not db.has_user_enough_items(idUser=user.get_userId(), idItem=req_material.get_idItem(),
-                                            reqcount=new_level * 2)
 
     if edit:
         await interaction.message.edit(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled))
@@ -98,9 +109,6 @@ class UpgradeButton(discord.ui.Button):
 
                     await update_item(interaction=interaction, user=self.user, edit=True)
                 else:
-                    # TODO: It doesnt go in here yet, so I need to do some checks..
-                    print("Identical exist! Removing old item and increasing count")
-
                     # remove that item
                     db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
                     # and increase count of identical rel
@@ -108,17 +116,32 @@ class UpgradeButton(discord.ui.Button):
                     db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
                     # equip that rel ID where we increased count
                     db.equip_item(idUser=self.user.get_userId(), item=existing_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
             else:
-                pass
-
                 # item count is greater than 1
-                    # check if identical +1 rel exist
-                        # reduce count from old rel and increase count in new rel
-                        # equip that new rel
-                    # no identical rel exist
-                        # create new item
-                        # equip that
-                        # reduce count from old rel
+
+                real_item.level += 1
+                existing_item = db.does_item_exist_for_user(idUser=self.user.get_userId(), item=real_item)
+
+                # check if identical +1 rel exist
+                if not existing_item:
+                    # reduce count from old rel
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    # create new item
+                    real_item.count = 1
+                    new_id_rel = db.add_item_to_user(idUser=self.user.get_userId(), item=real_item)
+                    real_item.set_idRel(new_id_rel)
+                    # equip that
+                    db.equip_item(idUser=self.user.get_userId(), item=real_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
+                else:
+                    # reduce count from old rel and increase count in new rel
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    existing_item.count = 1
+                    db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
+                    # equip that new rel
+                    db.equip_item(idUser=self.user.get_userId(), item=existing_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
 
         except discord.errors.NotFound:
             pass

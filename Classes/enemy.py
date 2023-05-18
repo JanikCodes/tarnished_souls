@@ -86,6 +86,16 @@ class Enemy:
         for move in self.moves:
             move.overwrite_name_in_description(name)
 
+    def get_move_from_type(self, phase, move_type):
+        available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0) and move.get_type() == move_type]
+        if available_moves:
+            selected_move = random.choice(available_moves)
+            self.last_move = selected_move
+            return selected_move
+        else:
+            print("Didn't found a valid move anymore!")
+            return None
+
     def get_move(self, phase):
         available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0)]
         if available_moves:

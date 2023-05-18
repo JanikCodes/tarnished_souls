@@ -322,7 +322,7 @@ def fill_db_weapons():
         scl_faith = get_json_scale_attribute(weapon, "Fai")
         scl_arcane = get_json_scale_attribute(weapon, "Arc")
 
-        total_dmg = sum(attack['amount'] for attack in weapon['attack'])
+        total_dmg = sum(attack['amount'] for attack in weapon['attack'] if attack['name'] != 'Crit')
 
         sql = f"SELECT * FROM item WHERE name = '{weapon_name}';"
         cursor.execute(sql)
@@ -486,29 +486,44 @@ def get_all_item_ids(obtainable_only, item_type):
 
 
 def add_item_to_user(idUser, item):
-    sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
-    cursor.execute(sql)
+    try:
+        # Start a transaction
+        cursor.execute("START TRANSACTION")
 
-    res = cursor.fetchone()
-    if res:
-        # update count
-        sql = f"UPDATE user_has_item r SET r.count = r.count + {item.get_count()} WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
+        # Perform a SELECT query with locking to prevent concurrent access
+        sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()} FOR UPDATE;"
         cursor.execute(sql)
-        mydb.commit()
 
-        sql = f"SELECT idRel FROM user_has_item WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND level = {item.get_level()} AND value = {item.get_extra_value()};"
-        cursor.execute(sql)
-        # Retrieve the primary key value from the fetched row
         res = cursor.fetchone()
         if res:
-            print(f"NEW REL ID: {res[0]}")
-            return res[0]
-    else:
-        # add new item to table
-        sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
-        cursor.execute(sql)
-        mydb.commit()
-        return cursor.lastrowid
+            # update count
+            sql = f"UPDATE user_has_item r SET r.count = r.count + {item.get_count()} WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
+            cursor.execute(sql)
+
+            sql = f"SELECT idRel FROM user_has_item WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND level = {item.get_level()} AND value = {item.get_extra_value()};"
+            cursor.execute(sql)
+            # Retrieve the primary key value from the fetched row
+            res = cursor.fetchone()
+            if res:
+                return res[0]
+        else:
+            # get free index
+            sql = "SELECT MIN(t1.idRel + 1) AS free_index FROM user_has_item t1 WHERE NOT EXISTS (SELECT * FROM user_has_item t2 WHERE t2.idRel = t1.idRel + 1) FOR UPDATE;"
+            cursor.execute(sql)
+            free_index = cursor.fetchone()[0]
+            if free_index:
+                # add new item to table
+                sql = f"INSERT INTO user_has_item VALUE({free_index}, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
+                cursor.execute(sql)
+                return cursor.lastrowid
+
+        # Commit the transaction
+        cursor.execute("COMMIT")
+    except Exception as e:
+        # Rollback the transaction in case of any error
+        cursor.execute("ROLLBACK")
+        print(f"TRANSACTION ERROR: The transaction got rollbacked.. because: {e}")
+        raise e
 
 
 
@@ -571,10 +586,13 @@ def add_item_to_encounter_has_item(idEncounter, item):
     cursor.execute(sql)
     mydb.commit()
 
+def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page, filter):
+    filter_txt = str()
+    if filter:
+        filter_txt = f"AND i.iconCategory = '{filter}'"
 
-def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page):
     items = []
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
+    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -656,8 +674,12 @@ def equip_item(idUser, item):
     return False
 
 
-def get_item_count_from_user(idUser, type):
-    sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}';"
+def get_total_item_count_from_user(idUser, type, filter):
+    filter_txt = str()
+    if filter:
+        filter_txt = f"AND i.iconCategory = '{filter}'"
+
+    sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' {filter_txt};"
     cursor.execute(sql)
     res = str(cursor.fetchone()).strip("(,)")
     if res:
@@ -1222,23 +1244,21 @@ async def update_usernames(client):
         await asyncio.sleep(1)
 
 
-def has_user_enough_items(idUser, idItem, reqcount):
+def get_item_count_from_user(idUser, idItem):
     sql = f"SELECT count FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        if int(res[0]) >= reqcount:
-            return True
-        else:
-            return False
+        return int(res[0])
 
+    return 0
 
 def does_item_exist_for_user(idUser, item):
     sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        return db.get_item_from_user_with_id_rel(idUser=idUser, idRel=res)
+        return db.get_item_from_user_with_id_rel(idUser=idUser, idRel=res[0])
 
     return None
 
