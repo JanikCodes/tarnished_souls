@@ -5,7 +5,7 @@ from discord.ext import commands
 import config
 import db
 from Classes.enemy import Enemy
-from Classes.user import User
+from Classes.user import User, BASE_HEALING
 from Utils import utils
 from Utils.classes import class_selection
 
@@ -13,7 +13,6 @@ MAX_USERS = 4
 STAMINA_REGEN = 7
 STAMINA_COST = 45
 HEAVY_STAMINA_COST = 45
-HEAL_AMOUNT = 380
 RUNE_REWARD_FOR_WAVE = 450
 
 
@@ -161,10 +160,16 @@ class Fight:
         enemy_phase = self.get_current_enemy().get_phase()
 
         # if we force idle, choose idle
+        enemy_move = None
         if force_idle_move:
-            enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=5)
+            enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[5])
         else:
-            enemy_move = self.get_current_enemy().get_move(phase=enemy_phase)
+            # Check if enemy can use healing ( invasion )
+            if self.get_current_enemy().is_player:
+                if self.get_current_enemy().flask_amount == 0:
+                    enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 4, 5])
+                else:
+                    enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
 
         enemy, users = enemy_move.execute(enemy=self.get_current_enemy(), users=self.users)
         self.turn_index = turn_index = self.cycle_turn_index(turn_index=self.turn_index, users=users)
@@ -175,9 +180,17 @@ class Fight:
 
         wave_text = str() if len(self.enemy_list) == 1 else f"`Wave: {self.enemy_index + 1}`"
 
+        flask_emoji = discord.utils.get(
+            self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis, name='flask')
+
+        # add flask count if enemy is a player ( invasions )
+        enemy_flask_count = str()
+        if self.get_current_enemy().is_player:
+            enemy_flask_count = f"{flask_emoji} {self.get_current_enemy().flask_amount}"
+
         embed = discord.Embed(title=f"**Fight against `{enemy.get_name()}`**",
                               description=f"{wave_text}\n"
-                                          f"`{enemy.get_name()}`\n"
+                                          f"`{enemy.get_name()}` {enemy_flask_count}\n"
                                           f"{utils.create_health_bar(enemy.get_health(), enemy.get_max_health(), self.interaction)} `{enemy.get_health()}/{enemy.get_max_health()}` {enemy.get_last_move_text()}")
 
         embed.add_field(name="Enemy action:", value=f"{enemy_move.get_description()}", inline=False)
@@ -185,8 +198,7 @@ class Fight:
         embed.add_field(name="Turn order:", value=f"**<@{users[turn_index].get_userId()}>** please choose an action..",
                         inline=False)
 
-        flask_emoji = discord.utils.get(
-            self.interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis, name='flask')
+
         # create UI for every user
         for user in users:
             embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
@@ -413,12 +425,12 @@ class HeavyAttackButton(BattleButton):
 
 class HealButton(BattleButton):
     def __init__(self, fight):
-        super().__init__(fight, label=f"Heal (+{HEAL_AMOUNT})", style=discord.ButtonStyle.success, row=1)
+        super().__init__(fight, label=f"Heal (+{BASE_HEALING})", style=discord.ButtonStyle.success, row=1)
         # Disable button if no flasks remaining
         self.disabled = fight.get_current_user().get_remaining_flasks() == 0
 
     def execute_action(self):
-        self.fight.get_current_user().increase_health(HEAL_AMOUNT)
+        self.fight.get_current_user().increase_health(BASE_HEALING)
 
 
 class DodgeButton(BattleButton):

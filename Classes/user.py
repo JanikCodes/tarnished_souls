@@ -1,6 +1,7 @@
 import db
 
 BASE_DAMAGE = 25
+BASE_HEALING = 375
 
 VIGOR_TABLE = {
     1: 300, 2: 304, 3: 312, 4: 322, 5: 334, 6: 347, 7: 362, 8: 378, 9: 396, 10: 414,

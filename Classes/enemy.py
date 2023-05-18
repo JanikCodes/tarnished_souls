@@ -24,6 +24,7 @@ class Enemy:
             self.dodge_next = False
             self.last_move_text = str()
             self.is_player = None
+            self.flask_amount = 0
         else:
             # empty constructor
             self.location = None
@@ -93,7 +94,7 @@ class Enemy:
             move.overwrite_name_in_description(name)
 
     def get_move_from_type(self, phase, move_type):
-        available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0) and move.get_type() == move_type]
+        available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0) and move.get_type() in move_type]
         if available_moves:
             selected_move = random.choice(available_moves)
             self.last_move = selected_move
@@ -179,3 +180,9 @@ class Enemy:
 
     def get_moves(self):
         return self.moves
+
+    def overwrite_moves_with_healing(self, healing):
+        if self.is_player:
+
+            for move in self.moves:
+                move.set_healing(healing)
