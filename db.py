@@ -1152,7 +1152,7 @@ def show_tables_in_db():
 def get_all_enemies():
     enemies = []
 
-    sql = f"select idEnemy from enemy ORDER BY health;"
+    sql = f"select idEnemy from enemy WHERE health > 0 ORDER BY health;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
