@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 import db
 
 MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
-UPDATE_ITEMS = False
+UPDATE_ITEMS = True
 FILL_FIRST_TIME_DATA = False
 
 class Client(commands.Bot):
@@ -48,6 +48,7 @@ class Client(commands.Bot):
             db.fill_db_init()
             print("Added init data..")
 
+        print("Finished updating/adding data")
         self.username_upd_task.start()
 
     @tasks.loop(hours=24)

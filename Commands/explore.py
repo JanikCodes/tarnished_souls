@@ -1,3 +1,4 @@
+import asyncio
 import math
 import random
 import time
@@ -12,15 +13,20 @@ from Classes.user import User
 from Utils.classes import class_selection
 
 STONE_DROP_CHANCE = 100
-EXPLORE_TIME = 10
+EXPLORE_TIME = 60 * 15
 ENCOUNTER_AMOUNT = 5
 BASE_RUNE_REWARD = 200
 
+COOLDOWN_DURATION = 3
+
+cooldowns = {}  # Dictionary to store the cooldown timestamps for each user
+lock = asyncio.Lock()  # Lock object for synchronization
 
 class Explore(commands.Cog):
 
     def __init__(self, client: commands.Bot):
         self.client = client
+
 
     @app_commands.command(name="explore", description="Explore the world, encounter events & receive items and souls!")
     async def explore(self, interaction: discord.Interaction):
@@ -30,20 +36,34 @@ class Explore(commands.Cog):
             self.client.add_to_activity()
 
             if db.validate_user(interaction.user.id):
-
                 user = User(interaction.user.id)
 
-                current_time = (round(time.time() * 1000)) // 1000
+                current_time = round(time.time())
                 last_time = user.get_last_explore()
 
-                if float(current_time) - float(last_time) > EXPLORE_TIME:
-                    # display a recap off the old explore message because it's finished
-                    await self.explore_status(interaction, percentage=100, user=user, finished=True)
-                    db.remove_user_encounters(idUser=user.get_userId())
-                    db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(), current_time=current_time)
+                if interaction.user.id in cooldowns and current_time < cooldowns[interaction.user.id]:
+                    # User is still on cooldown, skip the exploration
+                    remaining_time = cooldowns[interaction.user.id] - current_time
+
+                    embed = discord.Embed(title=f"Warning", description=f"You're on cooldown for {remaining_time} seconds...")
+                    embed.colour = discord.Color.orange()
+                    return await interaction.followup.send(embed=embed)
                 else:
-                    await self.explore_status(interaction, percentage=(current_time - last_time) / EXPLORE_TIME * 100,
-                                              user=user, finished=False)
+                    async with lock:
+                        # Acquire the lock before proceeding with exploration
+                        if current_time - last_time > EXPLORE_TIME:
+                            # Display a recap of the old explore message because it's finished
+                            await self.explore_status(interaction, percentage=100, user=user, finished=True)
+                            db.remove_user_encounters(idUser=user.get_userId())
+                            db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(),
+                                                                           current_time=current_time)
+
+                            # Set the cooldown for the user
+                            cooldowns[interaction.user.id] = current_time + COOLDOWN_DURATION
+                        else:
+                            await self.explore_status(interaction,
+                                                      percentage=(current_time - last_time) / EXPLORE_TIME * 100,
+                                                      user=user, finished=False)
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:
