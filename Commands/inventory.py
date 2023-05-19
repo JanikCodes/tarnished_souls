@@ -26,6 +26,8 @@ class InventoryPageButton(discord.ui.Button):
         elif direction == 'next':
             if total_page_count == last_page:
                 self.disabled = True
+            if total_page_count == 0:
+                self.disabled = True
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != int(self.user.get_userId()):
