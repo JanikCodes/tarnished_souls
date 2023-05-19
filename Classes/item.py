@@ -1,15 +1,5 @@
 import db
 
-SCALING_VALUES = {
-    '-': 0,
-    'E': 0.25,
-    'D': 0.45,
-    'C': 0.75,
-    'B': 1.15,
-    'A': 1.55,
-    'S': 1.75,
-}
-
 WEAPON_DMG_INCREASE_PER_UPGRADE = 6
 
 class Item:
@@ -72,17 +62,14 @@ class Item:
     def get_scaling_value(self, scaling, attribute):
         val = 0
         if scaling != "-":
-            val = SCALING_VALUES[scaling] * (self.value + self.extra_value) * (attribute / 100)
+            val = self.get_total_scaling_value_(scaling) * (self.value + self.extra_value) * (attribute / 100) + (self.level * 1.05)
         return val
 
     def get_total_value(self, user):
         return self.get_value_with_scaling(user) + self.extra_value
 
-    def get_level_value(self):
-        return self.level * WEAPON_DMG_INCREASE_PER_UPGRADE
-
     def get_value_with_scaling(self, user):
-        return self.value + self.get_total_scaling_value(user) + self.get_level_value()
+        return self.value + self.get_total_scaling_value(user)
 
     def get_total_scaling_value(self, user):
         total_value = 0
@@ -194,24 +181,41 @@ class Item:
 
         return text
 
+    def get_scaling_character_from_value(self, value):
+        if value > 1.75:
+            return "S"
+        elif value >= 1.4:
+            return "A"
+        elif value >= 0.9:
+            return "B"
+        elif value >= 0.6:
+            return "C"
+        elif value >= 0.25:
+            return "D"
+        else:
+            return "E"
+
+    def get_total_scaling_value_(self, value):
+        return (value / 100) + ( self.level * (value / 100) * 0.02 )
+
     def get_scaling_text(self):
         text = str()
-        if self.sclVigor != "-":
-            text += f"`Vig:` `{self.sclVigor}` "
-        if self.sclMind != "-":
-            text += f"`Min:` `{self.sclMind}` "
-        if self.sclEndurance != "-":
-            text += f"`End:` `{self.sclEndurance}` "
-        if self.sclStrength != "-":
-            text += f"`Str:` `{self.sclStrength}` "
-        if self.sclDexterity != "-":
-            text += f"`Dex:` `{self.sclDexterity}` "
-        if self.sclIntelligence != "-":
-            text += f"`Int:` `{self.sclIntelligence}` "
-        if self.sclFaith != "-":
-            text += f"`Fai:` `{self.sclFaith}` "
-        if self.sclArcane != "-":
-            text += f"`Arc:` `{self.sclArcane}` "
+        if self.sclVigor != 0:
+            text += f"`Vig:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclVigor))}` "
+        if self.sclMind != 0:
+            text += f"`Min:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclMind))}` "
+        if self.sclEndurance != 0:
+            text += f"`End:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclEndurance))}` "
+        if self.sclStrength != 0:
+            text += f"`Str:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclStrength))}` "
+        if self.sclDexterity != 0:
+            text += f"`Dex:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclDexterity))}` "
+        if self.sclIntelligence != 0:
+            text += f"`Int:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclIntelligence))}` "
+        if self.sclFaith != 0:
+            text += f"`Fai:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclFaith))}` "
+        if self.sclArcane != 0:
+            text += f"`Arc:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclArcane))}` "
 
         if text == str():
             text = "`None`"

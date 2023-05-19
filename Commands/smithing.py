@@ -33,10 +33,12 @@ async def update_item(interaction, user, edit):
 
     old_level = item.get_level()
     old_dmg = item.get_total_value(user)
+    old_scl_text = item.get_scaling_text()
 
     new_level = item.get_level() + 1
     item.level = item.level + 1
     new_dmg = item.get_total_value(user)
+    new_scl_text = item.get_scaling_text()
 
     embed = discord.Embed(title=f"**{item.get_name()}** `+{old_level}`",
                           description=f"Do you want to upgrade this weapon to `+{new_level}` ?")
@@ -61,6 +63,8 @@ async def update_item(interaction, user, edit):
 
     embed.add_field(name="", value=f"**After:** \n"
                                    f"`Damage:` **{old_dmg}** -> `Damage:` **{new_dmg}**", inline=False)
+    embed.add_field(name="", value=f"**Scaling:** \n"
+                                   f"{old_scl_text} -> {new_scl_text}")
 
     embed.colour = discord.Color.orange()
 
