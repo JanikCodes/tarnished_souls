@@ -94,6 +94,11 @@ class Fight:
                     # update quest progress
                     db.check_for_quest_update(idUser=users[0].get_userId(), item=item)
 
+            if self.get_current_enemy().is_player:
+                # it's an invasion
+                db.add_inv_death_to_user(idUser=self.get_current_enemy().is_player.get_userId())
+                db.add_inv_kill_to_user(idUser=users[0].get_userId())
+
             if self.interaction.message:
                 await self.interaction.message.edit(embed=embed, view=None)
             else:
@@ -131,6 +136,10 @@ class Fight:
         if self.get_is_horde_mode():
             # it's horde mode
             wave_text = f"You've reached wave `{self.enemy_index + 1}`"
+
+        if self.get_current_enemy().is_player:
+            # it's an invasion
+            db.add_inv_death_to_user(idUser=self.users[0].get_userId())
 
         embed.colour = discord.Color.red()
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",

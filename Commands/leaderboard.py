@@ -34,6 +34,15 @@ def get_leaderboard_text_from_choice(selected_choice, idUser):
             for x in range(len(leaderboard)):
                 ld_text += f"**{x + 1}.** {leaderboard[x][0]} - wave `{leaderboard[x][1]}`\n"
             return ld_text, user_pos
+        case "invasion":
+            leaderboard = db.get_leaderboard_invasion()
+            user_pos = db.get_user_position_in_lb_invasion(idUser=idUser)
+            ld_text = "**Top 10 players with the highest KDR for invasions**\n"
+
+            for x in range(len(leaderboard)):
+                ld_text += f"**{x + 1}.** {leaderboard[x][0]} - KDR `{leaderboard[x][1]}`\n"
+            return ld_text, user_pos
+
 
     ld_text = "There was an error.."
     return ld_text

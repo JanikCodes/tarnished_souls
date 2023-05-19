@@ -49,6 +49,8 @@ class User:
             self.dodge_next = False
             self.last_move_text = str()
             self.maxHordeWave = result[24]
+            self.inv_kills = result[25]
+            self.inv_deaths = result[26]
         else:
             # empty constructor
             pass
@@ -84,6 +86,8 @@ class User:
         self.dodge_next = False
         self.last_move_text = str()
         self.maxHordeWave = result[24]
+        self.inv_kills = result[25]
+        self.inv_deaths = result[26]
 
         return self
 

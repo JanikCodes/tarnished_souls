@@ -23,7 +23,6 @@ class InvadeCommand(commands.Cog):
                 user = User(interaction.user.id)
 
                 enemy_user = User(random.choice(db.get_all_user_ids_from_location(location=user.get_current_location(), himself=user.get_userId())))
-                invasionIdEnemy = None
 
                 # Check if user has weapon equipped
                 if not enemy_user.get_weapon():

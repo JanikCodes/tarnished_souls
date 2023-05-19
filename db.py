@@ -39,7 +39,7 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1);'
+    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1, 0, 0);'
     sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
@@ -244,7 +244,7 @@ def get_location_id_from_name(name):
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount, maxHordeWave FROM user u WHERE u.idUser = {userId};"
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount, maxHordeWave, inv_kills, inv_deaths FROM user u WHERE u.idUser = {userId};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -1267,5 +1267,42 @@ def does_item_exist_for_user(idUser, item):
 
 def update_item_from_user(idUser, item):
     sql = f"UPDATE user_has_item SET level = {item.get_level()} WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND idRel = {item.get_idRel()}"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def get_leaderboard_invasion():
+    leaderboard = []
+
+    sql = f"SELECT username, CASE WHEN inv_deaths = 0 THEN inv_kills ELSE inv_kills / inv_deaths END AS kdr FROM user ORDER BY kdr DESC LIMIT 10;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            leaderboard.append((row[0], row[1]))
+
+    return leaderboard
+
+
+def get_user_position_in_lb_invasion(idUser):
+    sql = f"SELECT leaderboard.position FROM ( SELECT u1.idUser, (SELECT COUNT(*) + 1 FROM user u2 WHERE (CASE WHEN u2.inv_deaths = 0 THEN u2.inv_kills ELSE u2.inv_kills / u2.inv_deaths END) > (CASE WHEN u1.inv_deaths = 0 THEN u1.inv_kills ELSE u1.inv_kills / u1.inv_deaths END) OR (CASE WHEN u2.inv_deaths = 0 THEN u2.inv_kills ELSE u2.inv_kills / u2.inv_deaths END) = (CASE WHEN u1.inv_deaths = 0 THEN u1.inv_kills ELSE u1.inv_kills / u1.inv_deaths END) AND u2.idUser < u1.idUser ) AS position FROM user u1 WHERE u1.idUser = {idUser} ) leaderboard;"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return res[0]
+    else:
+        # User not found in the database
+        return "error"
+
+
+def add_inv_death_to_user(idUser):
+    print("Added death")
+    sql = f"UPDATE user SET inv_deaths = inv_deaths + 1 WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+def add_inv_kill_to_user(idUser):
+    print("Added kill")
+    sql = f"UPDATE user SET inv_kills = inv_kills + 1 WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
