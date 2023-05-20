@@ -10,7 +10,7 @@ from Utils.classes import class_selection
 MATERIAL_TABLE = {
     1: 1001, 2: 1001, 3: 1001, 4: 1002, 5: 1002, 6: 1002, 7: 1003, 8: 1003, 9: 1003, 10: 1004,
     11: 1004, 12: 1004, 13: 1005, 14: 1005, 15: 1005, 16: 1006, 17: 1006, 18: 1006, 19: 1007, 20: 1007,
-    21: 1007, 22: 1008, 23: 1008, 24: 1008, 25: 1009
+    21: 1007, 22: 1008, 23: 1008, 24: 1008, 25: 1009, 26: 99999
 }
 
 async def update_item(interaction, user, edit):
@@ -47,16 +47,23 @@ async def update_item(interaction, user, edit):
         embed.set_thumbnail(url=f"{item.get_icon_url()}")
 
     material_item_id = MATERIAL_TABLE[new_level]
+
     req_material = db.get_item_from_item_id(material_item_id)
+    req_material.set_count(new_level * 2)
+
+    if not req_material:
+        embed.add_field(name="Error", value="There was an error with your upgrade.. I couldn't find the required material. Please use `/feedback`.", inline=False)
+        return await interaction.message.edit(embed=embed, view=None)
+
     category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name="smithing_stone")
 
     # Get user material count for UI and disable check
     material_count = db.get_item_count_from_user(idUser=user.get_userId(), idItem=req_material.get_idItem())
 
-    req_material_text = f"• {category_emoji} `{req_material.get_name()}` {material_count}/**{new_level * 2}**\n"
+    req_material_text = f"• {category_emoji} `{req_material.get_name()}` {material_count}/**{req_material.get_count()}**\n"
 
     # Check if we disable the button
-    disabled = material_count < new_level * 2
+    disabled = material_count < req_material.get_count()
 
     embed.add_field(name="", value=f"**Requires Materials:** \n"
                                    f"{req_material_text}", inline=False)
@@ -69,15 +76,16 @@ async def update_item(interaction, user, edit):
     embed.colour = discord.Color.orange()
 
     if edit:
-        await interaction.message.edit(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled))
+        await interaction.message.edit(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled, req_material=req_material))
     else:
-        await interaction.followup.send(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled))
+        await interaction.followup.send(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled, req_material=req_material))
 
 class UpgradeButton(discord.ui.Button):
-    def __init__(self, user, item, disabled):
+    def __init__(self, user, item, disabled, req_material):
         super().__init__(label=f"Upgrade!", style=discord.ButtonStyle.success, disabled=disabled)
         self.user = user
         self.item = item
+        self.req_material = req_material
 
     async def callback(self, interaction: discord.Interaction):
         try:
@@ -98,6 +106,23 @@ class UpgradeButton(discord.ui.Button):
                 edited_embed.colour = discord.Color.red()
                 edited_embed.set_footer(text="This item no longer exists..")
                 return await interaction.message.edit(embed=edited_embed, view=None)
+
+            material_count = db.get_item_count_from_user(idUser=self.user.get_userId(), idItem=self.req_material.get_idItem())
+
+            # Check if the user really has enough materials and that didn't change
+            if material_count < self.req_material.get_count():
+                edited_embed.colour = discord.Color.red()
+                edited_embed.set_footer(text="You don't have enough materials anymore..")
+                return await interaction.message.edit(embed=edited_embed, view=None)
+
+            mat_idRel = db.get_idRel_from_user_with_item_id(idUser=self.user.get_userId(), idItem=self.req_material.get_idItem())
+
+            if not mat_idRel:
+                edited_embed.colour = discord.Color.red()
+                edited_embed.set_footer(text="You don't have enough materials anymore..")
+                return await interaction.message.edit(embed=edited_embed, view=None)
+
+            db.decrease_item_from_user(idUser=self.user.get_userId(), relId=mat_idRel, amount=self.req_material.get_count())
 
             item_count = real_item.get_count()
 
@@ -152,10 +177,10 @@ class UpgradeButton(discord.ui.Button):
 
 class SmithingView(discord.ui.View):
 
-    def __init__(self, user, item, disabled):
+    def __init__(self, user, item, disabled, req_material):
         super().__init__()
         self.user = user.update_user()
-        self.add_item(UpgradeButton(user=user, item=item, disabled=disabled))
+        self.add_item(UpgradeButton(user=user, item=item, disabled=disabled, req_material=req_material))
 
 
 class SmithingCommand(commands.Cog):

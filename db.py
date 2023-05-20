@@ -1219,6 +1219,18 @@ def get_all_user_ids_from_location(location, himself):
 
     return idUsers
 
+def get_all_user_ids(himself):
+    idUsers = []
+    sql = f"SELECT idUser from user WHERE idUser != {himself};"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+
+    return idUsers
+
 def update_enemy_move_damage(idMove, new_damage):
     sql = f"UPDATE enemy_moves SET damage={new_damage} WHERE idMove = {idMove} ;"
     cursor.execute(sql)
@@ -1306,3 +1318,13 @@ def add_inv_kill_to_user(idUser):
     sql = f"UPDATE user SET inv_kills = inv_kills + 1 WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
+
+
+def get_idRel_from_user_with_item_id(idUser, idItem):
+    sql = f"SELECT idRel FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return int(res[0])
+
+    return None
