@@ -55,7 +55,7 @@ async def update_item(interaction, user, edit):
         return await interaction.message.edit(embed=embed, view=None)
 
     # Calculate the req material count
-    reqCount = 2 + (new_level % 3) * 2
+    reqCount = (new_level % 3) * 2
     req_material.set_count(reqCount)
 
     category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name="smithing_stone")
