@@ -177,10 +177,7 @@ class Fight:
                 if self.get_current_enemy().flask_amount == 0:
                     enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 4, 5])
                 else:
-                    if self.get_current_enemy().get_health() <= 200:
-                        enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[3])
-                    else:
-                        enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
+                    enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
             else:
                 enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
 

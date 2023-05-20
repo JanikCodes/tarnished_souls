@@ -1326,3 +1326,16 @@ def get_idRel_from_user_with_item_id(idUser, idItem):
         return int(res[0])
 
     return None
+
+
+def get_all_user_ids_with_similar_level(user, range):
+    idUsers = []
+    sql = f"SELECT idUser FROM user WHERE idUser != {user.get_userId()} AND (vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) BETWEEN ( {user.get_all_stat_levels()} - {range}) AND ( {user.get_all_stat_levels()} + {range});"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+
+    return idUsers

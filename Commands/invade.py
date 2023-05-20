@@ -26,7 +26,15 @@ class InvadeCommand(commands.Cog):
                 user = User(interaction.user.id)
 
                 # Get a random user except himself
-                enemy_user = User(random.choice(db.get_all_user_ids(himself=user.get_userId())))
+                enemy_user = User(random.choice(db.get_all_user_ids_with_similar_level(user=user, range=15)))
+
+                # we couldn't find a player in that skill range so do it again but wider threshold
+                if not enemy_user:
+                    enemy_user = User(random.choice(db.get_all_user_ids_with_similar_level(user=user, range=25)))
+                if not enemy_user:
+                    enemy_user = User(random.choice(db.get_all_user_ids_with_similar_level(user=user, range=50)))
+                if not enemy_user:
+                    enemy_user = User(random.choice(db.get_all_user_ids_with_similar_level(user=user, range=100)))
 
                 # Check if user has weapon equipped
                 if not enemy_user.get_weapon():
