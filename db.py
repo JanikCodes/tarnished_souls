@@ -1286,7 +1286,7 @@ def update_item_from_user(idUser, item):
 def get_leaderboard_invasion():
     leaderboard = []
 
-    sql = f"SELECT username, CASE WHEN inv_deaths = 0 THEN inv_kills ELSE inv_kills / inv_deaths END AS kdr FROM user ORDER BY kdr DESC LIMIT 10;"
+    sql = f"select username, inv_kills FROM user ORDER BY inv_kills DESC LIMIT 10;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -1297,11 +1297,11 @@ def get_leaderboard_invasion():
 
 
 def get_user_position_in_lb_invasion(idUser):
-    sql = f"SELECT leaderboard.position FROM ( SELECT u1.idUser, (SELECT COUNT(*) + 1 FROM user u2 WHERE (CASE WHEN u2.inv_deaths = 0 THEN u2.inv_kills ELSE u2.inv_kills / u2.inv_deaths END) > (CASE WHEN u1.inv_deaths = 0 THEN u1.inv_kills ELSE u1.inv_kills / u1.inv_deaths END) OR (CASE WHEN u2.inv_deaths = 0 THEN u2.inv_kills ELSE u2.inv_kills / u2.inv_deaths END) = (CASE WHEN u1.inv_deaths = 0 THEN u1.inv_kills ELSE u1.inv_kills / u1.inv_deaths END) AND u2.idUser < u1.idUser ) AS position FROM user u1 WHERE u1.idUser = {idUser} ) leaderboard;"
+    sql = f"SELECT username, inv_kills, FIND_IN_SET(inv_kills, (SELECT GROUP_CONCAT(inv_kills ORDER BY inv_kills DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        return res[0]
+        return res[2]
     else:
         # User not found in the database
         return "error"
