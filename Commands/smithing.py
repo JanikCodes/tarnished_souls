@@ -49,11 +49,14 @@ async def update_item(interaction, user, edit):
     material_item_id = MATERIAL_TABLE[new_level]
 
     req_material = db.get_item_from_item_id(material_item_id)
-    req_material.set_count(new_level * 2)
 
     if not req_material:
         embed.add_field(name="Error", value="There was an error with your upgrade.. I couldn't find the required material. Please use `/feedback`.", inline=False)
         return await interaction.message.edit(embed=embed, view=None)
+
+    # Calculate the req material count
+    reqCount = 2 + (new_level % 3) * 2
+    req_material.set_count(reqCount)
 
     category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name="smithing_stone")
 
