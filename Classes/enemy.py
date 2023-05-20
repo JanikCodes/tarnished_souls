@@ -100,7 +100,7 @@ class Enemy:
             self.last_move = selected_move
             return selected_move
         else:
-            print(f"Didn't found a valid move anymore for enemy: {self.name} with move_type: {move_type}")
+            print(f"Didn't found a valid move anymore for enemy: {self.name} ID: {self.id} with move_type: {move_type}")
             return None
 
     def get_move(self, phase):
@@ -110,7 +110,7 @@ class Enemy:
             self.last_move = selected_move
             return selected_move
         else:
-            print(f"Didn't found a valid move anymore for enemy: {self.name} in phase: {phase}")
+            print(f"Didn't found a valid move anymore for enemy: {self.name} ID: {self.id} in phase: {phase}")
             return None
 
     def dodge(self):
