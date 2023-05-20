@@ -1308,13 +1308,11 @@ def get_user_position_in_lb_invasion(idUser):
 
 
 def add_inv_death_to_user(idUser):
-    print("Added death")
     sql = f"UPDATE user SET inv_deaths = inv_deaths + 1 WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
 
 def add_inv_kill_to_user(idUser):
-    print("Added kill")
     sql = f"UPDATE user SET inv_kills = inv_kills + 1 WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
