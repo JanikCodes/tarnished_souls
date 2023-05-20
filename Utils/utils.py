@@ -14,9 +14,9 @@ def create_bars(value, max):
             first_digit = int(perc // 10)
 
     for i in range(first_digit):
-        str += ":blue_square:"
+        str += ":s_f_n_s:"
     for y in range(10 - first_digit):
-        emp += ":black_large_square:"
+        emp += ":h_e_n_s:"
 
     str += emp
     return str
