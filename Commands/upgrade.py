@@ -39,7 +39,7 @@ class UpgradeStatsButton(discord.ui.Button):
                 message = interaction.message
                 edited_embed = message.embeds[0]
                 edited_embed.set_field_at(0, name=f"**{self.selected_choice}**",
-                                          value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(
+                                          value=utils.create_bars(current_level, 100, interaction=interaction) + utils.create_invisible_spaces(
                                               3) + str(current_level) + "/100", inline=False)
 
                 await interaction.message.edit(embed=edited_embed,
@@ -94,7 +94,7 @@ class UpgradeStats(commands.Cog):
                                       description=f"Click the button below to upgrade your skill!")
                 embed.set_author(name=user.get_userName())
                 embed.add_field(name=f"**{selected_choice}**",
-                                value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(
+                                value=utils.create_bars(current_level, 100, interaction=interaction) + utils.create_invisible_spaces(3) + str(
                                     current_level) + "/100", inline=False)
                 await interaction.followup.send(embed=embed,
                                                         view=UpgradeStatsView(user=user, current_level=current_level,
