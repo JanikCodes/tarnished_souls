@@ -244,7 +244,7 @@ class User:
         return self.remaining_flasks
 
     def get_max_health(self):
-        return VIGOR_TABLE[self.vigor] if self.vigor in VIGOR_TABLE else None
+        return VIGOR_TABLE[self.vigor] + 200 if self.vigor in VIGOR_TABLE else None
 
     def reduce_health(self, amount):
         absorb = int((self.get_total_armor() / 8))
