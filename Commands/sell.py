@@ -59,10 +59,7 @@ class SellButton(discord.ui.Button):
         except discord.errors.NotFound:
             pass
 
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 class SellView(discord.ui.View):
 
     def __init__(self, user, item):
@@ -126,9 +123,6 @@ class Sell(commands.Cog):
         except Exception as e:
             await self.client.send_error_message(e)
 
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(Sell(client))
