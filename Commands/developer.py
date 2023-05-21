@@ -12,7 +12,6 @@ from Classes.user import User
 from Utils.classes import class_selection
 import os
 
-
 class DeveloperOptionsCategoryButton(discord.ui.Button):
     def __init__(self, text, custom_view, user):
         super().__init__(label=text, style=discord.ButtonStyle.grey)
@@ -1105,6 +1104,8 @@ class DeveloperDefaultView(discord.ui.View):
 
 class Developer(commands.Cog):
     def __init__(self, client: commands.Bot):
+        self.LAST_USER_COUNT = 0
+        self.LAST_SERVER_COUNT = 0
         self.client = client
 
 
@@ -1119,11 +1120,16 @@ class Developer(commands.Cog):
 
                 if interaction.user.id in config.botConfig["developer-ids"]:
 
-                    embed = discord.Embed(title=f"Developer options",
-                                          description="")
-                    embed.add_field(name="Servers", value=f"{len(self.client.guilds)}")
-                    embed.add_field(name="Users", value=f"{db.get_all_user_count()}")
+                    new_server_count = f" **+{ len(self.client.guilds) - self.LAST_SERVER_COUNT }**" if self.LAST_SERVER_COUNT != len(self.client.guilds) else ""
+                    new_user_count = f" **+{int(db.get_all_user_count()) - self.LAST_SERVER_COUNT }**" if self.LAST_USER_COUNT != int(db.get_all_user_count()) else ""
+
+                    embed = discord.Embed(title=f"Developer options", description="")
+                    embed.add_field(name="Servers", value=f"{len(self.client.guilds)} {new_server_count}")
+                    embed.add_field(name="Users", value=f"{db.get_all_user_count()} {new_user_count}")
                     embed.add_field(name="AVG Quest", value=f"{db.get_avg_user_quest()}")
+
+                    self.LAST_SERVER_COUNT = len(self.client.guilds)
+                    self.LAST_USER_COUNT = int(db.get_all_user_count())
 
                     await interaction.followup.send(embed=embed, view=DeveloperDefaultView(user=user))
                 else:

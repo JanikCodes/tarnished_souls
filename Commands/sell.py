@@ -2,14 +2,16 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils.classes import class_selection
 
 
 class SellButton(discord.ui.Button):
-    def __init__(self, user, item, amount, disabled = False):
-        super().__init__(label=f"Sell {amount}x ({item.get_price() * amount} runes)", style=discord.ButtonStyle.danger, disabled=disabled)
+    def __init__(self, user, item, amount, disabled=False):
+        super().__init__(label=f"Sell {amount}x ({item.get_price() * amount} runes)", style=discord.ButtonStyle.danger,
+                         disabled=disabled)
         self.user = user
         self.item = item
         self.amount = amount
@@ -27,7 +29,8 @@ class SellButton(discord.ui.Button):
             sell_item = db.get_item_from_user_with_id_rel(idUser=self.user.get_userId(), idRel=self.item.get_idRel())
             if sell_item:
                 if sell_item.get_count() >= self.amount:
-                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(), amount=self.amount)
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=sell_item.get_idRel(),
+                                               amount=self.amount)
                     db.increase_runes_from_user_with_id(self.user.get_userId(), self.item.get_price() * self.amount)
                     db.check_for_quest_update(idUser=self.user.get_userId(), runes=self.item.get_price() * self.amount)
                     message = interaction.message
@@ -36,7 +39,8 @@ class SellButton(discord.ui.Button):
 
                     if sell_item.get_count() - self.amount > 0:
                         edited_embed.title = f"**{sell_item.get_name()}** {sell_item.get_count() - self.amount}x `id: {sell_item.get_idRel()}`"
-                        await interaction.message.edit(embed=edited_embed, view=SellView(user=self.user, item=self.item))
+                        await interaction.message.edit(embed=edited_embed,
+                                                       view=SellView(user=self.user, item=self.item))
                     else:
                         # completely sold
                         edited_embed.title = f"**{sell_item.get_name()}**"
@@ -69,24 +73,20 @@ class SellView(discord.ui.View):
         self.add_item(SellButton(user=user, item=item, amount=1, disabled=False if item.get_count() >= 1 else True))
         self.add_item(SellButton(user=user, item=item, amount=5, disabled=False if item.get_count() >= 5 else True))
 
-
 class Sell(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
     @app_commands.command(name="sell", description="Sell one of your items")
-    @app_commands.describe(
-        item_id="Enter an item id",
-    )
+    @app_commands.describe(item_id="Enter an item id")
     @app_commands.rename(item_id='id')
-    async def sell(self, interaction: discord.Interaction, item_id: int):
+    async def sell(self, interaction: discord.Interaction, item_id: int = None):
         try:
             await interaction.response.defer()
 
             self.client.add_to_activity()
 
             if db.validate_user(interaction.user.id):
-
                 user = User(interaction.user.id)
                 item = db.get_item_from_user_with_id_rel(user.get_userId(), item_id)
                 if item is None:

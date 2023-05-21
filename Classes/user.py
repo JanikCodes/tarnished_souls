@@ -1,6 +1,7 @@
 import db
 
 BASE_DAMAGE = 25
+BASE_HEALING = 375
 
 VIGOR_TABLE = {
     1: 300, 2: 304, 3: 312, 4: 322, 5: 334, 6: 347, 7: 362, 8: 378, 9: 396, 10: 414,
@@ -48,6 +49,8 @@ class User:
             self.dodge_next = False
             self.last_move_text = str()
             self.maxHordeWave = result[24]
+            self.inv_kills = result[25]
+            self.inv_deaths = result[26]
         else:
             # empty constructor
             pass
@@ -83,6 +86,8 @@ class User:
         self.dodge_next = False
         self.last_move_text = str()
         self.maxHordeWave = result[24]
+        self.inv_kills = result[25]
+        self.inv_deaths = result[26]
 
         return self
 
@@ -239,12 +244,13 @@ class User:
         return self.remaining_flasks
 
     def get_max_health(self):
-        return VIGOR_TABLE[self.vigor] if self.vigor in VIGOR_TABLE else None
+        return VIGOR_TABLE[self.vigor] + 200 if self.vigor in VIGOR_TABLE else None
 
     def reduce_health(self, amount):
         absorb = int((self.get_total_armor() / 8))
-        self.health = max(self.health - (amount - absorb), 0)
-        self.last_move_text = f"`-{amount - absorb}`"
+        calc_dmg = max((amount - absorb), 0)
+        self.health = max(self.health - calc_dmg, 0)
+        self.last_move_text = f"`-{calc_dmg}`"
 
     def increase_health(self, amount):
         if self.remaining_flasks > 0:

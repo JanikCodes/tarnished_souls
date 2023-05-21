@@ -34,6 +34,15 @@ def get_leaderboard_text_from_choice(selected_choice, idUser):
             for x in range(len(leaderboard)):
                 ld_text += f"**{x + 1}.** {leaderboard[x][0]} - wave `{leaderboard[x][1]}`\n"
             return ld_text, user_pos
+        case "inv_kills":
+            leaderboard = db.get_leaderboard_invasion()
+            user_pos = db.get_user_position_in_lb_invasion(idUser=idUser)
+            ld_text = "**Top 10 players with the highest kills for invasions**\n"
+
+            for x in range(len(leaderboard)):
+                ld_text += f"**{x + 1}.** {leaderboard[x][0]} - `{leaderboard[x][1]}` kills\n"
+            return ld_text, user_pos
+
 
     ld_text = "There was an error.."
     return ld_text
@@ -48,6 +57,7 @@ class LeaderboardCommand(commands.Cog):
         app_commands.Choice(name="Runes", value="runes"),
         app_commands.Choice(name="Level", value="level"),
         app_commands.Choice(name="Horde-mode", value="wave"),
+        app_commands.Choice(name="Invasion Kills", value="inv_kills"),
     ])
     async def leaderboard(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
         try:

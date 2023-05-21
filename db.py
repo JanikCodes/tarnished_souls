@@ -39,7 +39,7 @@ async def init_database():
 
 
 def add_user(userId, userName):
-    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1);'
+    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1, 0, 0);'
     sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
@@ -150,10 +150,12 @@ def get_enemies_from_location(location_id):
 
 
 def get_enemy_id_from_name(name):
-    sql = f"SELECT idenemy FROM enemy WHERE name='{name}'"
+    sql = f"SELECT idEnemy FROM enemy WHERE name='{name}'"
     cursor.execute(sql)
-    return cursor.fetchone()
-
+    res = cursor.fetchone()[0]
+    if res:
+        return res
+    return None
 
 # data insertion
 def get_enemy_count():
@@ -242,7 +244,7 @@ def get_location_id_from_name(name):
 
 def get_user_with_id(userId):
     sql = f"SELECT idUser, userName, level, xp, souls, vigor, mind, endurance, strength, dexterity, intelligence, " \
-          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount, maxHordeWave FROM user u WHERE u.idUser = {userId};"
+          f"faith, arcane, last_explore, e_weapon, e_head, e_chest, e_legs, e_gauntlet, currentLocation, maxLocation, NG, last_quest, flaskCount, maxHordeWave, inv_kills, inv_deaths FROM user u WHERE u.idUser = {userId};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -384,7 +386,7 @@ def get_json_req_attribute(item, attribute_name):
 
 
 def get_json_scale_attribute(item, attribute_name):
-    req_value = "-"
+    req_value = 0
     for attribute in item['scalesWith']:
         if attribute['name'] == attribute_name and 'scaling' in attribute:
             req_value = attribute['scaling']
@@ -611,6 +613,18 @@ def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page, filte
         return items
     else:
         return None
+
+
+def get_all_items_from_user(idUser, type):
+    items = []
+    sql = f"SELECT idRel FROM user_has_item uhi, user u, item i WHERE i.type = '{type}' AND i.idItem = uhi.idItem AND NOT EXISTS (SELECT 1 FROM user u WHERE u.e_weapon = uhi.idRel OR u.e_head = uhi.idRel OR u.e_chest = uhi.idRel OR u.e_legs = uhi.idRel OR u.e_gauntlet = uhi.idRel) AND u.idUser = {idUser} AND uhi.idUser = u.idUser GROUP BY idRel;"
+    cursor.execute(sql)
+
+    res = cursor.fetchall()
+    if res:
+        for id in res:
+            items.append(get_item_from_user_with_id_rel(idUser, id[0]))
+    return items
 
 
 def get_item_from_user_with_id_rel(idUser, idRel):
@@ -1138,7 +1152,7 @@ def show_tables_in_db():
 def get_all_enemies():
     enemies = []
 
-    sql = f"select idEnemy from enemy ORDER BY health;"
+    sql = f"select idEnemy from enemy WHERE health > 0 ORDER BY health;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -1205,6 +1219,18 @@ def get_all_user_ids_from_location(location, himself):
 
     return idUsers
 
+def get_all_user_ids(himself):
+    idUsers = []
+    sql = f"SELECT idUser from user WHERE idUser != {himself};"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+
+    return idUsers
+
 def update_enemy_move_damage(idMove, new_damage):
     sql = f"UPDATE enemy_moves SET damage={new_damage} WHERE idMove = {idMove} ;"
     cursor.execute(sql)
@@ -1255,3 +1281,61 @@ def update_item_from_user(idUser, item):
     sql = f"UPDATE user_has_item SET level = {item.get_level()} WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND idRel = {item.get_idRel()}"
     cursor.execute(sql)
     mydb.commit()
+
+
+def get_leaderboard_invasion():
+    leaderboard = []
+
+    sql = f"select username, inv_kills FROM user ORDER BY inv_kills DESC LIMIT 10;"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            leaderboard.append((row[0], row[1]))
+
+    return leaderboard
+
+
+def get_user_position_in_lb_invasion(idUser):
+    sql = f"SELECT username, inv_kills, FIND_IN_SET(inv_kills, (SELECT GROUP_CONCAT(inv_kills ORDER BY inv_kills DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return res[2]
+    else:
+        # User not found in the database
+        return "error"
+
+
+def add_inv_death_to_user(idUser):
+    sql = f"UPDATE user SET inv_deaths = inv_deaths + 1 WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+def add_inv_kill_to_user(idUser):
+    sql = f"UPDATE user SET inv_kills = inv_kills + 1 WHERE idUser = {idUser};"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def get_idRel_from_user_with_item_id(idUser, idItem):
+    sql = f"SELECT idRel FROM user_has_item WHERE idItem = {idItem} AND idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return int(res[0])
+
+    return None
+
+
+def get_all_user_ids_with_similar_level(user, range):
+    idUsers = []
+    sql = f"SELECT idUser FROM user WHERE idUser != {user.get_userId()} AND (vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane) BETWEEN ( {user.get_all_stat_levels()} - {range}) AND ( {user.get_all_stat_levels()} + {range});"
+
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            idUsers.append(row[0])
+
+    return idUsers

@@ -16,7 +16,7 @@ class FeedbackModal(discord.ui.Modal, title="Feedback"):
 
     async def on_submit(self, interaction: discord.Interaction):
         try:
-            self.client.add_to_activity()
+            self.bot.add_to_activity()
 
             # get feedback results
             feedback = self.feedback.value
