@@ -12,6 +12,9 @@ class RespecCommand(commands.Cog):
         self.client = client
 
     @app_commands.command(name="respec", description="Change again how you distribute your levels")
+    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
+                                         external_emojis=True, read_message_history=True, read_messages=True,
+                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def respec(self, interaction: discord.Interaction, vigor: int, mind: int, endurance: int, strength: int, dexterity: int, intelligence: int, faith: int, arcane: int):
         if not interaction or interaction.is_expired():
             return
