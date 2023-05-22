@@ -1077,17 +1077,16 @@ def update_flask_amount_from_user(idUser, amount):
     sql = f"UPDATE user u SET flaskCount = {amount} WHERE u.idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
-    
 
 def get_leaderboard_runes():
     leaderboard = []
 
-    sql = f"select username, souls FROM user ORDER BY souls DESC LIMIT 10;"
+    sql = f"select username, souls, idUser FROM user ORDER BY souls DESC"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            leaderboard.append((row[0], row[1]))
+            leaderboard.append((row[0], row[1], row[2]))
 
     return leaderboard
 
@@ -1105,12 +1104,12 @@ def get_user_position_in_lb_runes(idUser):
 def get_leaderboard_levels():
     leaderboard = []
 
-    sql = "SELECT username, vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user ORDER BY total_level DESC LIMIT 10;"
+    sql = "SELECT username, vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level, idUser FROM user ORDER BY total_level DESC"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            leaderboard.append((row[0], row[1]))
+            leaderboard.append((row[0], row[1], row[2]))
 
     return leaderboard
 
@@ -1167,12 +1166,12 @@ def get_all_enemies():
 def get_leaderboard_horde():
     leaderboard = []
 
-    sql = f"select username, maxHordeWave FROM user ORDER BY maxHordeWave DESC LIMIT 10;"
+    sql = f"select username, maxHordeWave, idUser FROM user ORDER BY maxHordeWave DESC;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            leaderboard.append((row[0], row[1]))
+            leaderboard.append((row[0], row[1], row[2]))
 
     return leaderboard
 
@@ -1286,12 +1285,12 @@ def update_item_from_user(idUser, item):
 def get_leaderboard_invasion():
     leaderboard = []
 
-    sql = f"select username, inv_kills FROM user ORDER BY inv_kills DESC LIMIT 10;"
+    sql = f"select username, inv_kills, idUser FROM user ORDER BY inv_kills DESC;"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            leaderboard.append((row[0], row[1]))
+            leaderboard.append((row[0], row[1], row[2]))
 
     return leaderboard
 
