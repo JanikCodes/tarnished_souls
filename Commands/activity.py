@@ -19,6 +19,9 @@ class ActivityCommand(commands.Cog):
 
     @app_commands.command(name="activity", description="Developer only.. sorry")
     async def activity(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         await interaction.response.defer()
 
         try:

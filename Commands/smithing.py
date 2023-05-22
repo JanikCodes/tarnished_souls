@@ -192,6 +192,9 @@ class SmithingCommand(commands.Cog):
 
     @app_commands.command(name="smithing", description="Upgrade your equipped weapon with materials..")
     async def smithing(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

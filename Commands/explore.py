@@ -30,6 +30,9 @@ class Explore(commands.Cog):
 
     @app_commands.command(name="explore", description="Explore the world, encounter events & receive items and souls!")
     async def explore(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

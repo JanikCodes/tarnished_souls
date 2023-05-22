@@ -44,6 +44,8 @@ class Feedback(commands.Cog):
 
     @app_commands.command(name="feedback", description="In case you want to leave any feedback, ranging from balancing to simple opinion")
     async def feedback(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
 
         modal = FeedbackModal(bot=self.client)
         await interaction.response.send_modal(modal)

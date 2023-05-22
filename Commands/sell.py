@@ -81,6 +81,9 @@ class Sell(commands.Cog):
     @app_commands.describe(item_id="Enter an item id")
     @app_commands.rename(item_id='id')
     async def sell(self, interaction: discord.Interaction, item_id: int = None):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

@@ -54,6 +54,9 @@ class UnEquip(commands.Cog):
         app_commands.Choice(name="Legs", value="legs"),
     ])
     async def unequip(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

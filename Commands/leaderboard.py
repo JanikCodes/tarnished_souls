@@ -60,6 +60,9 @@ class LeaderboardCommand(commands.Cog):
         app_commands.Choice(name="Invasion Kills", value="inv_kills"),
     ])
     async def leaderboard(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

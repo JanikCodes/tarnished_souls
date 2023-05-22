@@ -211,6 +211,9 @@ class Inventory(commands.Cog):
 
     @app_commands.command(name="inventory", description="Display your inventory")
     async def inventory(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

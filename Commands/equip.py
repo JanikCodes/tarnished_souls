@@ -57,6 +57,9 @@ class Equip(commands.Cog):
     )
     @app_commands.rename(item_id='id')
     async def equip(self, interaction: discord.Interaction, item_id: int):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

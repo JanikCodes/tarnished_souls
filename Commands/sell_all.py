@@ -118,8 +118,10 @@ class SellAll(commands.Cog):
         app_commands.Choice(name="Items", value="Item")
     ])
     @app_commands.describe(duplicates="Select True if you want to sell duplicates ONLY. False if ALL.")
-    async def sell_all(self, interaction: discord.Interaction, choices: app_commands.Choice[str],
-                       duplicates: bool = None):
+    async def sell_all(self, interaction: discord.Interaction, choices: app_commands.Choice[str], duplicates: bool = None):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

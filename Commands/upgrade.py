@@ -79,6 +79,9 @@ class UpgradeStats(commands.Cog):
         app_commands.Choice(name="Arcane", value="arcane"),
     ])
     async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

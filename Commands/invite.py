@@ -22,6 +22,9 @@ class Invite(commands.Cog):
 
     @app_commands.command(name="invite", description="Invite this bot to your server!")
     async def invite(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

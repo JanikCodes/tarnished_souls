@@ -541,6 +541,9 @@ class FightCommand(commands.Cog):
         app_commands.Choice(name="More soon..", value="public")
     ])
     async def fight(self, interaction: discord.Interaction, visibility: app_commands.Choice[str] = None):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

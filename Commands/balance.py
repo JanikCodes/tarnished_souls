@@ -16,6 +16,9 @@ class BalanceCommand(commands.Cog):
 
     @app_commands.command(name="balance", description="Developer only.. sorry")
     async def balance(self, interaction: discord.Interaction, id_location: int, avg_min_damage: int, avg_max_damage: int, boss_extra_dmg: int):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
