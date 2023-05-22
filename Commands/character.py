@@ -15,9 +15,6 @@ class Character(commands.Cog):
 
     @app_commands.rename(optional_user='user')
     @app_commands.command(name="character", description="Display your character stats & equipment")
-    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
-                                         external_emojis=True, read_message_history=True, read_messages=True,
-                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def character(self, interaction: discord.Interaction, optional_user: discord.Member = None):
         if not interaction or interaction.is_expired():
             return

@@ -18,9 +18,6 @@ class ActivityCommand(commands.Cog):
         self.client = client
 
     @app_commands.command(name="activity", description="Developer only.. sorry")
-    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
-                                         external_emojis=True, read_message_history=True, read_messages=True,
-                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def activity(self, interaction: discord.Interaction):
         if not interaction or interaction.is_expired():
             return

@@ -50,9 +50,6 @@ class Travel(commands.Cog):
         self.client = client
 
     @app_commands.command(name="travel", description="Travel to to various places in order to earn different loot or encounter new enemies.")
-    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
-                                         external_emojis=True, read_message_history=True, read_messages=True,
-                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def travel(self, interaction: discord.Interaction):
         if not interaction or interaction.is_expired():
             return

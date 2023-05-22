@@ -56,9 +56,6 @@ class Equip(commands.Cog):
         item_id="Enter an item id",
     )
     @app_commands.rename(item_id='id')
-    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
-                                         external_emojis=True, read_message_history=True, read_messages=True,
-                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def equip(self, interaction: discord.Interaction, item_id: int):
         if not interaction or interaction.is_expired():
             return

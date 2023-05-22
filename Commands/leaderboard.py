@@ -108,9 +108,6 @@ class LeaderboardCommand(commands.Cog):
         app_commands.Choice(name="Global", value="global"),
         app_commands.Choice(name="Server", value="server")
     ])
-    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
-                                         external_emojis=True, read_message_history=True, read_messages=True,
-                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def leaderboard(self, interaction: discord.Interaction, type: app_commands.Choice[str], range: app_commands.Choice[str]):
         if not interaction or interaction.is_expired():
             return

@@ -15,9 +15,6 @@ class BalanceCommand(commands.Cog):
         self.client = client
 
     @app_commands.command(name="balance", description="Developer only.. sorry")
-    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
-                                         external_emojis=True, read_message_history=True, read_messages=True,
-                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def balance(self, interaction: discord.Interaction, id_location: int, avg_min_damage: int, avg_max_damage: int, boss_extra_dmg: int):
         if not interaction or interaction.is_expired():
             return

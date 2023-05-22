@@ -80,9 +80,6 @@ class Sell(commands.Cog):
     @app_commands.command(name="sell", description="Sell one of your items")
     @app_commands.describe(item_id="Enter an item id")
     @app_commands.rename(item_id='id')
-    @app_commands.checks.has_permissions(manage_messages=True, embed_links=True, add_reactions=True,
-                                         external_emojis=True, read_message_history=True, read_messages=True,
-                                         send_messages=True, use_application_commands=True, use_external_emojis=True)
     async def sell(self, interaction: discord.Interaction, item_id: int = None):
         if not interaction or interaction.is_expired():
             return
