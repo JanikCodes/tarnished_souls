@@ -46,7 +46,7 @@ def get_leaderboard_text_from_choice(bot, interaction, selected_range, selected_
             ld_text = "**Top 10 players with the highest rune count**\n"
 
             for x in range(len(leaderboard)):
-                ld_text += f"**{x + 1}.** {leaderboard[x][0]} - `{leaderboard[x][1]}` runes\n"
+                ld_text += f"{x + 1}. {leaderboard[x][0]} - `{leaderboard[x][1]}` runes\n"
             return ld_text, user_pos
         case "level":
             leaderboard = db.get_leaderboard_levels()
@@ -59,7 +59,7 @@ def get_leaderboard_text_from_choice(bot, interaction, selected_range, selected_
             ld_text = "**Top 10 players with the highest level**\n"
 
             for x in range(len(leaderboard)):
-                ld_text += f"**{x + 1}.** {leaderboard[x][0]} - level `{leaderboard[x][1]}`\n"
+                ld_text += f"{x + 1}. {leaderboard[x][0]} - level `{leaderboard[x][1]}`\n"
             return ld_text, user_pos
         case "wave":
             leaderboard = db.get_leaderboard_horde()
@@ -72,7 +72,7 @@ def get_leaderboard_text_from_choice(bot, interaction, selected_range, selected_
             ld_text = "**Top 10 players with the highest wave count in horde mode**\n"
 
             for x in range(len(leaderboard)):
-                ld_text += f"**{x + 1}.** {leaderboard[x][0]} - wave `{leaderboard[x][1]}`\n"
+                ld_text += f"{x + 1}. {leaderboard[x][0]} - wave `{leaderboard[x][1]}`\n"
             return ld_text, user_pos
         case "inv_kills":
             leaderboard = db.get_leaderboard_invasion()
@@ -85,7 +85,7 @@ def get_leaderboard_text_from_choice(bot, interaction, selected_range, selected_
             ld_text = "**Top 10 players with the highest kills for invasions**\n"
 
             for x in range(len(leaderboard)):
-                ld_text += f"**{x + 1}.** {leaderboard[x][0]} - `{leaderboard[x][1]}` kills\n"
+                ld_text += f"{x + 1}. {leaderboard[x][0]} - `{leaderboard[x][1]}` kills\n"
             return ld_text, user_pos
 
 
