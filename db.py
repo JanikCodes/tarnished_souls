@@ -831,7 +831,7 @@ def get_quest_with_id(idQuest):
 def add_init_quest_to_user(idUser):
     first_quest = get_quest_with_id(1)
     sql = convert_python_none_to_null(
-        f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()}, {first_quest.get_req_invasion_kills()}, {first_quest.get_req_horde_wave()});")
+        f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()}, {first_quest.get_req_invasion_kills()}, 0);")
     cursor.execute(sql)
     mydb.commit()
 
@@ -847,13 +847,13 @@ def remove_quest_from_user_with_quest_id(idUser, idQuest):
 def add_quest_to_user(idUser, idQuest):
     quest = get_quest_with_id(idQuest)
     sql = convert_python_none_to_null(
-        f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()});")
+        f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()}, {quest.get_req_invasion_kills()}, 0 );")
     cursor.execute(sql)
     mydb.commit()
 
 
-def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_location_id=None):
-    sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
+def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_location_id=None, invade_kill=False, max_horde_wave=0):
+    sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores, remaining_inv_kills, remaining_horde_wave FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -884,6 +884,15 @@ def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_locati
                     cursor.execute(sql)
                     mydb.commit()
 
+        if invade_kill:
+            sql = f"UPDATE user_has_quest r SET r.remaining_inv_kills = GREATEST(remaining_inv_kills - 1, 0) WHERE r.idUser = {idUser};"
+            cursor.execute(sql)
+            mydb.commit()
+
+        if max_horde_wave > 0:
+            sql = f"UPDATE user_has_quest r SET r.remaining_horde_wave = LEAST({max_horde_wave}, {quest.get_req_horde_wave()}) WHERE r.idUser = {idUser};"
+            cursor.execute(sql)
+            mydb.commit()
 
 def get_all_locations_from_user(user):
     locations = []

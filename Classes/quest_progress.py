@@ -13,7 +13,7 @@ class QuestProgress:
         self.remaining_runes = remaining_runes
         self.remaining_explore_count = remaining_explore_count
         self.remaining_invasion_kills = remaining_inv_kills
-        self.remaining_horde_wave = remaining_horde_wave
+        self.current_min_horde_wave = remaining_horde_wave
     def get_idRel(self):
         return self.idRel
 
@@ -54,16 +54,16 @@ class QuestProgress:
         if self.quest.req_invasion_kills:
             if self.quest.req_invasion_kills > 0:
                 remaining = self.quest.get_req_invasion_kills() - self.remaining_invasion_kills
-                text += f"**Defeat** **{remaining}/{self.quest.get_req_invasion_kills()}** Invaders with `/invade` \n"
+                text += f"**Defeat** **{remaining}/{self.quest.get_req_invasion_kills()}** Players with `/invade` \n"
         if self.quest.req_horde_wave:
             if self.quest.req_horde_wave > 0:
-                remaining = self.remaining_horde_wave
-                text += f"**Reach wave {self.quest.get_req_horde_wave()}** **{remaining}/{self.quest.get_req_horde_wave()}** with `/horde` \n"
+                current = self.current_min_horde_wave
+                text += f"**Reach wave {current}/{self.quest.get_req_horde_wave()}** with `/horde` \n"
 
         return text
 
     def has_rewards(self):
-        return self.quest.get_rune_reward() > 0 or self.quest.get_location_reward() or len(self.quest.get_item_reward()) > 0 or self.quest.get_flask_reward() > 0 and self.remaining_invasion_kills == 0 and self.remaining_horde_wave == self.quest.get_req_horde_wave()
+        return self.quest.get_rune_reward() > 0 or self.quest.get_location_reward() or len(self.quest.get_item_reward()) > 0 or self.quest.get_flask_reward() > 0
 
     def get_quest_reward_text(self, interaction):
         text = str()
@@ -85,4 +85,4 @@ class QuestProgress:
         return text
 
     def is_finished(self):
-        return self.remaining_runes == 0 and self.remaining_kills == 0 and self.remaining_item_count == 0 and self.remaining_explore_count == 0
+        return self.remaining_runes == 0 and self.remaining_kills == 0 and self.remaining_item_count == 0 and self.remaining_explore_count == 0 and self.remaining_invasion_kills == 0 and self.current_min_horde_wave == self.quest.get_req_horde_wave()
