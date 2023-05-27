@@ -6,7 +6,6 @@ from py_discord_db_management.classes.database import Database
 
 import config
 import db
-from Classes.user import User
 from Utils.classes import class_selection
 
 

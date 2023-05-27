@@ -4,7 +4,7 @@ import db
 
 
 class QuestProgress:
-    def __init__(self, idRel, idQuest, idUser, remaining_kills, remaining_item_count, remaining_runes, remaining_explore_count):
+    def __init__(self, idRel, idQuest, idUser, remaining_kills, remaining_item_count, remaining_runes, remaining_explore_count, remaining_inv_kills, remaining_horde_wave):
         self.idRel = idRel
         self.quest = db.get_quest_with_id(idQuest=idQuest)
         self.idUser = idUser
@@ -12,7 +12,8 @@ class QuestProgress:
         self.remaining_item_count = remaining_item_count
         self.remaining_runes = remaining_runes
         self.remaining_explore_count = remaining_explore_count
-
+        self.remaining_invasion_kills = remaining_inv_kills
+        self.remaining_horde_wave = remaining_horde_wave
     def get_idRel(self):
         return self.idRel
 
@@ -50,11 +51,19 @@ class QuestProgress:
             if self.quest.req_explore_count > 0:
                 remaining = self.quest.get_req_explore_count() - self.remaining_explore_count
                 text += f"**Explore** `{self.quest.get_explore_location().get_name()}` **{remaining}/{self.quest.get_req_explore_count()}** \n"
+        if self.quest.req_invasion_kills:
+            if self.quest.req_invasion_kills > 0:
+                remaining = self.quest.get_req_invasion_kills() - self.remaining_invasion_kills
+                text += f"**Defeat** **{remaining}/{self.quest.get_req_invasion_kills()}** Invaders with `/invade` \n"
+        if self.quest.req_horde_wave:
+            if self.quest.req_horde_wave > 0:
+                remaining = self.remaining_horde_wave
+                text += f"**Reach wave {self.quest.get_req_horde_wave()}** **{remaining}/{self.quest.get_req_horde_wave()}** with `/horde` \n"
 
         return text
 
     def has_rewards(self):
-        return self.quest.get_rune_reward() > 0 or self.quest.get_location_reward() or len(self.quest.get_item_reward()) > 0 or self.quest.get_flask_reward() > 0
+        return self.quest.get_rune_reward() > 0 or self.quest.get_location_reward() or len(self.quest.get_item_reward()) > 0 or self.quest.get_flask_reward() > 0 and self.remaining_invasion_kills == 0 and self.remaining_horde_wave == self.quest.get_req_horde_wave()
 
     def get_quest_reward_text(self, interaction):
         text = str()
