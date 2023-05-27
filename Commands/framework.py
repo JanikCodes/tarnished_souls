@@ -34,6 +34,41 @@ class FrameworkCommand(commands.Cog):
                                         database_name=config.botConfig["database"],
                                         charset='utf8mb4')
 
+                    database.set_table_hidden('enemy_logic')
+                    database.set_table_hidden('item')
+                    database.set_table_hidden('move_type')
+                    database.set_table_hidden('quest_has_user')
+                    database.set_table_hidden('quest_type')
+                    database.set_table_hidden('user')
+                    database.set_table_hidden('user_encounter')
+                    database.set_table_hidden('user_has_quest')
+                    # default values for enemy
+                    database.set_column_default_value('enemy', 'idLogic', 1)
+                    database.set_column_default_value('enemy', 'health', 0)
+                    database.set_column_default_value('enemy', 'runes', 0)
+                    database.set_column_default_value('enemy', 'idLocation', 1)
+                    # default values for enemy_moves
+                    database.set_column_default_value('enemy_moves', 'phase', 0)
+                    database.set_column_default_value('enemy_moves', 'idType', 1)
+                    database.set_column_default_value('enemy_moves', 'damage', 0)
+                    database.set_column_default_value('enemy_moves', 'healing', 0)
+                    database.set_column_default_value('enemy_moves', 'duration', 0)
+                    database.set_column_default_value('enemy_moves', 'maxTargets', 4)
+                    # default values for quest
+                    database.set_column_default_value('quest', 'reqKills', 0)
+                    database.set_column_default_value('quest', 'reqitemCount', 0)
+                    database.set_column_default_value('quest', 'reqRunes', 0)
+                    database.set_column_default_value('quest', 'idItem', None)
+                    database.set_column_default_value('quest', 'idEnemy', None)
+                    database.set_column_default_value('quest', 'runeReward', 0)
+                    database.set_column_default_value('quest', 'locationIdReward', None)
+                    database.set_column_default_value('quest', 'reqExploreCount', 0)
+                    database.set_column_default_value('quest', 'locationId', None)
+                    database.set_column_default_value('quest', 'cooldown', 0)
+                    database.set_column_default_value('quest', 'flaskReward', 0)
+                    database.set_column_default_value('quest', 'reqInvasionKills', 0)
+                    database.set_column_default_value('quest', 'reqHordeWave', 0)
+
                     embed, view = dbpyman.create_db_management(database)
 
                     await interaction.followup.send(embed=embed, view=view)
