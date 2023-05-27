@@ -54,6 +54,8 @@ class FrameworkCommand(commands.Cog):
                     database.set_column_default_value('enemy_moves', 'healing', 0)
                     database.set_column_default_value('enemy_moves', 'duration', 0)
                     database.set_column_default_value('enemy_moves', 'maxTargets', 4)
+                    database.set_column_hidden('enemy_moves', 'damage')
+                    database.set_column_hidden('enemy_moves', 'duration')
                     # default values for quest
                     database.set_column_default_value('quest', 'reqKills', 0)
                     database.set_column_default_value('quest', 'reqitemCount', 0)
@@ -68,6 +70,8 @@ class FrameworkCommand(commands.Cog):
                     database.set_column_default_value('quest', 'flaskReward', 0)
                     database.set_column_default_value('quest', 'reqInvasionKills', 0)
                     database.set_column_default_value('quest', 'reqHordeWave', 0)
+
+
 
                     embed, view = dbpyman.create_db_management(database)
 
