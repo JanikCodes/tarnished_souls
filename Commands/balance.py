@@ -35,7 +35,7 @@ class BalanceCommand(commands.Cog):
                         raw_enemy_health = min_health + (count * 125)
                         new_enemy_health = random.randint(raw_enemy_health - 200, raw_enemy_health)
                         new_enemy_healing = int(min_health / 8)
-                        new_runes = new_enemy_health / 6
+                        new_runes = new_enemy_health / 2
                         count += 1
 
                         if enemy.description.upper() == "BOSS":
