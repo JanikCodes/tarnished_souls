@@ -35,15 +35,17 @@ class BalanceCommand(commands.Cog):
                         raw_enemy_health = min_health + (count * 125)
                         new_enemy_health = random.randint(raw_enemy_health - 200, raw_enemy_health)
                         new_enemy_healing = int(min_health / 8)
+                        new_runes = new_enemy_health / 6
                         count += 1
 
                         if enemy.description.upper() == "BOSS":
-                            print("Adjusted boss dmg..")
+                            print(f"Adjusted balance for location [{id_location}]")
                             enemy_average_damage_per_turn += boss_extra_dmg
                             new_enemy_health += boss_extra_health
 
                         db.update_enemy_move_healing(enemy.get_id(), new_enemy_healing)
                         db.update_enemy_health(enemy.get_id(), new_enemy_health)
+                        db.update_enemy_runes(enemy.get_id(), new_runes)
 
                         enemy_attack_move_count = sum(move.get_type() == 1 for move in enemy.moves)
                         for move in enemy.moves:
@@ -54,7 +56,7 @@ class BalanceCommand(commands.Cog):
                                 db.update_enemy_move_damage(move.get_id(), move_damage)
 
 
-                    await interaction.followup.send(f"Auto balanced all enemies with `AVG {avg_min_damage} - {avg_max_damage}` (Boss: +{boss_extra_dmg}) damage at location `ID {id_location}`")
+                    await interaction.followup.send(f"Auto balanced all enemies with `AVG {avg_min_damage} - {avg_max_damage}` (Boss: +{boss_extra_dmg}) damage,  `{min_health}` (Boss: +{boss_extra_health}) health at location `ID {id_location}`")
                 else:
                     await interaction.followup.send("You're not a developer!", ephemeral=True)
             else:

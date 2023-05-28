@@ -1359,3 +1359,9 @@ def update_enemy_health(idEnemy, new_enemy_health):
     sql = f"UPDATE enemy SET health={new_enemy_health} WHERE idEnemy = {idEnemy};"
     cursor.execute(sql)
     mydb.commit()
+
+
+def update_enemy_runes(idEnemy, new_runes):
+    sql = f"UPDATE enemy SET runes={new_runes} WHERE idEnemy = {idEnemy};"
+    cursor.execute(sql)
+    mydb.commit()
