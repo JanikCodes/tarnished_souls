@@ -15,7 +15,7 @@ class BalanceCommand(commands.Cog):
         self.client = client
 
     @app_commands.command(name="balance", description="Developer only.. sorry")
-    async def balance(self, interaction: discord.Interaction, id_location: int, avg_min_damage: int, avg_max_damage: int, boss_extra_dmg: int):
+    async def balance(self, interaction: discord.Interaction, id_location: int, avg_min_damage: int, avg_max_damage: int, min_health: int, boss_extra_dmg: int, boss_extra_health: int):
         if not interaction or interaction.is_expired():
             return
 
@@ -27,14 +27,23 @@ class BalanceCommand(commands.Cog):
                 if interaction.user.id in config.botConfig["developer-ids"]:
 
                     enemy_list = db.get_enemies_from_location(location_id=id_location)
-
+                    count = 0
                     for enemy in enemy_list:
                         total_moves = len(enemy.moves)
                         enemy_average_damage_per_turn = random.randint(avg_min_damage, avg_max_damage)
 
+                        raw_enemy_health = min_health + (count * 125)
+                        new_enemy_health = random.randint(raw_enemy_health - 200, raw_enemy_health)
+                        new_enemy_healing = int(min_health / 8)
+                        count += 1
+
                         if enemy.description.upper() == "BOSS":
                             print("Adjusted boss dmg..")
                             enemy_average_damage_per_turn += boss_extra_dmg
+                            new_enemy_health += boss_extra_health
+
+                        db.update_enemy_move_healing(enemy.get_id(), new_enemy_healing)
+                        db.update_enemy_health(enemy.get_id(), new_enemy_health)
 
                         enemy_attack_move_count = sum(move.get_type() == 1 for move in enemy.moves)
                         for move in enemy.moves:
@@ -43,6 +52,7 @@ class BalanceCommand(commands.Cog):
                                                                     enemy_attack_move_count, total_moves)
                                 move_damage += random.randint(-4, 4)
                                 db.update_enemy_move_damage(move.get_id(), move_damage)
+
 
                     await interaction.followup.send(f"Auto balanced all enemies with `AVG {avg_min_damage} - {avg_max_damage}` (Boss: +{boss_extra_dmg}) damage at location `ID {id_location}`")
                 else:

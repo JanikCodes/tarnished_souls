@@ -1239,8 +1239,8 @@ def get_all_user_ids(himself):
 
     return idUsers
 
-def update_enemy_move_damage(idMove, new_damage):
-    sql = f"UPDATE enemy_moves SET damage={new_damage} WHERE idMove = {idMove} ;"
+def update_enemy_move_damage(idMove, new_value):
+    sql = f"UPDATE enemy_moves SET damage={new_value} WHERE idMove = {idMove} ;"
     cursor.execute(sql)
     mydb.commit()
 
@@ -1347,3 +1347,15 @@ def get_all_user_ids_with_similar_level(user, range):
             idUsers.append(row[0])
 
     return idUsers
+
+
+def update_enemy_move_healing(idEnemy, new_enemy_healing):
+    sql = f"UPDATE enemy_moves SET healing={new_enemy_healing} WHERE idEnemy = {idEnemy} AND idType = 3;"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def update_enemy_health(idEnemy, new_enemy_health):
+    sql = f"UPDATE enemy SET health={new_enemy_health} WHERE idEnemy = {idEnemy};"
+    cursor.execute(sql)
+    mydb.commit()
