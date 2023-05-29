@@ -35,13 +35,15 @@ class BalanceCommand(commands.Cog):
                         raw_enemy_health = min_health + (count * 125)
                         new_enemy_health = random.randint(raw_enemy_health - 200, raw_enemy_health)
                         new_enemy_healing = int(min_health / 8)
-                        new_runes = new_enemy_health / 2
+
                         count += 1
 
                         if enemy.description.upper() == "BOSS":
                             print(f"Adjusted balance for location [{id_location}]")
                             enemy_average_damage_per_turn += boss_extra_dmg
                             new_enemy_health += boss_extra_health
+
+                        new_runes = new_enemy_health / 2
 
                         db.update_enemy_move_healing(enemy.get_id(), new_enemy_healing)
                         db.update_enemy_health(enemy.get_id(), new_enemy_health)
