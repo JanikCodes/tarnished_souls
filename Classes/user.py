@@ -262,7 +262,7 @@ class User:
         if self.weapon is not None:
             return BASE_DAMAGE + self.weapon.get_total_value(self)
         else:
-            return BASE_DAMAGE
+            return BASE_DAMAGE + (self.strength + self.dexterity)
 
     def get_total_weight(self):
         weight = 0

@@ -54,8 +54,11 @@ class UpgradeStatsView(discord.ui.View):
         super().__init__()
         self.user = user.update_user()
         self.current_level = current_level
-        disabled = True if utils.calculate_upgrade_cost(user=self.user,
-                                                        next_upgrade_cost=next_upgrade_cost) > user.get_runes() else False
+        disabled = True if utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=next_upgrade_cost) > user.get_runes() else False
+
+        if current_level == 99:
+            disabled = True
+
         self.add_item(UpgradeStatsButton(
             f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=next_upgrade_cost)} runes",
             discord.ButtonStyle.success, "upgrade", selected_choice, user, disabled=disabled))
