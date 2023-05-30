@@ -4,6 +4,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+DEVELOPER_CMDS = ['dev.py', 'developer.py', 'framework.py', 'balance.py']
+
 class Help(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -44,12 +46,13 @@ class Help(commands.Cog):
                     all_cmds = str()
                     for fileName in os.listdir('./Commands'):
                         if fileName.endswith('.py'):
-                            count += 1
-                            if count == 3:
-                                count = 0
-                                all_cmds += f"`{fileName[:-3]}`\n"
-                            else:
-                                all_cmds += f"`{fileName[:-3]}` "
+                            if not fileName in DEVELOPER_CMDS:
+                                count += 1
+                                if count == 3:
+                                    count = 0
+                                    all_cmds += f"`{fileName[:-3]}`\n"
+                                else:
+                                    all_cmds += f"`{fileName[:-3]}` "
 
                     embed = discord.Embed(title=f"Information about `Commands`",
                                           description=all_cmds)
