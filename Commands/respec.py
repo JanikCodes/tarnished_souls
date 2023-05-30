@@ -38,6 +38,13 @@ class RespecCommand(commands.Cog):
                     await interaction.followup.send(embed=embed)
                     return
 
+                if(vigor > 99 or mind > 99 or endurance > 99 or strength > 99 or dexterity > 99 or intelligence > 99 or faith > 99 or arcane > 99):
+                    embed = discord.Embed(title=f"Failed",
+                                          description="One of your attribute was above **99**. Every attribute needs to be below level 100!")
+                    embed.colour = discord.Color.red()
+                    await interaction.followup.send(embed=embed)
+                    return
+
                 if total_points > total_points_spend:
                     embed = discord.Embed(title=f"Failed",
                                           description=f"You have a total of {total_points} points to spend **but** you only spend {total_points_spend} points! \nPlease add **__{total_points - total_points_spend}__** points to any attribute.")

@@ -580,8 +580,6 @@ class AddEnemyModal(discord.ui.Modal):
 
         self.enemy_name = None
         self.enemy_description = None
-        self.enemy_health = None
-        self.enemy_runes = None
 
         self.item_drop_item_id = None
         self.item_drop_count = None
@@ -604,15 +602,9 @@ class AddEnemyModal(discord.ui.Modal):
             self.enemy_description = discord.ui.TextInput(label="Description", style=discord.TextStyle.long,
                                                           placeholder="Enter a valid enemy description..",
                                                           required=False)
-            self.enemy_health = discord.ui.TextInput(label="Health", style=discord.TextStyle.short,
-                                                     placeholder="Enter a valid health amount..", required=True)
-            self.enemy_runes = discord.ui.TextInput(label="Runes", style=discord.TextStyle.short,
-                                                    placeholder="Enter a valid rune amount..", required=True)
-
             self.add_item(self.enemy_name)
             self.add_item(self.enemy_description)
-            self.add_item(self.enemy_health)
-            self.add_item(self.enemy_runes)
+
 
     async def on_submit(self, interaction: discord.Interaction):
         if self.item_drop:
@@ -637,8 +629,8 @@ class AddEnemyModal(discord.ui.Modal):
 
         else:
             self.enemy.set_name(self.enemy_name.value)
-            self.enemy.set_health(self.enemy_health.value)
-            self.enemy.set_runes(self.enemy_runes.value)
+            self.enemy.set_health(0)
+            self.enemy.set_runes(0)
 
             if self.enemy_description.value == "":
                 self.enemy.set_description("null")
@@ -666,26 +658,16 @@ class AddEnemyMoveModal(discord.ui.Modal):
         self.enemy = enemy
         self.move_type = move_type
         self.embed = embed
-        self.move_damage = None
-        self.move_healing = None
         self.move_max_targets = None
 
         match self.move_type.get_type():
             case 'attack':
-                self.move_damage = discord.ui.TextInput(label="Damage", style=discord.TextStyle.short,
-                                                        placeholder="Enter a damage amount, leave empty if None..",
-                                                        required=False)
                 self.move_max_targets = discord.ui.TextInput(label="Max_targets", style=discord.TextStyle.short,
                                                              placeholder="Enter a valid Max_targets amount",
                                                              required=True)
-                self.add_item(self.move_damage)
                 self.add_item(self.move_max_targets)
-
             case 'heal':
-                self.move_healing = discord.ui.TextInput(label="Healing", style=discord.TextStyle.short,
-                                                         placeholder="Enter a healing amount, leave empty if None..",
-                                                         required=False)
-                self.add_item(self.move_healing)
+                pass
 
     async def on_submit(self, interaction: discord.Interaction):
 
@@ -704,18 +686,8 @@ class AddEnemyMoveModal(discord.ui.Modal):
             self.embed.add_field(name="Move_phase:", value=self.move_phase)
             self.move_type.set_phase(self.move_phase)
 
-        if self.move_damage is not None:
-            self.embed.add_field(name="Move_damage:", value=self.move_damage)
-            self.move_type.set_damage(self.move_damage)
-        else:
-            self.move_type.set_damage(0)
-
-        if self.move_healing is not None:
-            self.embed.add_field(name="Move_healing:", value=self.move_healing)
-            self.move_type.set_healing(self.move_healing)
-        else:
-            self.move_type.set_healing(0)
-
+        self.move_type.set_damage(0)
+        self.move_type.set_healing(0)
         self.move_type.set_duration(0)
 
         await interaction.message.edit(embed=self.embed,

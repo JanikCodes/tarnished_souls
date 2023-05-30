@@ -40,6 +40,8 @@ class InvadeCommand(commands.Cog):
                     enemy_user = db.get_all_user_ids_with_similar_level(user=user, range=100)
                 if not enemy_user:
                     enemy_user = db.get_all_user_ids_with_similar_level(user=user, range=400)
+                if not enemy_user:
+                    enemy_user = db.get_all_user_ids_with_similar_level(user=user, range=900)
 
                 if enemy_user:
                     enemy_user = User(random.choice(enemy_user))

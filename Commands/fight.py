@@ -85,8 +85,7 @@ class Fight:
             # grant rune rewards to all players
             for user in users:
                 db.increase_runes_from_user_with_id(user.get_userId(), enemy.get_runes())
-                db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id())
-                db.check_for_quest_update(idUser=users[0].get_userId(), runes=enemy.get_runes())
+                db.check_for_quest_update(idUser=users[0].get_userId(), idEnemy=enemy.get_id(), runes=enemy.get_runes())
 
                 # give each user the item drops
                 for item in item_drops:
@@ -98,6 +97,7 @@ class Fight:
                 # it's an invasion
                 db.add_inv_death_to_user(idUser=self.get_current_enemy().is_player.get_userId())
                 db.add_inv_kill_to_user(idUser=users[0].get_userId())
+                db.check_for_quest_update(idUser=users[0].get_userId(), invade_kill=True)
 
             if self.interaction.message:
                 await self.interaction.message.edit(embed=embed, view=None)
@@ -127,19 +127,24 @@ class Fight:
         # All users died
         total_rune_reward = int(self.enemy_index * RUNE_REWARD_FOR_WAVE)
 
-        # grant rune reward to each user
+        # grant reward to each user
         for user in self.users:
             db.increase_runes_from_user_with_id(user.get_userId(), total_rune_reward)
             db.update_max_horde_wave_from_user(idUser=user.get_userId(), wave=self.enemy_index + 1)
+
+            if self.get_is_horde_mode():
+                db.check_for_quest_update(idUser=user.get_userId(), max_horde_wave=self.enemy_index + 1)
 
         wave_text = str()
         if self.get_is_horde_mode():
             # it's horde mode
             wave_text = f"You've reached wave `{self.enemy_index + 1}`"
 
+
         if self.get_current_enemy().is_player:
             # it's an invasion
             db.add_inv_death_to_user(idUser=self.users[0].get_userId())
+            db.check_for_quest_update(idUser=self.get_current_enemy().is_player.get_userId(), invade_kill=True)
 
         embed.colour = discord.Color.red()
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",

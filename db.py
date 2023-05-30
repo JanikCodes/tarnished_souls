@@ -799,30 +799,30 @@ def add_item_to_location(location, item):
     return sql
 
 def get_current_user_quest(idUser):
-    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser};"
+    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores, remaining_inv_kills, remaining_horde_wave FROM user_has_quest WHERE idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5], res[6])
+        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8])
         return quest_progress
     else:
         return None
 
 def get_user_quest_with_quest_id(idUser, idQuest):
-    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
+    sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores, remaining_inv_kills, remaining_horde_wave FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5], res[6])
+        quest_progress = QuestProgress(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8])
         return quest_progress
     else:
         return None
 def get_quest_with_id(idQuest):
-    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId, cooldown, flaskReward FROM quest WHERE idQuest = {idQuest};"
+    sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId, cooldown, flaskReward, reqHordeWave, reqInvasionKills FROM quest WHERE idQuest = {idQuest};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12], res[13])
+        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12], res[13], res[14], res[15])
         return quest
     else:
         return None
@@ -831,7 +831,7 @@ def get_quest_with_id(idQuest):
 def add_init_quest_to_user(idUser):
     first_quest = get_quest_with_id(1)
     sql = convert_python_none_to_null(
-        f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()});")
+        f"INSERT INTO user_has_quest VALUE(NULL, {first_quest.get_id()}, {idUser}, {first_quest.get_req_kills()}, {first_quest.get_req_item_count()}, {first_quest.get_req_runes()}, {first_quest.get_req_explore_count()}, {first_quest.get_req_invasion_kills()}, 0);")
     cursor.execute(sql)
     mydb.commit()
 
@@ -847,13 +847,13 @@ def remove_quest_from_user_with_quest_id(idUser, idQuest):
 def add_quest_to_user(idUser, idQuest):
     quest = get_quest_with_id(idQuest)
     sql = convert_python_none_to_null(
-        f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()});")
+        f"INSERT INTO user_has_quest VALUE(NULL, {quest.get_id()}, {idUser}, {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_req_explore_count()}, {quest.get_req_invasion_kills()}, 0 );")
     cursor.execute(sql)
     mydb.commit()
 
 
-def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_location_id=None):
-    sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
+def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_location_id=None, invade_kill=False, max_horde_wave=0):
+    sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores, remaining_inv_kills, remaining_horde_wave FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -884,6 +884,15 @@ def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_locati
                     cursor.execute(sql)
                     mydb.commit()
 
+        if invade_kill:
+            sql = f"UPDATE user_has_quest r SET r.remaining_inv_kills = GREATEST(remaining_inv_kills - 1, 0) WHERE r.idUser = {idUser};"
+            cursor.execute(sql)
+            mydb.commit()
+
+        if max_horde_wave > 0:
+            sql = f"UPDATE user_has_quest r SET r.remaining_horde_wave = LEAST({max_horde_wave}, {quest.get_req_horde_wave()}) WHERE r.idUser = {idUser};"
+            cursor.execute(sql)
+            mydb.commit()
 
 def get_all_locations_from_user(user):
     locations = []
@@ -1230,8 +1239,8 @@ def get_all_user_ids(himself):
 
     return idUsers
 
-def update_enemy_move_damage(idMove, new_damage):
-    sql = f"UPDATE enemy_moves SET damage={new_damage} WHERE idMove = {idMove} ;"
+def update_enemy_move_damage(idMove, new_value):
+    sql = f"UPDATE enemy_moves SET damage={new_value} WHERE idMove = {idMove} ;"
     cursor.execute(sql)
     mydb.commit()
 
@@ -1338,3 +1347,21 @@ def get_all_user_ids_with_similar_level(user, range):
             idUsers.append(row[0])
 
     return idUsers
+
+
+def update_enemy_move_healing(idEnemy, new_enemy_healing):
+    sql = f"UPDATE enemy_moves SET healing={new_enemy_healing} WHERE idEnemy = {idEnemy} AND idType = 3;"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def update_enemy_health(idEnemy, new_enemy_health):
+    sql = f"UPDATE enemy SET health={new_enemy_health} WHERE idEnemy = {idEnemy};"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def update_enemy_runes(idEnemy, new_runes):
+    sql = f"UPDATE enemy SET runes={new_runes} WHERE idEnemy = {idEnemy};"
+    cursor.execute(sql)
+    mydb.commit()
