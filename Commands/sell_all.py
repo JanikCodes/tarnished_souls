@@ -168,10 +168,10 @@ class SellAll(commands.Cog):
                                                                              items=items, amount=amount,
                                                                              value=value, duplicates=True))
                         else:
-                            new_embed = discord.Embed(title=f"You don't have any {choices.name} duplicates..",
+                            new_embed = discord.Embed(title=f"You don't have any {choices.name.lower()} duplicates..",
                                                       description="", colour=discord.Color.red())
                             if choices.value != "Armor":
-                                new_embed.title = f"You don't have any {choices.name[:-1].lower} duplicates.."
+                                new_embed.title = f"You don't have any {choices.name[:-1].lower()} duplicates.."
                             await interaction.followup.send(
                                 embed=new_embed)
                     else:
