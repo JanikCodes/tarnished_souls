@@ -64,7 +64,7 @@ class InventoryReturnButton(discord.ui.Button):
         default_embed.colour = discord.Color.green()
         default_embed.set_footer(text="You'll unlock more items while playing!")
 
-        await interaction.message.edit(embed=default_embed, view=DefaultInventoryView(user=self.user))
+        await interaction.message.edit(embed=default_embed, view=DefaultInventoryView(user=self.user, interaction=interaction))
 
 
 class ItemInventoryView(discord.ui.View):
@@ -83,6 +83,22 @@ class ItemInventoryView(discord.ui.View):
             self.add_item(InventorySubCategoryButton(text="Chestplate", value="chest_armor", row=1, user=user, func=func, last_page=current_page))
             self.add_item(InventorySubCategoryButton(text="Greaves", value="leg_armor", row=1, user=user, func=func, last_page=current_page))
             self.add_item(InventorySubCategoryButton(text="Gauntlet", value="gauntlets", row=1, user=user, func=func, last_page=current_page))
+        elif func == 'favorite':
+            self.add_item(InventorySubCategoryButton(text="Helmet", value="helm", row=1, user=user, func=func,
+                                                     last_page=current_page))
+            self.add_item(
+                InventorySubCategoryButton(text="Chestplate", value="chest_armor", row=1, user=user, func=func,
+                                           last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Greaves", value="leg_armor", row=1, user=user, func=func,
+                                                     last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Gauntlet", value="gauntlets", row=1, user=user, func=func,
+                                                     last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Items", value="item", row=2, user=user, func=func,
+                                                     last_page=current_page))
+            self.add_item(InventorySubCategoryButton(text="Weapons", value="weapon", row=2, user=user, func=func,
+                                                     last_page=current_page))
+
+
 
 class InventorySubCategoryButton(discord.ui.Button):
     def __init__(self, text, value, row, user, last_page, func):
@@ -104,8 +120,8 @@ class InventorySubCategoryButton(discord.ui.Button):
         await view_inventory_page(interaction=interaction, label=self.func, user=self.user, page=1, filter=self.value)  # default is always page 1, that's why page=1
 
 class InventoryCategoryButton(discord.ui.Button):
-    def __init__(self, text, button_style, func, user):
-        super().__init__(label=text, style=button_style)
+    def __init__(self, text, button_style, func, user, emoji):
+        super().__init__(label=text, style=button_style, emoji=emoji)
         self.func = func
         self.user = user
 
@@ -127,9 +143,14 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                               description="Below are your items sorted by their value.")
     new_embed.colour = discord.Color.light_embed()
 
-    items = db.get_items_from_user_id_with_type_at_page(idUser=user.get_userId(), type=label, page=page,
-                                                        max_page=MAX_ITEM_FOR_PAGE, filter=filter)
-    item_count = db.get_total_item_count_from_user(idUser=user.get_userId(), type=label, filter=filter)
+    if label == "favorite":
+        items = db.get_items_from_user_id_with_type_at_page(idUser=user.get_userId(), type=None, page=page,
+                                                            max_page=MAX_ITEM_FOR_PAGE, filter=filter, favorite=True)
+        item_count = db.get_total_item_count_from_user(idUser=user.get_userId(), type=None, filter=filter, favorite=True)
+    else:
+        items = db.get_items_from_user_id_with_type_at_page(idUser=user.get_userId(), type=label, page=page,
+                                                        max_page=MAX_ITEM_FOR_PAGE, filter=filter, favorite=False)
+        item_count = db.get_total_item_count_from_user(idUser=user.get_userId(), type=label, filter=filter, favorite=False)
     total_page_count = (int(item_count) + MAX_ITEM_FOR_PAGE - 1) // MAX_ITEM_FOR_PAGE
 
     if items:
@@ -141,7 +162,12 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                     equipped_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name='equipped')
 
+                    fav_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                                                       name='favorite')
+
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()
+
+                    fav_text = fav_emoji if user.has_item_favorite(item) else str()
 
                     extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
 
@@ -150,7 +176,7 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                         level_text = f"+{item.get_level()}"
 
                     new_embed.add_field(
-                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ {level_text} `id: {item.get_idRel()}` {eq_text}",
+                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ {level_text} `id: {item.get_idRel()}` {eq_text} {fav_text}",
                         value=f"**Statistics:** \n"
                               f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text}`Weight:` **{item.get_weight()}**\n"
                               f"**Requirements:** \n"
@@ -165,12 +191,17 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                     equipped_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name='equipped')
 
+                    fav_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                                                       name='favorite')
+
                     eq_text = equipped_emoji if user.has_item_equipped(item) else str()
+
+                    fav_text = fav_emoji if user.has_item_favorite(item) else str()
 
                     extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
 
                     new_embed.add_field(
-                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text}",
+                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text} {fav_text}",
                         value=f"**Statistics:** \n"
                               f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n",
                         inline=False)
@@ -180,11 +211,41 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                         interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                         name=item.get_iconCategory())
 
+                    fav_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                                                       name='favorite')
+
+                    fav_text = fav_emoji if user.has_item_favorite(item) else str()
+
                     new_embed.description = "Below are your items sorted by their value."
 
                     new_embed.add_field(
-                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}`",
+                        name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {fav_text}",
                         value=f"*Material* \n", inline=False)
+            case "favorite":
+                for item in items:
+                    if item.get_favorite() == 1:
+                        category_emoji = discord.utils.get(
+                            interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                            name=item.get_iconCategory())
+
+                        equipped_emoji = discord.utils.get(
+                            interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                            name='equipped')
+
+                        fav_emoji = discord.utils.get(
+                            interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                            name='favorite')
+
+                        eq_text = equipped_emoji if user.has_item_equipped(item) else str()
+
+                        fav_text = fav_emoji if user.has_item_favorite(item) else str()
+
+                        new_embed.description = "Below are your items sorted by their value."
+
+                        new_embed.add_field(
+                            name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text} {fav_text}",
+                            value=f"*Material* \n", inline=False)
+
 
     new_embed.set_footer(text=f"Page {page}/{str(total_page_count)}")
 
@@ -194,15 +255,20 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
 
 class DefaultInventoryView(discord.ui.View):
 
-    def __init__(self, user):
+    def __init__(self, user, interaction):
         super().__init__()
         self.user = user.update_user()
         self.add_item(
-            InventoryCategoryButton(text="Weapons", button_style=discord.ButtonStyle.danger, func="weapon", user=user))
+            InventoryCategoryButton(text="Weapons", button_style=discord.ButtonStyle.danger, func="weapon", user=user, emoji=None))
         self.add_item(
-            InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.primary, func="armor", user=user))
+            InventoryCategoryButton(text="Armor", button_style=discord.ButtonStyle.primary, func="armor", user=user, emoji=None))
         self.add_item(
-            InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="item", user=user))
+            InventoryCategoryButton(text="Items", button_style=discord.ButtonStyle.success, func="item", user=user, emoji=None))
+        fav_emoji = discord.utils.get(
+            interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+            name='favorite')
+        self.add_item(
+            InventoryCategoryButton(text="", button_style=discord.ButtonStyle.secondary, func="favorite", user=user, emoji=fav_emoji))
 
 
 class Inventory(commands.Cog):
@@ -227,7 +293,7 @@ class Inventory(commands.Cog):
                                       description="Please select an inventory category below!")
                 embed.colour = discord.Color.green()
                 embed.set_footer(text="You'll unlock more items while playing!")
-                await interaction.followup.send(embed=embed, view=DefaultInventoryView(user=user))
+                await interaction.followup.send(embed=embed, view=DefaultInventoryView(user=user, interaction=interaction))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:
