@@ -3,38 +3,38 @@ import db
 WEAPON_DMG_INCREASE_PER_UPGRADE = 6
 
 class Item:
-    def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength,
-                 reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl, sclVigor, sclMind, sclEndurance, sclStrength, sclDexterity, sclIntelligence, sclFaith, sclArcane):
-        self.idItem = idItem
-        self.name = name
-        self.iconCategory = iconCategory
-        self.item_type = item_type
+    def __init__(self, idItem):
+        filled_item = db.get_item_from_item_id(idItem=idItem)
+        self.idItem = filled_item[0]
+        self.name = filled_item[1]
+        self.iconCategory = filled_item[2]
+        self.item_type = filled_item[3]
 
         # Requirements
-        self.reqVigor = reqVigor
-        self.reqMind = reqMind
-        self.reqEndurance = reqEndurance
-        self.reqStrength = reqStrength
-        self.reqDexterity = reqDexterity
-        self.reqIntelligence = reqIntelligence
-        self.reqFaith = reqFaith
-        self.reqArcane = reqArcane
+        self.reqVigor = filled_item[4]
+        self.reqMind = filled_item[5]
+        self.reqEndurance = filled_item[6]
+        self.reqStrength = filled_item[7]
+        self.reqDexterity = filled_item[8]
+        self.reqIntelligence = filled_item[9]
+        self.reqFaith = filled_item[10]
+        self.reqArcane = filled_item[11]
 
         #Scaling
-        self.sclVigor = sclVigor
-        self.sclMind = sclMind
-        self.sclEndurance = sclEndurance
-        self.sclStrength = sclStrength
-        self.sclDexterity = sclDexterity
-        self.sclIntelligence = sclIntelligence
-        self.sclFaith = sclFaith
-        self.sclArcane = sclArcane
+        self.sclVigor = filled_item[17]
+        self.sclMind = filled_item[18]
+        self.sclEndurance = filled_item[19]
+        self.sclStrength = filled_item[20]
+        self.sclDexterity = filled_item[21]
+        self.sclIntelligence = filled_item[22]
+        self.sclFaith = filled_item[23]
+        self.sclArcane = filled_item[24]
 
-        self.price = price
-        self.value = value
-        self.obtainable = obtainable
-        self.weight = weight
-        self.iconUrl = iconUrl
+        self.price = filled_item[13]
+        self.value = filled_item[12]
+        self.obtainable = filled_item[14]
+        self.weight = filled_item[15]
+        self.iconUrl = filled_item[16]
 
         self.level = 0
         self.extra_value = 0

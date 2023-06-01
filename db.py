@@ -4,8 +4,6 @@ import random
 
 import mysql.connector
 
-import config
-import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
 from Classes.enemy_logic import EnemyLogic
@@ -16,15 +14,15 @@ from Classes.quest import Quest
 from Classes.quest_progress import QuestProgress
 
 
-async def init_database():
+def init_database(json_file):
     global mydb
     # Connect to the database
     mydb = mysql.connector.connect(
-        host=config.botConfig["host"],
-        user=config.botConfig["user"],
-        password=config.botConfig["password"],
-        port=config.botConfig["port"],
-        database=config.botConfig["database"],
+        host=json_file["host"],
+        user=json_file["user"],
+        password=json_file["password"],
+        port=json_file["port"],
+        database=json_file["database"],
         charset='utf8mb4'
     )
 
@@ -555,29 +553,17 @@ def get_item_from_item_id(idItem):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
-                    reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
-                    reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
-                    weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19],
-                    sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23],
-                    sclArcane=res[24])
-
-        return item
+        return res
     else:
         return None
 
 
 def get_item_from_item_name(item_name):
-    sql = f'SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i WHERE i.name = "{item_name}"'
+    sql = f'SELECT i.idItem FROM item i WHERE i.name = "{item_name}"'
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
-                    reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
-                    reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
-                    weight=res[15], iconUrl=res[16], sclVigor=res[17], sclMind=res[18], sclEndurance=res[19],
-                    sclStrength=res[20], sclDexterity=res[21], sclIntelligence=res[22], sclFaith=res[23],
-                    sclArcane=res[24])
+        item = Item(idItem=res[0])
         return item
     else:
         return None
@@ -594,21 +580,16 @@ def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page, filte
         filter_txt = f"AND i.iconCategory = '{filter}'"
 
     items = []
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
+    sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            item = Item(idItem=row[0], name=row[1], iconCategory=row[2], item_type=row[3], reqVigor=row[4],
-                        reqMind=row[5], reqEndurance=row[6], reqStrength=row[7], reqDexterity=row[8],
-                        reqIntelligence=row[9], reqFaith=row[10], reqArcane=row[11], value=row[12], price=row[13],
-                        obtainable=row[14], weight=row[15], iconUrl=row[20], sclVigor=row[21], sclMind=row[22],
-                        sclEndurance=row[23], sclStrength=row[24], sclDexterity=row[25], sclIntelligence=row[26],
-                        sclFaith=row[27], sclArcane=row[28])
-            item.set_level(row[16])
-            item.set_count(row[17])
-            item.set_extra_value(row[18])
-            item.set_idRel(row[19])
+            item = Item(row[0])
+            item.set_level(row[1])
+            item.set_count(row[2])
+            item.set_extra_value(row[3])
+            item.set_idRel(row[4])
             items.append(item)
         return items
     else:
@@ -628,20 +609,15 @@ def get_all_items_from_user(idUser, type):
 
 
 def get_item_from_user_with_id_rel(idUser, idRel):
-    sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.idRel = '{idRel}';"
+    sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.idRel = '{idRel}';"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        item = Item(idItem=res[0], name=res[1], iconCategory=res[2], item_type=res[3], reqVigor=res[4], reqMind=res[5],
-                    reqEndurance=res[6], reqStrength=res[7], reqDexterity=res[8], reqIntelligence=res[9],
-                    reqFaith=res[10], reqArcane=res[11], value=res[12], price=res[13], obtainable=res[14],
-                    weight=res[15], iconUrl=res[20], sclVigor=res[21], sclMind=res[22], sclEndurance=res[23],
-                    sclStrength=res[24], sclDexterity=res[25], sclIntelligence=res[26], sclFaith=res[27],
-                    sclArcane=res[28])
-        item.set_level(res[16])
-        item.set_count(res[17])
-        item.set_extra_value(res[18])
-        item.set_idRel(res[19])
+        item = Item(res[0])
+        item.set_level(res[1])
+        item.set_count(res[2])
+        item.set_extra_value(res[3])
+        item.set_idRel(res[4])
         return item
     else:
         return None
@@ -664,7 +640,6 @@ def equip_item(idUser, item):
 
     sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idRel = {item.get_idRel()} AND r.idUser = {idUser};"
     cursor.execute(sql)
-
     res = cursor.fetchone()
     if res:
         sql = f"UPDATE user u SET u.{equip_slot_name} = {item.get_idRel()} WHERE u.idUser = {idUser};"
