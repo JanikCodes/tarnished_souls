@@ -606,7 +606,6 @@ def get_items_from_user_id_with_type_at_page(idUser, page, max_page, filter, fav
             else:
                 filter_txt_fav = filter_txt
         sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt_fav} AND r.idUser = {idUser} AND r.favorite = 1 ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
-        print(sql)
     else:
         sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, r.level, r.count, r.value, r.idRel, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
 
@@ -1330,7 +1329,7 @@ def does_item_exist_for_user(idUser, item):
     return None
 
 
-def update_item_from_user(idUser, item):
+def update_item_from_user(idUser, item, favorite):
     sql = f"UPDATE user_has_item SET level = {item.get_level()} WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND idRel = {item.get_idRel()}"
     cursor.execute(sql)
     mydb.commit()

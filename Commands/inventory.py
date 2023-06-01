@@ -91,7 +91,7 @@ class ItemInventoryView(discord.ui.View):
                                            last_page=current_page))
             self.add_item(InventorySubCategoryButton(text="Greaves", value="leg_armor", row=1, user=user, func=func,
                                                      last_page=current_page))
-            self.add_item(InventorySubCategoryButton(text="Gauntlet", value="gauntlets", row=1, user=user, func=func,
+            self.add_item(InventorySubCategoryButton(text="Gauntlet", value="gauntlets", row=2, user=user, func=func,
                                                      last_page=current_page))
             self.add_item(InventorySubCategoryButton(text="Items", value="item", row=2, user=user, func=func,
                                                      last_page=current_page))
@@ -138,8 +138,20 @@ class InventoryCategoryButton(discord.ui.Button):
                                   page=1)  # default is always page 1, that's why page=1
 
 
+def __translate_sort_value(filter):
+    match filter:
+        case "leg_armor":
+            return filter.replace("_", " ")
+        case "chest_armor":
+            return filter.replace("_", " ")
+        case "helm":
+            return filter.replace("_", " ")
+        case "gauntlets":
+            return filter.replace("_", " ")
+
+
 async def view_inventory_page(interaction, label, user, page, filter = None):
-    new_embed = discord.Embed(title=f"Inventory '{label}'",
+    new_embed = discord.Embed(title=f"Inventory for {label.capitalize()}",
                               description="Below are your items sorted by their value.")
     new_embed.colour = discord.Color.light_embed()
 
@@ -156,6 +168,7 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
     if items:
         match label:
             case "weapon":
+                new_embed.title += f"s"
                 for item in items:
                     category_emoji = discord.utils.get(interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                                                        name=item.get_iconCategory())
@@ -200,6 +213,12 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
 
                     extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
 
+                    type_sorted_txt = f"value"
+                    if filter:
+                        type_sorted_txt += f" and {__translate_sort_value(filter)}"
+
+                    new_embed.description = f"Below is your armor sorted by {type_sorted_txt}."
+
                     new_embed.add_field(
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text} {fav_text}",
                         value=f"**Statistics:** \n"
@@ -222,6 +241,11 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                         name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {fav_text}",
                         value=f"*Material* \n", inline=False)
             case "favorite":
+                fav_emoji = discord.utils.get(
+                    interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                    name='favorite')
+
+                new_embed.title += f"s {fav_emoji}"
                 for item in items:
                     if item.get_favorite() == 1:
                         category_emoji = discord.utils.get(
@@ -232,19 +256,45 @@ async def view_inventory_page(interaction, label, user, page, filter = None):
                             interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
                             name='equipped')
 
-                        fav_emoji = discord.utils.get(
-                            interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
-                            name='favorite')
-
                         eq_text = equipped_emoji if user.has_item_equipped(item) else str()
+
+                        extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
+                        item_level_text = str() if item.get_level() == 0 else f"`+{item.get_level()}`"
 
                         fav_text = fav_emoji if user.has_item_favorite(item) else str()
 
-                        new_embed.description = "Below are your items sorted by their value."
+                        new_embed.description = "Below are your weapons, armor and items sorted by their value."
+
+                        if filter:
+                            type_sorted_txt = str()
+                            match item.get_item_type().upper():
+                                case "WEAPON":
+                                    type_sorted_txt = f"Below are your {item.get_item_type().lower()}s sorted by value."
+                                case "ARMOR":
+                                    type_sorted_txt = f"Below is your {item.get_item_type().lower()} sorted by value and {__translate_sort_value(filter)}."
+                                case "ITEM":
+                                    type_sorted_txt = f"Below are your {item.get_item_type().lower()}s sorted by value."
+                            new_embed.description = type_sorted_txt
+
+                        embed_value_txt = str()
+                        match item.get_item_type().upper():
+                            case "ITEM":
+                                embed_value_txt = f"*Material for smithing*"
+                            case "WEAPON":
+                                embed_value_txt = (f"**Statistics:** \n"
+                                f"`Damage:` **{item.get_value_with_scaling(user)}** {extra_val_text}`Weight:` **{item.get_weight()}**\n"
+                                f"**Requirements:** \n"
+                                f"{item.get_requirement_text()}\n"
+                                f"**Scaling:** \n"
+                                f"{item.get_scaling_text()}")
+                            case "ARMOR":
+                                embed_value_txt = (f"**Statistics:** \n"
+                                f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n")
 
                         new_embed.add_field(
-                            name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ `id: {item.get_idRel()}` {eq_text} {fav_text}",
-                            value=f"*Material* \n", inline=False)
+                            name=f"{category_emoji} __{item.get_count()}x {item.get_name()}__ {item_level_text} `id: {item.get_idRel()}` {eq_text} {fav_text}",
+                            value=embed_value_txt, inline=False)
 
 
     new_embed.set_footer(text=f"Page {page}/{str(total_page_count)}")
