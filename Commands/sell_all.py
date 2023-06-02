@@ -130,6 +130,7 @@ class SellAll(commands.Cog):
             if db.validate_user(interaction.user.id):
                 user = User(userId=interaction.user.id)
                 items = db.get_all_items_from_user(user.get_userId(), choices.value)
+
                 if items:
                     embed = discord.Embed(title=f"Do you want to sell all {choices.name.lower()}?")
                     match choices.value:

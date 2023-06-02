@@ -40,6 +40,7 @@ class Item:
         self.extra_value = 0
         self.count = 1
         self.idRel = 0
+        self.favorite = 0
         self.drop_rate = 100
         self.dropped_from_enemy_names = db.get_enemy_names_from_item_id(idItem=self.idItem)
 
@@ -49,6 +50,9 @@ class Item:
 
     def get_idRel(self):
         return self.idRel
+
+    def get_favorite(self):
+        return self.favorite
 
     def get_idItem(self):
         return self.idItem
@@ -144,6 +148,9 @@ class Item:
 
     def set_level(self, level):
         self.level = level
+
+    def set_favorite(self, favorite):
+        self.favorite = favorite
 
     def set_drop_rate(self, val):
         self.drop_rate = val

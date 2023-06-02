@@ -513,7 +513,7 @@ def add_item_to_user(idUser, item):
             free_index = cursor.fetchone()[0]
             if free_index:
                 # add new item to table
-                sql = f"INSERT INTO user_has_item VALUE({free_index}, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()});"
+                sql = f"INSERT INTO user_has_item VALUE({free_index}, {idUser}, {item.get_idItem()}, {item.get_level()}, {item.get_count()}, {item.get_extra_value()}, {item.get_favorite()});"
                 cursor.execute(sql)
                 return cursor.lastrowid
 
@@ -574,27 +574,38 @@ def add_item_to_encounter_has_item(idEncounter, item):
     cursor.execute(sql)
     mydb.commit()
 
-def get_items_from_user_id_with_type_at_page(idUser, type, page, max_page, filter):
+
+
+
+
+def get_items_from_user_id_with_type_at_page(idUser, page, max_page, filter, favorite, type=None):
     filter_txt = str()
     if filter:
         filter_txt = f"AND i.iconCategory = '{filter}'"
 
     items = []
-    sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
+    if favorite:
+        filter_txt_fav = str()
+        if filter:
+            if filter == "weapon" or filter == "item":
+                filter_txt_fav = f"AND i.type = '{filter}'"
+            else:
+                filter_txt_fav = filter_txt
+        sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt_fav} AND r.idUser = {idUser} AND r.favorite = 1 ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
+    else:
+        sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
+
     cursor.execute(sql)
     res = cursor.fetchall()
-    if res:
-        for row in res:
-            item = Item(row[0])
-            item.set_level(row[1])
-            item.set_count(row[2])
-            item.set_extra_value(row[3])
-            item.set_idRel(row[4])
-            items.append(item)
-        return items
-    else:
-        return None
-
+    for row in res:
+        item = Item(row[0])
+        item.set_level(row[1])
+        item.set_count(row[2])
+        item.set_extra_value(row[3])
+        item.set_idRel(row[4])
+        item.set_favorite(row[5])
+        items.append(item)
+    return items
 
 def get_all_items_from_user(idUser, type):
     items = []
@@ -602,14 +613,40 @@ def get_all_items_from_user(idUser, type):
     cursor.execute(sql)
 
     res = cursor.fetchall()
-    if res:
-        for id in res:
-            items.append(get_item_from_user_with_id_rel(idUser, id[0]))
+    for id in res:
+        item = get_item_from_user_with_id_rel(idUser, id[0])
+        if item.get_favorite() == 1:
+            continue
+        items.append(item)
+    print(items)
+    print(len(items))
     return items
 
 
+def set_item_from_user_favorite(idUser, idRel, favorite):
+    fav_val = 0
+    if favorite:
+        fav_val = 1
+
+    try:
+        # Start a transaction
+        cursor.execute("START TRANSACTION")
+
+        # Perform an UPDATE query with locking to prevent concurrent access
+        sql = f"UPDATE user_has_item SET favorite={fav_val} WHERE idUser={idUser} AND idRel={idRel}"
+        cursor.execute(sql)
+
+        # Commit the transaction
+        cursor.execute("COMMIT")
+
+    except Exception as e:
+        # Rollback the transaction in case of any error
+        cursor.execute("ROLLBACK")
+        print(f"TRANSACTION ERROR: The transaction got rollbacked.. because: {e}")
+        raise e
+
 def get_item_from_user_with_id_rel(idUser, idRel):
-    sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.idRel = '{idRel}';"
+    sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.idRel = '{idRel}';"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
@@ -618,6 +655,7 @@ def get_item_from_user_with_id_rel(idUser, idRel):
         item.set_count(res[2])
         item.set_extra_value(res[3])
         item.set_idRel(res[4])
+        item.set_favorite(res[5])
         return item
     else:
         return None
@@ -651,12 +689,17 @@ def equip_item(idUser, item):
     return False
 
 
-def get_total_item_count_from_user(idUser, type, filter):
+def get_total_item_count_from_user(idUser, filter, favorite, type=None):
     filter_txt = str()
     if filter:
         filter_txt = f"AND i.iconCategory = '{filter}'"
 
-    sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' {filter_txt};"
+    if favorite:
+        if filter == "weapon" or filter == "item":
+            filter_txt = f"AND i.type = '{filter}'"
+        sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.favorite = 1 {filter_txt};"
+    else:
+        sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' {filter_txt};"
     cursor.execute(sql)
     res = str(cursor.fetchone()).strip("(,)")
     if res:
@@ -1260,7 +1303,7 @@ def does_item_exist_for_user(idUser, item):
     return None
 
 
-def update_item_from_user(idUser, item):
+def update_item_from_user(idUser, item, favorite):
     sql = f"UPDATE user_has_item SET level = {item.get_level()} WHERE idUser = {idUser} AND idItem = {item.get_idItem()} AND idRel = {item.get_idRel()}"
     cursor.execute(sql)
     mydb.commit()
