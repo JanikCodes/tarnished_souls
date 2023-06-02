@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils.classes import class_selection
@@ -40,8 +41,16 @@ async def update_item(interaction, user, edit):
     new_dmg = item.get_total_value(user)
     new_scl_text = item.get_scaling_text()
 
-    embed = discord.Embed(title=f"**{item.get_name()}** `+{old_level}`",
-                          description=f"Do you want to upgrade this weapon to `+{new_level}` ?")
+    fav_emoji = discord.utils.get(
+        interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+        name='favorite')
+
+    fav_text = fav_emoji if user.has_item_favorite(item) else str()
+
+    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
+    embed = discord.Embed(title=f"**{item.get_name()}** `+{old_level}` {fav_text}",
+                          description=f"Do you want to upgrade this weapon to `+{new_level}`?")
 
     if item.get_icon_url() is not None and item.get_icon_url() != 'None':
         embed.set_thumbnail(url=f"{item.get_icon_url()}")
@@ -72,7 +81,7 @@ async def update_item(interaction, user, edit):
                                    f"{req_material_text}", inline=False)
 
     embed.add_field(name="", value=f"**After:** \n"
-                                   f"`Damage:` **{old_dmg}** -> `Damage:` **{new_dmg}**", inline=False)
+                                   f"`Damage:` **{old_dmg}** {extra_val_text} -> `Damage:` **{new_dmg}** {extra_val_text}", inline=False)
     embed.add_field(name="", value=f"**Scaling:** \n"
                                    f"{old_scl_text} -> {new_scl_text}")
 
@@ -137,7 +146,7 @@ class UpgradeButton(discord.ui.Button):
 
                 # +1 that item if no identical rel's exist
                 if not existing_item:
-                    db.update_item_from_user(idUser=self.user.get_userId(), item=real_item)
+                    db.update_item_from_user(idUser=self.user.get_userId(), item=real_item, favorite=real_item.get_favorite())
 
                     await update_item(interaction=interaction, user=self.user, edit=True)
                 else:
@@ -146,6 +155,9 @@ class UpgradeButton(discord.ui.Button):
                     # and increase count of identical rel
                     existing_item.count = 1
                     db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
+                    db.set_item_from_user_favorite(idUser=self.user.get_userId(), idRel=existing_item.get_idRel(),
+                                                   favorite=True)
+                    existing_item.set_favorite(1)
                     # equip that rel ID where we increased count
                     db.equip_item(idUser=self.user.get_userId(), item=existing_item)
                     await update_item(interaction=interaction, user=self.user, edit=True)
@@ -159,10 +171,17 @@ class UpgradeButton(discord.ui.Button):
                 if not existing_item:
                     # reduce count from old rel
                     db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    if real_item.get_favorite() != 1:
+                        favorite = False
+                    else:
+                        favorite = True
                     # create new item
                     real_item.count = 1
                     new_id_rel = db.add_item_to_user(idUser=self.user.get_userId(), item=real_item)
                     real_item.set_idRel(new_id_rel)
+                    real_item.set_favorite(0 if favorite is False else 1)
+                    db.set_item_from_user_favorite(idUser=self.user.get_userId(), idRel=real_item.get_idRel(),
+                                                   favorite=favorite)
                     # equip that
                     db.equip_item(idUser=self.user.get_userId(), item=real_item)
                     await update_item(interaction=interaction, user=self.user, edit=True)
@@ -171,6 +190,9 @@ class UpgradeButton(discord.ui.Button):
                     db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
                     existing_item.count = 1
                     db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
+                    existing_item.set_favorite(1)
+                    db.set_item_from_user_favorite(idUser=self.user.get_userId(), idRel=existing_item.get_idRel(),
+                                                   favorite=True)
                     # equip that new rel
                     db.equip_item(idUser=self.user.get_userId(), item=existing_item)
                     await update_item(interaction=interaction, user=self.user, edit=True)

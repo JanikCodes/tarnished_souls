@@ -34,7 +34,7 @@ class Client(commands.Bot):
         print(f"{prfx} Discord Version {Fore.YELLOW} {discord.__version__}")
         print(f"{prfx} Python Version {Fore.YELLOW} {str(platform.python_version())}")
         print(f"{prfx} Bot Version 0.1")
-        await db.init_database()
+        await db.init_database(config.botConfig)
 
         logging.warning("Now logging..")
 

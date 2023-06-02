@@ -130,6 +130,7 @@ class SellAll(commands.Cog):
             if db.validate_user(interaction.user.id):
                 user = User(userId=interaction.user.id)
                 items = db.get_all_items_from_user(user.get_userId(), choices.value)
+
                 if items:
                     embed = discord.Embed(title=f"Do you want to sell all {choices.name.lower()}?")
                     match choices.value:
@@ -168,10 +169,10 @@ class SellAll(commands.Cog):
                                                                              items=items, amount=amount,
                                                                              value=value, duplicates=True))
                         else:
-                            new_embed = discord.Embed(title=f"You don't have any {choices.name} duplicates..",
+                            new_embed = discord.Embed(title=f"You don't have any {choices.name.lower()} duplicates..",
                                                       description="", colour=discord.Color.red())
                             if choices.value != "Armor":
-                                new_embed.title = f"You don't have any {choices.name[:-1].lower} duplicates.."
+                                new_embed.title = f"You don't have any {choices.name[:-1].lower()} duplicates.."
                             await interaction.followup.send(
                                 embed=new_embed)
                     else:

@@ -7,12 +7,12 @@ from Classes.user import User
 from Utils.classes import class_selection
 
 
-class Favorite(commands.Cog):
+class Unfavorite(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @app_commands.command(name="favorite", description="Mark one of your items are favorite!")
-    async def favorite(self, interaction: discord.Interaction, id: int ):
+    @app_commands.command(name="unfavorite", description="Remove favorite mark from one of your items!")
+    async def unfavorite(self, interaction: discord.Interaction, id: int ):
         if not interaction or interaction.is_expired():
             return
 
@@ -28,16 +28,16 @@ class Favorite(commands.Cog):
                 item = db.get_item_from_user_with_id_rel(idUser=user.get_userId(), idRel=id)
 
                 if item:
-                    if item.get_favorite() != 1:
-                        db.set_item_from_user_favorite(idUser=user.get_userId(), idRel=id, favorite=True)
+                    if item.get_favorite() == 1:
+                        db.set_item_from_user_favorite(idUser=user.get_userId(), idRel=id, favorite=False)
 
-                        embed = discord.Embed(title=f"{item.get_name()} has been marked as favorite!",
-                                              description="It will be excluded from the `sell` commands.", colour=discord.Color.green())
+                        embed = discord.Embed(title=f"Removed favorite mark from {item.get_name()}!",
+                                              description="It will now be included in the `sell` commands again.", colour=discord.Color.green())
                         embed.set_thumbnail(url=item.get_icon_url())
 
                         await interaction.followup.send(embed=embed)
                     else:
-                        embed = discord.Embed(title=f"{item.get_name()} is already marked as favorite!", description="", colour=discord.Color.red())
+                        embed = discord.Embed(title=f"{item.get_name()} is not marked as favorite!", description="", colour=discord.Color.red())
 
                         await interaction.followup.send(embed=embed)
 
@@ -53,4 +53,4 @@ class Favorite(commands.Cog):
 
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(Favorite(client))
+    await client.add_cog(Unfavorite(client))
