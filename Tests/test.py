@@ -1,14 +1,13 @@
 import json
 import os
 import unittest
+
 import db
 from Classes.item import Item
 from Classes.user import User
 
 
 class TestCases(unittest.TestCase):
-    # Class-level variable to store the database object
-
     FAKE_USER_ID =  999999
 
     @classmethod
@@ -90,6 +89,65 @@ class TestCases(unittest.TestCase):
 
         self.assertEqual(old_rune_amount - amount, new_rune_amount)
 
+    def test_08_quest_explored_wrong_location(self):
+        # explore 3 times the wrong quest
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, explore_location_id=6)
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, explore_location_id=6)
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, explore_location_id=6)
+
+        current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        self.assertFalse(current_quest.is_finished())
+
+    def test_09_quest_explored_right_location_but_didnt_complete_quest(self):
+        current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        old_count = current_quest.get_remaining_explore_count()
+
+        # do it 2 times to nearly complete the quest
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, explore_location_id=current_quest.quest.get_explore_location().get_id())
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, explore_location_id=current_quest.quest.get_explore_location().get_id())
+
+        current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        new_count = current_quest.get_remaining_explore_count()
+
+        self.assertEqual(old_count - 2, new_count)
+
+    def test_10_quest_explored_right_location_and_complete_quest(self):
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, explore_location_id=1)
+        current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        self.assertTrue(current_quest.is_finished())
+
+    def test_11_quest_remove_completed_quest(self):
+        old_current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        db.remove_quest_from_user_with_quest_id(idUser=self.FAKE_USER_ID, idQuest=old_current_quest.quest.get_id())
+
+        db.add_quest_to_user(idUser=self.FAKE_USER_ID, idQuest=old_current_quest.get_quest().get_id() + 1)
+
+        new_current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        self.assertNotEqual(old_current_quest.quest.get_id(), new_current_quest.quest.get_id())
+
+    def test_12_quest_kill_wrong_enemy(self):
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, idEnemy=20)
+        db.check_for_quest_update(idUser=self.FAKE_USER_ID, idEnemy=20)
+
+        current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        self.assertEqual(current_quest.get_remaining_kills(), current_quest.quest.get_req_kills())
+
+    def test_13_quest_kill_right_enemy(self):
+        current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        for index in range(0, current_quest.quest.get_req_kills()):
+            db.check_for_quest_update(idUser=self.FAKE_USER_ID, idEnemy=current_quest.quest.get_enemy().get_id())
+
+        current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
+
+        self.assertEqual(current_quest.get_remaining_kills(), 0)
 
 if __name__ == '__main__':
     unittest.main()
