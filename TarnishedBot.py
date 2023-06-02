@@ -74,22 +74,16 @@ class Client(commands.Bot):
 
 
 def __run_tests():
-    # Create a test suite
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCases)
 
-    # Create a test runner
     runner = unittest.TextTestRunner()
 
-    # Run the tests and capture the result
     result = runner.run(suite)
 
-    # Access the test result information
     print("Number of tests run:", result.testsRun)
     print("Number of failures:", len(result.failures))
     print("Number of errors:", len(result.errors))
-    # You can access more information from the 'result' object, such as the list of failures and errors.
 
-    # Access the test results programmatically
     if result.wasSuccessful():
         print("All tests passed successfully.")
         return True

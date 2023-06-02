@@ -148,6 +148,3 @@ class TestCases(unittest.TestCase):
         current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
 
         self.assertEqual(current_quest.get_remaining_kills(), 0)
-
-if __name__ == '__main__':
-    unittest.main()
