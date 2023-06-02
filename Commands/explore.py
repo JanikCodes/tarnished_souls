@@ -9,6 +9,7 @@ from discord.ext import commands
 
 import config
 import db
+from Classes.item import Item
 from Classes.user import User
 from Utils.classes import class_selection
 
@@ -109,7 +110,7 @@ class Explore(commands.Cog):
                     # we received an item drop!
                     all_item_ids = db.get_all_item_ids(obtainable_only=True, item_type="equip")
                     random_item_id = random.choice(all_item_ids)
-                    item = db.get_item_from_item_id(random_item_id)
+                    item = Item(random_item_id)
                     random_stats = self.calculate_random_stats()
                     item.set_extra_value(random_stats)
                     new_encounter.set_item_rewards(item)

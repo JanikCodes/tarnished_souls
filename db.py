@@ -53,8 +53,7 @@ def get_item_name_from_id(item_id):
     cursor.execute(sql)
     res = cursor.fetchone()[0]
     if res:
-        return res
-
+        return Item(res)
     return None
 
 
@@ -204,12 +203,6 @@ def get_move_type_name_from_id(id):
     return cursor.fetchone()[0]
 
 
-def get_move_type_id_from_name(name):
-    sql = f"SELECT idType FROM move_type WHERE name='{name}'"
-    cursor.execute(sql)
-    return cursor.fetchone()[0]
-
-
 def get_encounter_id_from_description(description):
     sql = f'SELECT idencounter FROM encounter WHERE description="{description}"'
     cursor.execute(sql)
@@ -228,16 +221,6 @@ def get_all_locations():
         locations.append(location)
 
     return locations
-
-
-def get_location_id_from_name(name):
-    sql = f"SELECT idLocation FROM location WHERE name={name}"
-    cursor.execute(sql)
-    res = cursor.fetchone()
-    if res:
-        return res
-    else:
-        return None
 
 
 def get_user_with_id(userId):
@@ -411,7 +394,7 @@ def get_item_from_encounter_has_item_with_enc_id(idUser, idEncounter):
     cursor.execute(sql)
     res = cursor.fetchall()
     for idItem in res:
-        item = db.get_item_from_item_id(idItem[0])
+        item = Item(idItem=idItem[0])
 
 
         sql = f"SELECT extraValue FROM encounter_has_item e, item i, user_encounter r WHERE r.idEncounter = {idEncounter} AND e.idEncounter = {idEncounter} AND r.idUser = {idUser} AND e.idItem = i.idItem AND e.idItem = {item.get_idItem()};"
@@ -546,9 +529,6 @@ def add_item_to_user_with_item_name(idUser, item_name):
 
 
 def get_item_from_item_id(idItem):
-    if idItem is None:
-        return None
-
     sql = f"SELECT i.idItem, i.name, i.iconCategory, i.type, i.reqVigor, i.reqMind, i.reqEndurance, i.reqStrength, i.reqDexterity, i.reqIntelligence, i.reqFaith, i.reqArcane, i.value, i.price, i.obtainable, i.weight, i.iconUrl, i.sclVigor, i.sclMind, i.sclEndurance, i.sclStrength, i.sclDexterity, i.sclIntelligence, i.sclFaith, i.sclArcane FROM item i WHERE i.idItem = {idItem}"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -573,9 +553,6 @@ def add_item_to_encounter_has_item(idEncounter, item):
     sql = f"INSERT INTO encounter_has_item VALUE(null, {idEncounter}, {item.get_idItem()}, {item.get_extra_value()}, {item.get_count()});"
     cursor.execute(sql)
     mydb.commit()
-
-
-
 
 
 def get_items_from_user_id_with_type_at_page(idUser, page, max_page, filter, favorite, type=None):
@@ -840,8 +817,7 @@ def get_quest_with_id(idQuest):
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        quest = Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12], res[13], res[14], res[15])
-        return quest
+        return Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12], res[13], res[14], res[15])
     else:
         return None
 
@@ -1053,7 +1029,7 @@ def get_items_from_location_id(idLocation):
     res = cursor.fetchall()
     if res:
         for row in res:
-            item = get_item_from_item_id(row[0])
+            item = Item(idItem=row[0])
             if item:
                 items.append(item)
     else:
@@ -1069,7 +1045,7 @@ def get_items_from_enemy_id(idEnemy):
     res = cursor.fetchall()
     if res:
         for row in res:
-            item = get_item_from_item_id(row[0])
+            item = Item(idItem=row[0])
             if item:
                 item.set_count(row[1])
                 item.set_drop_rate(row[2])

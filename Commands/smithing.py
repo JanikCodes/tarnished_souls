@@ -4,6 +4,7 @@ from discord.ext import commands
 
 import config
 import db
+from Classes.item import Item
 from Classes.user import User
 from Utils.classes import class_selection
 
@@ -57,7 +58,7 @@ async def update_item(interaction, user, edit):
 
     material_item_id = MATERIAL_TABLE[new_level]
 
-    req_material = db.get_item_from_item_id(material_item_id)
+    req_material = Item(idItem=material_item_id)
 
     if not req_material:
         embed.add_field(name="Error", value="There was an error with your upgrade.. I couldn't find the required material. Please use `/feedback`.", inline=False)

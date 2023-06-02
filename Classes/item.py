@@ -2,6 +2,7 @@ import db
 
 WEAPON_DMG_INCREASE_PER_UPGRADE = 6
 
+
 class Item:
     def __init__(self, idItem):
         filled_item = db.get_item_from_item_id(idItem=idItem)
@@ -20,7 +21,7 @@ class Item:
         self.reqFaith = filled_item[10]
         self.reqArcane = filled_item[11]
 
-        #Scaling
+        # Scaling
         self.sclVigor = filled_item[17]
         self.sclMind = filled_item[18]
         self.sclEndurance = filled_item[19]
@@ -66,7 +67,8 @@ class Item:
     def get_scaling_value(self, scaling, attribute):
         val = 0
         if scaling != "-":
-            val = self.get_total_scaling_value_(scaling) * (self.value + self.extra_value) * (attribute / 100) + (self.level * 1.05)
+            val = self.get_total_scaling_value_(scaling) * (self.value + self.extra_value) * (attribute / 100) + (
+                        self.level * 1.05)
         return val
 
     def get_total_value(self, user):
@@ -203,7 +205,7 @@ class Item:
             return "E"
 
     def get_total_scaling_value_(self, value):
-        return (value / 100) + ( self.level * (value / 100) * 0.02 )
+        return (value / 100) + (self.level * (value / 100) * 0.02)
 
     def get_scaling_text(self):
         text = str()

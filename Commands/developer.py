@@ -7,6 +7,7 @@ import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
 from Classes.enemy_move import EnemyMove
+from Classes.item import Item
 from Classes.quest import Quest
 from Classes.user import User
 from Utils.classes import class_selection
@@ -609,7 +610,7 @@ class AddEnemyModal(discord.ui.Modal):
     async def on_submit(self, interaction: discord.Interaction):
         if self.item_drop:
 
-            item = db.get_item_from_item_id(idItem=self.item_drop_item_id)
+            item = Item(idItem=self.item_drop_item_id)
             item.set_count(self.item_drop_count.value)
             item.set_drop_rate(self.item_drop_chance.value)
 
@@ -895,7 +896,7 @@ class AddQuestModal(discord.ui.Modal):
                                      value=db.get_item_name_from_id(self.quest_item_reward_id))
                 self.embed.add_field(name="Reward amount/count:", value=self.quest_item_count.value)
 
-                self.quest.set_item_reward(db.get_item_from_item_id(self.quest_item_reward_id))
+                self.quest.set_item_reward(Item(idItem=self.quest_item_reward_id))
                 item = self.quest.get_item_reward()[0]
                 item.set_count(self.quest_item_count.value)
 
@@ -916,7 +917,7 @@ class AddLocationModal(discord.ui.Modal):
                                    placeholder="Enter a valid item id..", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
-        item = db.get_item_from_item_id(self.item_id.value)
+        item = Item(idItem=self.item_id.value)
 
         self.location.add_item_reward(item)
 

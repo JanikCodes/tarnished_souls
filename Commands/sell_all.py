@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 
 import db
+from Classes.item import Item
 from Classes.user import User
 from Utils.classes import class_selection
 
@@ -135,11 +136,11 @@ class SellAll(commands.Cog):
                     embed = discord.Embed(title=f"Do you want to sell all {choices.name.lower()}?")
                     match choices.value:
                         case "Weapon":
-                            embed.set_thumbnail(url=db.get_item_from_item_id(5).get_icon_url())
+                            embed.set_thumbnail(url=Item(idItem=5).get_icon_url())
                         case "Armor":
-                            embed.set_thumbnail(url=db.get_item_from_item_id(308).get_icon_url())
+                            embed.set_thumbnail(url=Item(idItem=308).get_icon_url())
                         case "Item":
-                            embed.set_thumbnail(url=db.get_item_from_item_id(851).get_icon_url())
+                            embed.set_thumbnail(url=Item(idItem=851).get_icon_url())
                     embed.color = discord.Color.orange()
                     if choices.value != "Item":
                         embed.set_footer(text="Except your currently equipped ones.")

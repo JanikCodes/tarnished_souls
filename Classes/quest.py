@@ -1,5 +1,6 @@
 import db
 from Classes.enemy import Enemy
+from Classes.item import Item
 
 
 class Quest:
@@ -14,8 +15,6 @@ class Quest:
             self.req_kills = req_kills
             self.req_item_count = req_item_count
             self.req_runes = req_runes
-            self.req_item = db.get_item_from_item_id(idItem)
-            self.req_enemy = Enemy(idEnemy) if idEnemy is not None else None
             self.rune_reward = runeReward
             self.item_reward = db.get_quest_item_reward(idQuest=id)
             self.location_reward = db.get_location_from_id(locationIdReward)
@@ -25,6 +24,15 @@ class Quest:
             self.flask_reward = flask_reward
             self.req_horde_wave=reqHordeWave
             self.req_invasion_kills=reqInvasionKills
+
+            if idItem:
+                self.req_item = Item(idItem=idItem)
+            else:
+                self.req_item = None
+            if idEnemy:
+                self.req_enemy = Enemy(idEnemy=idEnemy)
+            else:
+                self.req_enemy = None
 
         else:
             # empty constructor
