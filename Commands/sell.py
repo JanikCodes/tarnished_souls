@@ -97,6 +97,11 @@ class Sell(commands.Cog):
                                           description=f"You can find your Item Id inside your inventory. Access it with `/inventory`",
                                           colour=discord.Color.red())
                     await interaction.followup.send(embed=embed, ephemeral=True)
+                elif item.get_favorite() == 1:
+                    embed = discord.Embed(title=f"{item.get_name()} is marked as a favorite..",
+                                          description=f"You can unfavorite it with `/unfavorite`.",
+                                          colour=discord.Color.red())
+                    await interaction.followup.send(embed=embed, ephemeral=True)
                 else:
                     embed = discord.Embed(title=f"**{item.get_name()}** {item.get_count()}x `id: {item.get_idRel()}`",
                                           description=f"Do you want to sell this item?")

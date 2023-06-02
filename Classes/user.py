@@ -16,6 +16,7 @@ VIGOR_TABLE = {
     91: 2070, 92: 2074, 93: 2078, 94: 2082, 95: 2086, 96: 2090, 97: 2094, 98: 2097, 99: 2100
 }
 
+
 class User:
     def __init__(self, userId=None):
         if userId is not None:
@@ -341,6 +342,25 @@ class User:
                 return True
         if self.gauntlet:
             if self.gauntlet.get_idRel() == item.get_idRel():
+                return True
+
+        return False
+
+    def has_item_favorite(self, item):
+        if self.weapon:
+            if item.get_favorite() == 1:
+                return True
+        if self.head:
+            if item.get_favorite() == 1:
+                return True
+        if self.chest:
+            if item.get_favorite() == 1:
+                return True
+        if self.legs:
+            if item.get_favorite() == 1:
+                return True
+        if self.gauntlet:
+            if item.get_favorite() == 1:
                 return True
 
         return False
