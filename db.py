@@ -915,7 +915,7 @@ def get_quest_item_reward(idQuest):
     res = cursor.fetchall()
     if res:
         for row in res:
-            new_item = get_item_from_item_id(row[0])
+            new_item = Item(row[0])
             if new_item:
                 new_item.set_count(row[1])
                 items.append(new_item)
