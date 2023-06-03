@@ -22,8 +22,8 @@ class Quest:
             self.explore_location = db.get_location_from_id(explore_location)
             self.cooldown = cooldown
             self.flask_reward = flask_reward
-            self.req_horde_wave=reqHordeWave
-            self.req_invasion_kills=reqInvasionKills
+            self.req_horde_wave = reqHordeWave
+            self.req_invasion_kills = reqInvasionKills
 
             if idItem:
                 self.req_item = Item(idItem=idItem)

@@ -558,16 +558,16 @@ def add_item_to_encounter_has_item(idEncounter, item):
 def get_items_from_user_id_with_type_at_page(idUser, page, max_page, filter, favorite, type=None):
     filter_txt = str()
     if filter:
-        filter_txt = f"AND i.iconCategory = '{filter}'"
+        if filter.startswith("scl"):
+            filter_txt = f"AND i.{filter} > 0"
+        else:
+            filter_txt = f"AND i.iconCategory = '{filter}'"
 
     items = []
     if favorite:
-        filter_txt_fav = str()
-        if filter:
-            if filter == "weapon" or filter == "item":
-                filter_txt_fav = f"AND i.type = '{filter}'"
-            else:
-                filter_txt_fav = filter_txt
+        filter_txt_fav = filter_txt
+        if filter == "weapon" or filter == "item":
+            filter_txt_fav = f"AND i.type = '{filter}'"
         sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt_fav} AND r.idUser = {idUser} AND r.favorite = 1 ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
     else:
         sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem {filter_txt} AND r.idUser = {idUser} AND i.type = '{type}' ORDER BY i.value + r.value DESC LIMIT {max_page} OFFSET {(page - 1) * max_page};"
@@ -669,12 +669,16 @@ def equip_item(idUser, item):
 def get_total_item_count_from_user(idUser, filter, favorite, type=None):
     filter_txt = str()
     if filter:
-        filter_txt = f"AND i.iconCategory = '{filter}'"
+        if filter.startswith("scl"):
+            filter_txt = f"AND i.{filter} > 0"
+        else:
+            filter_txt = f"AND i.iconCategory = '{filter}'"
 
     if favorite:
+        filter_txt_fav = filter_txt
         if filter == "weapon" or filter == "item":
-            filter_txt = f"AND i.type = '{filter}'"
-        sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.favorite = 1 {filter_txt};"
+            filter_txt_fav = f"AND i.type = '{filter}'"
+        sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.favorite = 1 {filter_txt_fav};"
     else:
         sql = f"SELECT count(*) FROM user_has_item r, item i WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND i.type = '{type}' {filter_txt};"
     cursor.execute(sql)
