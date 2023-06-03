@@ -595,8 +595,6 @@ def get_all_items_from_user(idUser, type):
         if item.get_favorite() == 1:
             continue
         items.append(item)
-    print(items)
-    print(len(items))
     return items
 
 
