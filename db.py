@@ -1327,7 +1327,6 @@ def does_item_exist_for_user(idUser, item):
     sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
     cursor.execute(sql)
     res = cursor.fetchone()
-    print(item.get_name())
     if res:
         return get_item_from_user_with_id_rel(idUser=idUser, idRel=res[0])
 
