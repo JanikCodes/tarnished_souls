@@ -113,7 +113,7 @@ def add_quest(quest: Quest()):
         location_reward_id = location_reward.get_id()
 
     sql = f'INSERT INTO quest VALUES(null, "{quest.get_title()}", "{quest.get_description()}", {quest.get_req_kills()}, {quest.get_req_item_count()}, {quest.get_req_runes()}, {quest.get_item()}, {enemy_id}, {quest.get_rune_reward()}, {location_reward_id}, {quest.get_req_explore_count()}, {exploration_location_id}, {quest.get_cooldown()}, {quest.get_flask_reward()});'
-    #sql.replace("'", "\'")
+    # sql.replace("'", "\'")
     cursor.execute(sql)
     mydb.commit()
     return sql
@@ -154,6 +154,50 @@ def get_enemy_id_from_name(name):
         return res
     return None
 
+
+def search_with_name(idUser, name, filter, page, max_page):
+    match filter:
+        case "enemy":
+            sql = f'SELECT count(idEnemy) FROM enemy WHERE REPLACE(name, "\'", "") like "%{name}%"'
+            cursor.execute(sql)
+            total_count = cursor.fetchone()[0]
+
+            enemies = []
+            sql = f'SELECT idEnemy FROM enemy WHERE REPLACE(name, "\'", "") like "%{name}%" ORDER BY name ASC LIMIT {max_page} OFFSET {(page - 1) * max_page}'
+            cursor.execute(sql)
+
+            for res in cursor.fetchall():
+                enemies.append(Enemy(idEnemy=res[0]))
+
+            return enemies, total_count
+        case "inventory":
+            sql = f'SELECT count(i.idItem) FROM user_has_item uhi JOIN item i ON uhi.idItem=i.idItem AND uhi.idUser={idUser} AND REPLACE(i.name, "\'", "") like "%{name}%"';
+            cursor.execute(sql)
+            total_count = cursor.fetchone()[0]
+
+            items = []
+            sql = f'SELECT uhi.idRel FROM user_has_item uhi JOIN item i ON uhi.idItem=i.idItem AND uhi.idUser={idUser} AND REPLACE(i.name, "\'", "") like "%{name}%" ORDER BY name ASC LIMIT {max_page} OFFSET {(page - 1) * max_page}'
+            cursor.execute(sql)
+
+            for res in cursor.fetchall():
+                items.append(get_item_from_user_with_id_rel(idUser=idUser, idRel=res[0]))
+
+            return items, total_count
+        case "item":
+            sql = f'SELECT count(idItem) FROM item WHERE REPLACE(name, "\'", "") like "%{name}%"'
+            cursor.execute(sql)
+            total_count = cursor.fetchone()[0]
+
+            items = []
+            sql = f'SELECT idItem FROM item WHERE REPLACE(name, "\'", "") like "%{name}%" ORDER BY name ASC LIMIT {max_page} OFFSET {(page - 1) * max_page}'
+            cursor.execute(sql)
+
+            for res in cursor.fetchall():
+                items.append(Item(idItem=res[0]))
+
+            return items, total_count
+
+
 # data insertion
 def get_enemy_count():
     sql = "SELECT COUNT(*) FROM enemy"
@@ -174,13 +218,6 @@ def get_all_enemy_logic():
         return logics
     else:
         return None
-
-
-def get_enemy_logic_id_from_name(name):
-    sql = "SELECT idLogic FROM enemy_logic WHERE name=%s"
-    val = name
-    cursor.execute(sql, (val,))
-    return cursor.fetchone()
 
 
 def get_all_move_types():
@@ -323,8 +360,6 @@ def fill_db_weapons():
             cursor.execute(sql)
             mydb.commit()
 
-
-
     print("Added weapons..")
 
 
@@ -396,7 +431,6 @@ def get_item_from_encounter_has_item_with_enc_id(idUser, idEncounter):
     for idItem in res:
         item = Item(idItem=idItem[0])
 
-
         sql = f"SELECT extraValue FROM encounter_has_item e, item i, user_encounter r WHERE r.idEncounter = {idEncounter} AND e.idEncounter = {idEncounter} AND r.idUser = {idUser} AND e.idItem = i.idItem AND e.idItem = {item.get_idItem()};"
         cursor.execute(sql)
         res = cursor.fetchone()
@@ -406,6 +440,7 @@ def get_item_from_encounter_has_item_with_enc_id(idUser, idEncounter):
         items.append(item)
 
     return items
+
 
 def update_last_explore_timer_from_user_with_id(idUser, current_time):
     sql = f"UPDATE user u SET last_explore = {current_time} WHERE u.idUser = {idUser};"
@@ -509,7 +544,6 @@ def add_item_to_user(idUser, item):
         raise e
 
 
-
 def add_item_to_user_with_item_name(idUser, item_name):
     item = get_item_from_item_name(item_name=item_name)
 
@@ -584,6 +618,7 @@ def get_items_from_user_id_with_type_at_page(idUser, page, max_page, filter, fav
         items.append(item)
     return items
 
+
 def get_all_items_from_user(idUser, type):
     items = []
     sql = f"SELECT idRel FROM user_has_item uhi, user u, item i WHERE i.type = '{type}' AND i.idItem = uhi.idItem AND NOT EXISTS (SELECT 1 FROM user u WHERE u.e_weapon = uhi.idRel OR u.e_head = uhi.idRel OR u.e_chest = uhi.idRel OR u.e_legs = uhi.idRel OR u.e_gauntlet = uhi.idRel) AND u.idUser = {idUser} AND uhi.idUser = u.idUser GROUP BY idRel;"
@@ -619,6 +654,7 @@ def set_item_from_user_favorite(idUser, idRel, favorite):
         cursor.execute("ROLLBACK")
         print(f"TRANSACTION ERROR: The transaction got rollbacked.. because: {e}")
         raise e
+
 
 def get_item_from_user_with_id_rel(idUser, idRel):
     sql = f"SELECT i.idItem, r.level, r.count, r.value, r.idRel, r.favorite FROM item i, user_has_item r WHERE i.idItem = r.idItem AND r.idUser = {idUser} AND r.idRel = '{idRel}';"
@@ -789,11 +825,13 @@ def get_location_from_id(idLocation):
             return 0
     return None
 
+
 def add_item_to_location(location, item):
     sql = f"INSERT INTO location_has_item VALUES(null, {location.get_id()}, {item.get_idItem()})"
     cursor.execute(sql)
     mydb.commit()
     return sql
+
 
 def get_current_user_quest(idUser):
     sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores, remaining_inv_kills, remaining_horde_wave FROM user_has_quest WHERE idUser = {idUser};"
@@ -805,6 +843,7 @@ def get_current_user_quest(idUser):
     else:
         return None
 
+
 def get_user_quest_with_quest_id(idUser, idQuest):
     sql = f"SELECT idRel, idQuest, idUser, remaining_kills, remaining_items, remaining_runes, remaining_explores, remaining_inv_kills, remaining_horde_wave FROM user_has_quest WHERE idUser = {idUser} AND idQuest = {idQuest};"
     cursor.execute(sql)
@@ -814,12 +853,15 @@ def get_user_quest_with_quest_id(idUser, idQuest):
         return quest_progress
     else:
         return None
+
+
 def get_quest_with_id(idQuest):
     sql = f"SELECT idQuest, title, description, reqKills, reqItemCount, reqRunes, idItem, idEnemy, runeReward, locationIdReward, reqExploreCount, locationId, cooldown, flaskReward, reqHordeWave, reqInvasionKills FROM quest WHERE idQuest = {idQuest};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        return Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11], res[12], res[13], res[14], res[15])
+        return Quest(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], res[10], res[11],
+                     res[12], res[13], res[14], res[15])
     else:
         return None
 
@@ -848,7 +890,8 @@ def add_quest_to_user(idUser, idQuest):
     mydb.commit()
 
 
-def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_location_id=None, invade_kill=False, max_horde_wave=0):
+def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_location_id=None, invade_kill=False,
+                           max_horde_wave=0):
     sql = f"select q.idQuest, remaining_kills, remaining_items, remaining_runes, remaining_explores, remaining_inv_kills, remaining_horde_wave FROM quest q JOIN user_has_quest r ON q.idQuest = r.idQuest AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
@@ -889,6 +932,7 @@ def check_for_quest_update(idUser, item=None, runes=0, idEnemy=0, explore_locati
             sql = f"UPDATE user_has_quest r SET r.remaining_horde_wave = LEAST({max_horde_wave}, {quest.get_req_horde_wave()}) WHERE r.idUser = {idUser};"
             cursor.execute(sql)
             mydb.commit()
+
 
 def get_all_locations_from_user(user):
     locations = []
@@ -1068,6 +1112,7 @@ def get_enemy_names_from_item_id(idItem):
 
     return names
 
+
 def fill_db_init():
     with open("Data/init-data.txt", 'r') as f:
         for line in f:
@@ -1083,6 +1128,7 @@ def update_flask_amount_from_user(idUser, amount):
     cursor.execute(sql)
     mydb.commit()
 
+
 def get_leaderboard_runes():
     leaderboard = []
 
@@ -1094,6 +1140,7 @@ def get_leaderboard_runes():
             leaderboard.append((row[0], row[1], row[2]))
 
     return leaderboard
+
 
 def get_user_position_in_lb_runes(idUser):
     sql = f"SELECT username, souls, FIND_IN_SET(souls, (SELECT GROUP_CONCAT(souls ORDER BY souls DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
@@ -1135,11 +1182,13 @@ def get_user_position_in_lb_level(idUser):
         # User not found in the database
         return "error"
 
+
 def update_dev_user_maxLocation(idUser):
     sql = f"UPDATE user SET maxLocation=13 WHERE idUser={idUser}"
     cursor.execute(sql)
     mydb.commit()
     return sql
+
 
 def get_user_level(idUser):
     sql = f"SELECT vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79 AS total_level FROM user WHERE idUser={idUser} ORDER BY total_level;"
@@ -1223,6 +1272,7 @@ def get_all_user_ids_from_location(location, himself):
 
     return idUsers
 
+
 def get_all_user_ids(himself):
     idUsers = []
     sql = f"SELECT idUser from user WHERE idUser != {himself};"
@@ -1234,6 +1284,7 @@ def get_all_user_ids(himself):
             idUsers.append(row[0])
 
     return idUsers
+
 
 def update_enemy_move_damage(idMove, new_value):
     sql = f"UPDATE enemy_moves SET damage={new_value} WHERE idMove = {idMove} ;"
@@ -1271,12 +1322,14 @@ def get_item_count_from_user(idUser, idItem):
 
     return 0
 
+
 def does_item_exist_for_user(idUser, item):
     sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
     cursor.execute(sql)
     res = cursor.fetchone()
+    print(item.get_name())
     if res:
-        return db.get_item_from_user_with_id_rel(idUser=idUser, idRel=res[0])
+        return get_item_from_user_with_id_rel(idUser=idUser, idRel=res[0])
 
     return None
 
@@ -1315,6 +1368,7 @@ def add_inv_death_to_user(idUser):
     sql = f"UPDATE user SET inv_deaths = inv_deaths + 1 WHERE idUser = {idUser};"
     cursor.execute(sql)
     mydb.commit()
+
 
 def add_inv_kill_to_user(idUser):
     sql = f"UPDATE user SET inv_kills = inv_kills + 1 WHERE idUser = {idUser};"
