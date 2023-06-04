@@ -191,6 +191,7 @@ async def view_search_results_page(interaction, user, page, label, filter=None):
                         new_embed.add_field(name=stats_name, value=stats_value, inline=False)
 
                     if item.get_item_type().upper() == "ARMOR":
+                        extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
                         new_embed.add_field(
                             name=f"**Statistics:**",
                             value=f"`Armor:` **{item.get_value_with_scaling(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**\n",
