@@ -1,12 +1,13 @@
 import db
 from Classes.enemy import Enemy
+from Classes.item import Item
 
 
 class Quest:
     def __init__(self, id=None, title=None, description=None, req_kills=None, req_item_count=None, req_runes=None,
-                 idItem=None, idEnemy=None, runeReward=None, \
+                 idItem=None, idEnemy=None, runeReward=None,
                  locationIdReward=None, req_explore_count=None, explore_location=None, cooldown=None,
-                 flask_reward=None):
+                 flask_reward=None, reqHordeWave=None, reqInvasionKills=None):
         if id is not None:
             self.id = id
             self.title = title
@@ -14,8 +15,6 @@ class Quest:
             self.req_kills = req_kills
             self.req_item_count = req_item_count
             self.req_runes = req_runes
-            self.req_item = db.get_item_from_item_id(idItem)
-            self.req_enemy = Enemy(idEnemy) if idEnemy is not None else None
             self.rune_reward = runeReward
             self.item_reward = db.get_quest_item_reward(idQuest=id)
             self.location_reward = db.get_location_from_id(locationIdReward)
@@ -23,6 +22,17 @@ class Quest:
             self.explore_location = db.get_location_from_id(explore_location)
             self.cooldown = cooldown
             self.flask_reward = flask_reward
+            self.req_horde_wave = reqHordeWave
+            self.req_invasion_kills = reqInvasionKills
+
+            if idItem:
+                self.req_item = Item(idItem=idItem)
+            else:
+                self.req_item = None
+            if idEnemy:
+                self.req_enemy = Enemy(idEnemy=idEnemy)
+            else:
+                self.req_enemy = None
 
         else:
             # empty constructor
@@ -39,6 +49,12 @@ class Quest:
 
     def get_description(self):
         return self.description
+
+    def get_req_horde_wave(self):
+        return self.req_horde_wave
+
+    def get_req_invasion_kills(self):
+        return self.req_invasion_kills
 
     def get_req_kills(self):
         return self.req_kills

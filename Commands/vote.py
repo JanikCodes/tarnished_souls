@@ -22,6 +22,9 @@ class VoteCommand(commands.Cog):
 
     @app_commands.command(name="vote", description="Use this to vote our bot on top.gg!")
     async def vote(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

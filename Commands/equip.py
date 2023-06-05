@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
 from Classes.user import User
 from Utils.classes import class_selection
@@ -57,6 +58,9 @@ class Equip(commands.Cog):
     )
     @app_commands.rename(item_id='id')
     async def equip(self, interaction: discord.Interaction, item_id: int):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
@@ -72,13 +76,23 @@ class Equip(commands.Cog):
                                           colour=discord.Color.red())
                     await interaction.followup.send(embed=embed, ephemeral=True)
                 else:
-                    if item.get_item_type() == "items":
+                    if item.get_item_type().upper() == "ITEM":
                         embed = discord.Embed(title=f"This.. doesn't seem like something you would equip..",
                                               description=f"Nice try tho.",
                                               colour=discord.Color.red())
                         return await interaction.followup.send(embed=embed, ephemeral=True)
 
-                    embed = discord.Embed(title=f"**{item.get_name()}** `id: {item.get_idRel()}`",
+                    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
+                    fav_emoji = discord.utils.get(
+                        interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+                        name='favorite')
+
+                    fav_text = fav_emoji if user.has_item_favorite(item) else str()
+
+                    item_level_text = str() if item.get_level() == 0 else f"`+{item.get_level()}`"
+
+                    embed = discord.Embed(title=f"**{item.get_name()}** {item_level_text} `id: {item.get_idRel()}` {fav_text}",
                                           description=f"Do you want to equip this item?")
 
                     if item.get_icon_url() is not None and item.get_icon_url() != 'None':
@@ -93,7 +107,7 @@ class Equip(commands.Cog):
                             value_name = "Armor"
 
                     embed.add_field(name="", value=f"**Statistics:** \n"
-                                                   f"`{value_name}:` **{item.get_total_value(user)}** `Weight:` **{item.get_weight()}**", inline=False)
+                                                   f"`{value_name}:` **{item.get_total_value(user)}** {extra_val_text} `Weight:` **{item.get_weight()}**", inline=False)
                     embed.add_field(name="", value=f"**Requirements** \n"
                                                    f"{item.get_requirement_text()}", inline=False)
 

@@ -2,7 +2,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import config
 import db
+from Classes.item import Item
 from Classes.user import User
 from Utils.classes import class_selection
 
@@ -10,12 +12,19 @@ from Utils.classes import class_selection
 MATERIAL_TABLE = {
     1: 1001, 2: 1001, 3: 1001, 4: 1002, 5: 1002, 6: 1002, 7: 1003, 8: 1003, 9: 1003, 10: 1004,
     11: 1004, 12: 1004, 13: 1005, 14: 1005, 15: 1005, 16: 1006, 17: 1006, 18: 1006, 19: 1007, 20: 1007,
-    21: 1007, 22: 1008, 23: 1008, 24: 1008, 25: 1009
+    21: 1007, 22: 1008, 23: 1008, 24: 1008, 25: 1009, 26: 99999
 }
 
 async def update_item(interaction, user, edit):
     user = user.update_user()
     weapon = user.get_weapon()
+
+    if not weapon:
+        embed = discord.Embed(title=f"You don't have a weapon equipped..",
+                              description="Equip one with `/equip`",
+                              colour=discord.Color.red())
+        return await interaction.followup.send(embed=embed, ephemeral=True)
+
     item = db.get_item_from_user_with_id_rel(idRel=weapon.get_idRel(), idUser=user.get_userId())
 
     if not item:
@@ -26,43 +35,70 @@ async def update_item(interaction, user, edit):
 
     old_level = item.get_level()
     old_dmg = item.get_total_value(user)
+    old_scl_text = item.get_scaling_text()
 
     new_level = item.get_level() + 1
     item.level = item.level + 1
     new_dmg = item.get_total_value(user)
+    new_scl_text = item.get_scaling_text()
 
-    embed = discord.Embed(title=f"**{item.get_name()}** `+{old_level}`",
-                          description=f"Do you want to upgrade this weapon to `+{new_level}` ?")
+    fav_emoji = discord.utils.get(
+        interaction.client.get_guild(config.botConfig["hub-server-guild-id"]).emojis,
+        name='favorite')
+
+    fav_text = fav_emoji if user.has_item_favorite(item) else str()
+
+    extra_val_text = str() if item.get_extra_value() == 0 else f"(*+{item.get_extra_value()}*)"
+
+    embed = discord.Embed(title=f"**{item.get_name()}** `+{old_level}` {fav_text}",
+                          description=f"Do you want to upgrade this weapon to `+{new_level}`?")
 
     if item.get_icon_url() is not None and item.get_icon_url() != 'None':
         embed.set_thumbnail(url=f"{item.get_icon_url()}")
 
     material_item_id = MATERIAL_TABLE[new_level]
-    req_material = db.get_item_from_item_id(material_item_id)
+
+    req_material = Item(idItem=material_item_id)
+
+    if not req_material:
+        embed.add_field(name="Error", value="There was an error with your upgrade.. I couldn't find the required material. Please use `/feedback`.", inline=False)
+        return await interaction.message.edit(embed=embed, view=None)
+
+    # Calculate the req material count
+    reqCount = ((new_level - 1) % 3 + 1) * 2
+    req_material.set_count(reqCount)
+
     category_emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name="smithing_stone")
-    req_material_text = f"• {category_emoji} `{req_material.get_name()}` **{new_level * 2}**x\n"
+
+    # Get user material count for UI and disable check
+    material_count = db.get_item_count_from_user(idUser=user.get_userId(), idItem=req_material.get_idItem())
+
+    req_material_text = f"• {category_emoji} `{req_material.get_name()}` {material_count}/**{req_material.get_count()}**\n"
+
+    # Check if we disable the button
+    disabled = material_count < req_material.get_count()
 
     embed.add_field(name="", value=f"**Requires Materials:** \n"
                                    f"{req_material_text}", inline=False)
 
     embed.add_field(name="", value=f"**After:** \n"
-                                   f"`Damage:` **{old_dmg}** -> `Damage:` **{new_dmg}**", inline=False)
+                                   f"`Damage:` **{old_dmg}** {extra_val_text} -> `Damage:` **{new_dmg}** {extra_val_text}", inline=False)
+    embed.add_field(name="", value=f"**Scaling:** \n"
+                                   f"{old_scl_text} -> {new_scl_text}")
 
     embed.colour = discord.Color.orange()
 
-    disabled = not db.has_user_enough_items(idUser=user.get_userId(), idItem=req_material.get_idItem(),
-                                            reqcount=new_level * 2)
-
     if edit:
-        await interaction.message.edit(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled))
+        await interaction.message.edit(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled, req_material=req_material))
     else:
-        await interaction.followup.send(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled))
+        await interaction.followup.send(embed=embed, view=SmithingView(user=user, item=item, disabled=disabled, req_material=req_material))
 
 class UpgradeButton(discord.ui.Button):
-    def __init__(self, user, item, disabled):
+    def __init__(self, user, item, disabled, req_material):
         super().__init__(label=f"Upgrade!", style=discord.ButtonStyle.success, disabled=disabled)
         self.user = user
         self.item = item
+        self.req_material = req_material
 
     async def callback(self, interaction: discord.Interaction):
         try:
@@ -84,6 +120,23 @@ class UpgradeButton(discord.ui.Button):
                 edited_embed.set_footer(text="This item no longer exists..")
                 return await interaction.message.edit(embed=edited_embed, view=None)
 
+            material_count = db.get_item_count_from_user(idUser=self.user.get_userId(), idItem=self.req_material.get_idItem())
+
+            # Check if the user really has enough materials and that didn't change
+            if material_count < self.req_material.get_count():
+                edited_embed.colour = discord.Color.red()
+                edited_embed.set_footer(text="You don't have enough materials anymore..")
+                return await interaction.message.edit(embed=edited_embed, view=None)
+
+            mat_idRel = db.get_idRel_from_user_with_item_id(idUser=self.user.get_userId(), idItem=self.req_material.get_idItem())
+
+            if not mat_idRel:
+                edited_embed.colour = discord.Color.red()
+                edited_embed.set_footer(text="You don't have enough materials anymore..")
+                return await interaction.message.edit(embed=edited_embed, view=None)
+
+            db.decrease_item_from_user(idUser=self.user.get_userId(), relId=mat_idRel, amount=self.req_material.get_count())
+
             item_count = real_item.get_count()
 
             # check item count
@@ -94,41 +147,66 @@ class UpgradeButton(discord.ui.Button):
 
                 # +1 that item if no identical rel's exist
                 if not existing_item:
-                    db.update_item_from_user(idUser=self.user.get_userId(), item=real_item)
+                    db.update_item_from_user(idUser=self.user.get_userId(), item=real_item, favorite=real_item.get_favorite())
 
                     await update_item(interaction=interaction, user=self.user, edit=True)
                 else:
-                    # TODO: It doesnt go in here yet, so I need to do some checks..
-                    print("Identical exist! Removing old item and increasing count")
-
                     # remove that item
                     db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
                     # and increase count of identical rel
                     existing_item.count = 1
                     db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
+                    db.set_item_from_user_favorite(idUser=self.user.get_userId(), idRel=existing_item.get_idRel(),
+                                                   favorite=True)
+                    existing_item.set_favorite(1)
                     # equip that rel ID where we increased count
                     db.equip_item(idUser=self.user.get_userId(), item=existing_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
             else:
-                pass
-
                 # item count is greater than 1
-                    # check if identical +1 rel exist
-                        # reduce count from old rel and increase count in new rel
-                        # equip that new rel
-                    # no identical rel exist
-                        # create new item
-                        # equip that
-                        # reduce count from old rel
+
+                real_item.level += 1
+                existing_item = db.does_item_exist_for_user(idUser=self.user.get_userId(), item=real_item)
+
+                # check if identical +1 rel exist
+                if not existing_item:
+                    # reduce count from old rel
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    if real_item.get_favorite() != 1:
+                        favorite = False
+                    else:
+                        favorite = True
+                    # create new item
+                    real_item.count = 1
+                    new_id_rel = db.add_item_to_user(idUser=self.user.get_userId(), item=real_item)
+                    real_item.set_idRel(new_id_rel)
+                    real_item.set_favorite(0 if favorite is False else 1)
+                    db.set_item_from_user_favorite(idUser=self.user.get_userId(), idRel=real_item.get_idRel(),
+                                                   favorite=favorite)
+                    # equip that
+                    db.equip_item(idUser=self.user.get_userId(), item=real_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
+                else:
+                    # reduce count from old rel and increase count in new rel
+                    db.decrease_item_from_user(idUser=self.user.get_userId(), relId=real_item.get_idRel(), amount=1)
+                    existing_item.count = 1
+                    db.add_item_to_user(idUser=self.user.get_userId(), item=existing_item)
+                    existing_item.set_favorite(1)
+                    db.set_item_from_user_favorite(idUser=self.user.get_userId(), idRel=existing_item.get_idRel(),
+                                                   favorite=True)
+                    # equip that new rel
+                    db.equip_item(idUser=self.user.get_userId(), item=existing_item)
+                    await update_item(interaction=interaction, user=self.user, edit=True)
 
         except discord.errors.NotFound:
             pass
 
 class SmithingView(discord.ui.View):
 
-    def __init__(self, user, item, disabled):
+    def __init__(self, user, item, disabled, req_material):
         super().__init__()
         self.user = user.update_user()
-        self.add_item(UpgradeButton(user=user, item=item, disabled=disabled))
+        self.add_item(UpgradeButton(user=user, item=item, disabled=disabled, req_material=req_material))
 
 
 class SmithingCommand(commands.Cog):
@@ -137,6 +215,9 @@ class SmithingCommand(commands.Cog):
 
     @app_commands.command(name="smithing", description="Upgrade your equipped weapon with materials..")
     async def smithing(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 

@@ -1,3 +1,4 @@
+import asyncio
 import math
 import random
 import time
@@ -8,42 +9,65 @@ from discord.ext import commands
 
 import config
 import db
+from Classes.item import Item
 from Classes.user import User
 from Utils.classes import class_selection
 
-STONE_DROP_CHANCE = 15
-EXPLORE_TIME = 20
+STONE_DROP_CHANCE = 20
+EXPLORE_TIME = 60 * 15
 ENCOUNTER_AMOUNT = 5
-BASE_RUNE_REWARD = 200
+BASE_RUNE_REWARD = 120
 
+COOLDOWN_DURATION = 3
+
+cooldown = {}  # Dictionary to store the cooldown timestamps for each user
+lock = asyncio.Lock()  # Lock object for synchronization
 
 class Explore(commands.Cog):
 
     def __init__(self, client: commands.Bot):
         self.client = client
 
+
     @app_commands.command(name="explore", description="Explore the world, encounter events & receive items and souls!")
     async def explore(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
             self.client.add_to_activity()
 
             if db.validate_user(interaction.user.id):
-
                 user = User(interaction.user.id)
 
-                current_time = (round(time.time() * 1000)) // 1000
+                current_time = round(time.time())
                 last_time = user.get_last_explore()
 
-                if float(current_time) - float(last_time) > EXPLORE_TIME:
-                    # display a recap off the old explore message because it's finished
-                    await self.explore_status(interaction, percentage=100, user=user, finished=True)
-                    db.remove_user_encounters(idUser=user.get_userId())
-                    db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(), current_time=current_time)
+                if interaction.user.id in cooldown and current_time < cooldown[interaction.user.id]:
+                    # User is still on cooldown, skip the exploration
+                    remaining_time = cooldown[interaction.user.id] - current_time
+
+                    embed = discord.Embed(title=f"Warning", description=f"You're on cooldown for {remaining_time} seconds...")
+                    embed.colour = discord.Color.orange()
+                    return await interaction.followup.send(embed=embed)
                 else:
-                    await self.explore_status(interaction, percentage=(current_time - last_time) / EXPLORE_TIME * 100,
-                                              user=user, finished=False)
+                    async with lock:
+                        # Acquire the lock before proceeding with exploration
+                        if current_time - last_time > EXPLORE_TIME:
+                            # Display a recap of the old explore message because it's finished
+                            await self.explore_status(interaction, percentage=100, user=user, finished=True)
+                            db.remove_user_encounters(idUser=user.get_userId())
+                            db.update_last_explore_timer_from_user_with_id(idUser=user.get_userId(),
+                                                                           current_time=current_time)
+
+                            # Set the cooldown for the user
+                            cooldown[interaction.user.id] = current_time + COOLDOWN_DURATION
+                        else:
+                            await self.explore_status(interaction,
+                                                      percentage=(current_time - last_time) / EXPLORE_TIME * 100,
+                                                      user=user, finished=False)
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:
@@ -86,7 +110,7 @@ class Explore(commands.Cog):
                     # we received an item drop!
                     all_item_ids = db.get_all_item_ids(obtainable_only=True, item_type="equip")
                     random_item_id = random.choice(all_item_ids)
-                    item = db.get_item_from_item_id(random_item_id)
+                    item = Item(random_item_id)
                     random_stats = self.calculate_random_stats()
                     item.set_extra_value(random_stats)
                     new_encounter.set_item_rewards(item)
@@ -101,7 +125,7 @@ class Explore(commands.Cog):
 
                 if STONE_DROP_CHANCE >= random.randint(0, 100):
                     extra_items = new_encounter.get_location().get_item_rewards()
-                    if len(extra_items) > 0:
+                    if extra_items and len(extra_items) > 0:
                         stone_item = random.choice(extra_items)
                         new_encounter.set_item_rewards(stone_item)
 

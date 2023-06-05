@@ -1,0 +1,394 @@
+{
+    "Deathtouched Catacombs": [
+        {
+            "id": "17f69886115l0i2m7307w4njyfhwt5",
+            "name": "Deathtouched Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69886115l0i2m7307w4njyfhwt5.png",
+            "region": "Limgrave",
+            "description": "Catacombs filled with the stench of death, Skeletons dwell in the shadows"
+        }
+    ],
+    "Coastal Cave": [
+        {
+            "id": "17f697edfb9l0i2m79bx2q2xwbbjtl",
+            "name": "Coastal Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f697edfb9l0i2m79bx2q2xwbbjtl.png",
+            "region": "Limgrave",
+            "description": "Coastal Cave is a dark opening on the side of a cliff. Its mossy depths are overrun by hostile humanoid creatures, but those who brave it may find passage to new lands"
+        }
+    ],
+    "Fringefolk Hero's Grave": [
+        {
+            "id": "17f699ae4a0l0i2m7xeop7sxh8y65e",
+            "name": "Fringefolk Hero's Grave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f699ae4a0l0i2m7xeop7sxh8y65e.png",
+            "region": "Limgrave",
+            "description": "Fingefolk Hero's Grave is a dark and secluded location within the Cave of Knowledge. The confused and aimless dwell within"
+        }
+    ],
+    "Limgrave Tunnels": [
+        {
+            "id": "17f698e05eel0i2m8lxtk1iuo5pp3",
+            "name": "Limgrave Tunnels",
+            "image": "https://eldenring.fanapis.com/images/locations/17f698e05eel0i2m8lxtk1iuo5pp3.png",
+            "region": "Limgrave",
+            "description": "Limgrave Tunnels are a mine harvested for Glimstone. Its zealous miners don't dare venture into its hidden chambers, for fear of the hoarder Troll within "
+        }
+    ],
+    "Groveside Cave": [
+        {
+            "id": "17f69bc29c9l0i2m8mjnl6ac43o3sa",
+            "name": "Groveside Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69bc29c9l0i2m8mjnl6ac43o3sa.png",
+            "region": "Limgrave",
+            "description": "Groveside Cave is a small refuge for wildlife in Limgrave. Its proximity to water and ease of access make it a sought-after shelter against bad weather, but those who venture in don't seem to return"
+        }
+    ],
+    "Highroad Cave": [
+        {
+            "id": "17f699b601fl0i2m8statevuowxrrb",
+            "name": "Highroad Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f699b601fl0i2m8statevuowxrrb.png",
+            "region": "Limgrave",
+            "description": "A cave that houses a tomb, deep within. It is situated at the northmost part of Limgrave. It has been inhabited by a pack of Wolves, Land Octopuses, and Giant Bats"
+        }
+    ],
+    "Murkwater Catacombs": [
+        {
+            "id": "17f69dedf7al0i2m9b4pz1v8jipl5",
+            "name": "Murkwater Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69dedf7al0i2m9b4pz1v8jipl5.png",
+            "region": "Limgrave",
+            "description": "An underground cemetery that is located at the north-east side of Agheel Lake in Limgrave. Once a place for peaceful rest for fallen heroes, it is now infested by goblins.  "
+        }
+    ],
+    "Murkwater Cave": [
+        {
+            "id": "17f69e79661l0i2m9c3uzzwon60ru",
+            "name": "Murkwater Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69e79661l0i2m9c3uzzwon60ru.png",
+            "region": "Limgrave",
+            "description": "A dark cave halfway through the Murkwater River "
+        }
+    ],
+    "Stormfoot Catacombs": [
+        {
+            "id": "17f69c93d09l0i2m9yixlupxvwoc7r",
+            "name": "Stormfoot Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69c93d09l0i2m9yixlupxvwoc7r.png",
+            "region": "Limgrave",
+            "description": "Stormfoot Catacombs were meant as a restful place for the deceased, but its now overrun by Goblins. Its deepest secrets are secured by the Guardian of the Burial Tree "
+        }
+    ],
+    "Earthbore Cave": [
+        {
+            "id": "17f69a6e7bal0i2mbxtdxxdlkbn228",
+            "name": "Earthbore Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69a6e7bal0i2mbxtdxxdlkbn228.png",
+            "region": "Limgrave",
+            "description": "Earthbore Cave is a small dark cave on the side of the Cliffside between Limgrave and Weeping Peninsula. One might be able to hear the squeaks of rats and the snoring of a large beast deep within if you listen closely"
+        }
+    ],
+    "Impaler's Catacombs": [
+        {
+            "id": "17f69eb484al0i2mc6wcx3of77ezpi",
+            "name": "Impaler's Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69eb484al0i2mc6wcx3of77ezpi.png",
+            "region": "Weeping Peninsula",
+            "description": "The Impaler's Catacombs are found in the east side of the Weeping Peninsula. Once used to store the bodies of the dead, it is now crawling with Imps. "
+        }
+    ],
+    "Morne Tunnel": [
+        {
+            "id": "17f6981a517l0i2mcvl2m9zjgmsg8q",
+            "name": "Morne Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f6981a517l0i2mcvl2m9zjgmsg8q.png",
+            "region": "Weeping Peninsula",
+            "description": "A dark and hidden tunnel that is inhabited by Misbegottens and Miners."
+        }
+    ],
+    "Tombsward Cave": [
+        {
+            "id": "17f69d80346l0i2md4i5cedghtnq25",
+            "name": "Tombsward Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69d80346l0i2md4i5cedghtnq25.png",
+            "region": "Weeping Peninsula",
+            "description": "Hidden cave in the forest teeming with poison-filled creatures."
+        }
+    ],
+    "Tombsward Catacombs": [
+        {
+            "id": "17f69e49901l0i2mdbbaoshgf9r6xb",
+            "name": "Tombsward Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69e49901l0i2mdbbaoshgf9r6xb.png",
+            "region": "Weeping Peninsula",
+            "description": "The Tombsward Catacombs are hidden inside the mountain near the Minor Erdtree in the Weeping Peninsula. Once filled with the bodies of the dead, armed skeletons now rise to chase away those that wish to explore its depths."
+        }
+    ],
+    "Academy Crystal Cave": [
+        {
+            "id": "17f69eea151l0i2mdvyoq9hes3awih",
+            "name": "Academy Crystal Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69eea151l0i2mdvyoq9hes3awih.png",
+            "region": "Liurnia of the Lakes",
+            "description": "The depths of the Raya Lucaria Academy are rich in rose-tinted crystals, imbued with the natural magic of the area"
+        }
+    ],
+    "Black Knife Catacombs": [
+        {
+            "id": "17f699441c2l0i2men3bc9smd0h3jp",
+            "name": "Black Knife Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f699441c2l0i2men3bc9smd0h3jp.png",
+            "region": "Liurnia of the Lakes",
+            "description": "Black Knife Catacombs homes many skeletons and crabs within its depths, find and defeat the Black Knife Assassin within to obtain their dagger."
+        }
+    ],
+    "Lakeside Crystal Cave": [
+        {
+            "id": "17f69a91598l0i2mhgmal00xkh3qlq",
+            "name": "Lakeside Crystal Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69a91598l0i2mhgmal00xkh3qlq.png",
+            "region": "Liurnia of the Lakes",
+            "description": "Hidden on the southwestern cliffs of Liurnia of the Lakes, a winding cave carved by large crystals"
+        }
+    ],
+    "Raya Lucaria Crystal Tunnel": [
+        {
+            "id": "17f69c399c9l0i2mil0mh3d0ps7e7",
+            "name": "Raya Lucaria Crystal Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69c399c9l0i2mil0mh3d0ps7e7.png",
+            "region": "Liurnia of the Lakes",
+            "description": "One of the vast networks of tunnels used prominently for the academy's crystal mining operation."
+        }
+    ],
+    "Road's End Catacombs": [
+        {
+            "id": "17f69cc10e6l0i2mj6tb3yh7hepkwb",
+            "name": "Road's End Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69cc10e6l0i2mj6tb3yh7hepkwb.png",
+            "region": "Liurnia of the Lakes",
+            "description": "Catacombs at the end of the world.."
+        }
+    ],
+    "Stillwater Cave": [
+        {
+            "id": "17f69bc3adbl0i2mjzcn0qc9u6t9bk",
+            "name": "Stillwater Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69bc3adbl0i2mjzcn0qc9u6t9bk.png",
+            "region": "Liurnia of the Lakes",
+            "description": "A dark and murky cave beset by a poisonous miasma. Home to servants of rot, relishing in the presence of the giant poisonblooms endemic to the cave"
+        }
+    ],
+    "Abandoned Cave": [
+        {
+            "id": "17f69a76b08l0i2mkixrtbvunct38",
+            "name": "Abandoned Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69a76b08l0i2mkixrtbvunct38.png",
+            "region": "Caelid",
+            "description": "Long time abandoned cave."
+        }
+    ],
+    "Caelid Catacombs": [
+        {
+            "id": "17f696635c6l0i2mkuc7ifimqdqkmw",
+            "name": "Caelid Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f696635c6l0i2mkuc7ifimqdqkmw.png",
+            "region": "Caelid",
+            "description": "A labyrinth of Scarlet Rot-soaked floors and tunnels."
+        }
+    ],
+    "Gael Tunnel": [
+        {
+            "id": "17f69b4d520l0i2mln0ngtae6zndll",
+            "name": "Gael Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69b4d520l0i2mln0ngtae6zndll.png",
+            "region": "Caelid",
+            "description": "A set of tunnels found on the western edge of Caelid, along the border to Limgrave"
+        }
+    ],
+    "Gaol Cave": [
+        {
+            "id": "17f69d11b53l0i2mlurz5othyaw2yn",
+            "name": "Gaol Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69d11b53l0i2mlurz5othyaw2yn.png",
+            "region": "Caelid",
+            "description": "Found at the west of Caelid."
+        }
+    ],
+    "Minor Erdtree Catacombs": [
+        {
+            "id": "17f69d11915l0i2mm7w192hcoirxvu",
+            "name": "Minor Erdtree Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69d11915l0i2mm7w192hcoirxvu.png",
+            "region": "Caelid",
+            "description": "Minor Erdtree Catacombs is a Location in Elden Ring. The Minor Erdtree Catacombs is found in Caelid, beneath the Minor Erdtree. Players can reach this location by traveling east from where the region meets with Limgrave and then looking for the entrance behind the tree, in the north."
+        }
+    ],
+    "Sellia Crystal Tunnel": [
+        {
+            "id": "17f69e4cd2al0i2mmjf7o5gwy7nhbg",
+            "name": "Sellia Crystal Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69e4cd2al0i2mmjf7o5gwy7nhbg.png",
+            "region": "Caelid",
+            "description": "The crystal mining operation of Sellia is overseen by greedy and aggressive insectoids "
+        }
+    ],
+    "War-Dead Catacombs": [
+        {
+            "id": "17f699e1038l0i2mnmh37d1nfbes3b",
+            "name": "War-dead Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f699e1038l0i2mnmh37d1nfbes3b.png",
+            "region": "Caelid",
+            "description": "Catacombs for those who have died a glorious battle death"
+        }
+    ],
+    "Altus Tunnel": [
+        {
+            "id": "17f6993b974l0i2mnzpvp1ultcqrm",
+            "name": "Altus Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f6993b974l0i2mnzpvp1ultcqrm.png",
+            "region": "Altus Pleateau",
+            "description": "The Altus tunnels were once used to supply the lands with quality crystals "
+        },
+        {
+            "id": "17f697f9642l0i2molzde5v6dex4io",
+            "name": "Altus Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f697f9642l0i2molzde5v6dex4io.png",
+            "region": "Altus Pleateau",
+            "description": "The Altus tunnels were once used to supply the lands with quality crystals "
+        },
+        {
+            "id": "17f697666c6l0i2mozt3d41gvlk4j8",
+            "name": "Old Altus Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f697666c6l0i2mozt3d41gvlk4j8.png",
+            "region": "Altus Pleateau",
+            "description": "An old mining site, still active to this day. Its tunnels echo with the grunts and groans of the commoners, tirelessly slaving away, grinding at the rich reservoir of crystals deep within"
+        }
+    ],
+    "Old Altus Tunnel": [
+        {
+            "id": "17f697666c6l0i2mozt3d41gvlk4j8",
+            "name": "Old Altus Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f697666c6l0i2mozt3d41gvlk4j8.png",
+            "region": "Altus Pleateau",
+            "description": "An old mining site, still active to this day. Its tunnels echo with the grunts and groans of the commoners, tirelessly slaving away, grinding at the rich reservoir of crystals deep within"
+        }
+    ],
+    "Sealed Tunnel": [
+        {
+            "id": "17f698984e2l0i2mpau822kzbjamiq",
+            "name": "Sealed Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f698984e2l0i2mpau822kzbjamiq.png",
+            "region": "Altus Pleateau",
+            "description": "Not as small or abandoned as it looks."
+        }
+    ],
+    "Gelmir Hero's Grave": [
+        {
+            "id": "17f69b3cf18l0i2mqdndclk0p7tmvv",
+            "name": "Gelmir Hero's Grave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69b3cf18l0i2mqdndclk0p7tmvv.png",
+            "region": "Altus Pleateau",
+            "description": "Large Catacombs housing an ancient hero of Mt. Gelmir."
+        }
+    ],
+    "Sage's Cave": [
+        {
+            "id": "17f69a39644l0i2mr10gkkf9agp8m7",
+            "name": "Sage's Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69a39644l0i2mr10gkkf9agp8m7.png",
+            "region": "Altus Pleateau",
+            "description": "Sage's Cave is a dark opening in the side of a mountain. Its dark depths are overrun by hostile undead, but those who brave it may find treasures beyond compare"
+        }
+    ],
+    "Unsightly Catacombs": [
+        {
+            "id": "17f69c28019l0i2mrdirn1c1brqcqj",
+            "name": "Unsightly Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69c28019l0i2mrdirn1c1brqcqj.png",
+            "region": "Altus Pleateau",
+            "description": "A burial grounds crawling with Misbegotten creatures found deep beneath the Perfumer's Ruins. Despite its decrepit state, the catacombs give off a trace of fragrant aromas juxtaposed by the scent of the ancient dead"
+        }
+    ],
+    "Seethewater Cave": [
+        {
+            "id": "17f6967952el0i2mrhy8fpgqo0f4hr",
+            "name": "Seethewater Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f6967952el0i2mrhy8fpgqo0f4hr.png",
+            "region": "Altus Pleateau",
+            "description": "A cave found along the Seethewater Ravine."
+        }
+    ],
+    "Wyndham Catacombs": [
+        {
+            "id": "17f696c58e8l0i2mrr461qyqfe46y6",
+            "name": "Wyndham Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f696c58e8l0i2mrr461qyqfe46y6.png",
+            "region": "Altus Pleateau",
+            "description": "Burial grounds located beneath Wyndham Ruins."
+        }
+    ],
+    "Volcano Cave": [
+        {
+            "id": "17f69e3f410l0i2mrtcr66ff1g9p4h",
+            "name": "Volcano Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69e3f410l0i2mrtcr66ff1g9p4h.png",
+            "region": "Altus Pleateau",
+            "description": "A cave system at the highest point of Mt. Gelmir, made into a home by a family of Demi-Humans hiding their maddened Queen."
+        }
+    ],
+    "Dragonbarrow Cave": [
+        {
+            "id": "17f69a52fdal0i2mscdgudt5b894m5",
+            "name": "Dragonbarrow Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69a52fdal0i2mscdgudt5b894m5.png",
+            "region": "Dragonbarrow",
+            "description": "A small dungeon found beneath the Minor Erdtree in Dragonbarrow"
+        }
+    ],
+    "Giant-Conquering Hero's Grave": [
+        {
+            "id": "17f697036fbl0i2mtt1y66q5foxdq",
+            "name": "Giant-conquering Hero's Grave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f697036fbl0i2mtt1y66q5foxdq.png",
+            "region": "Mountaintops of the Giants",
+            "description": "A complex dungeon filled with invulnerable enemies and strange golden floor seals. "
+        }
+    ],
+    "Spiritcaller's Cave": [
+        {
+            "id": "17f69a25d31l0i2muhzfvabyqxiv2v",
+            "name": "Spiritcaller's Cave",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69a25d31l0i2muhzfvabyqxiv2v.png",
+            "region": "Mountaintops of the Giants",
+            "description": "A cave found by the Freezing Lake, heavily battered by the elements"
+        }
+    ],
+    "Consecrated Snowfield Catacombs": [
+        {
+            "id": "17f69b5132al0i2mvbu1p0fqlhzbjb",
+            "name": "Consecrated Snowfield Catacombs",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69b5132al0i2mvbu1p0fqlhzbjb.png",
+            "region": "Mountaintops of the Giants",
+            "description": "The Catacombs of the fields leading to Miquella's Haligtree hide powerful secrets, but are zealously guarded"
+        }
+    ],
+    "Hidden Path to the Haligtree": [
+        {
+            "id": "17f69a00a08l0i2mvsxha1qmkpwnqb",
+            "name": "Hidden Path To The Haligtree",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69a00a08l0i2mvsxha1qmkpwnqb.png",
+            "region": "Mountaintops of the Giants",
+            "description": "The secret passage leading to Miquella's Haligtree has been polluted by Those Who Live in Dead "
+        }
+    ],
+    "Yelough Anix Tunnel": [
+        {
+            "id": "17f69dfae57l0i2mwa08uny35m2uqf",
+            "name": "Yelough Anix Tunnel",
+            "image": "https://eldenring.fanapis.com/images/locations/17f69dfae57l0i2mwa08uny35m2uqf.png",
+            "region": "Mountaintops of the Giants",
+            "description": "An icy tunnel on the southern edge of the Yelough Anix Ruins"
+        }
+    ]
+}

@@ -11,14 +11,19 @@ from colorama import Back, Fore, Style
 from discord.ext import commands, tasks
 import db
 
+import unittest
+from Tests.test import TestCases
+
 MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
-UPDATE_ITEMS = False
+UPDATE_ITEMS = True
 FILL_FIRST_TIME_DATA = False
+
 
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='!-&%', intents=discord.Intents().all())
         self.activity_list = {i: 0 for i in range(24)}
+
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
             if fileName.endswith('.py'):
@@ -34,7 +39,7 @@ class Client(commands.Bot):
         print(f"{prfx} Discord Version {Fore.YELLOW} {discord.__version__}")
         print(f"{prfx} Python Version {Fore.YELLOW} {str(platform.python_version())}")
         print(f"{prfx} Bot Version 0.1")
-        await db.init_database()
+        db.init_database(config.botConfig)
 
         logging.warning("Now logging..")
 
@@ -48,6 +53,7 @@ class Client(commands.Bot):
             db.fill_db_init()
             print("Added init data..")
 
+        print("Finished updating/adding data")
         self.username_upd_task.start()
 
     @tasks.loop(hours=24)
@@ -58,6 +64,7 @@ class Client(commands.Bot):
         channel = client.get_channel(config.botConfig["error-channel-id"])
         error_message = f"An error occurred:\n```{traceback.format_exc()}```"
         await channel.send(error_message)
+
     async def on_error(self, event, *args, **kwargs):
         await self.send_error_message(traceback.format_exc())
 
@@ -65,5 +72,26 @@ class Client(commands.Bot):
         hour = datetime.now().hour
         self.activity_list[hour] += 1
 
-client = Client()
-client.run(config.botConfig["token"])
+
+def __run_tests():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestCases)
+
+    runner = unittest.TextTestRunner()
+
+    result = runner.run(suite)
+
+    print("Number of tests run:", result.testsRun)
+    print("Number of failures:", len(result.failures))
+    print("Number of errors:", len(result.errors))
+
+    if result.wasSuccessful():
+        print("All tests passed successfully.")
+        return True
+    else:
+        print("Some tests failed.")
+        return False
+
+
+if __run_tests():
+    client = Client()
+    client.run(config.botConfig["token"])

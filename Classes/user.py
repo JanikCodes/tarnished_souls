@@ -1,6 +1,7 @@
 import db
 
 BASE_DAMAGE = 25
+BASE_HEALING = 375
 
 VIGOR_TABLE = {
     1: 300, 2: 304, 3: 312, 4: 322, 5: 334, 6: 347, 7: 362, 8: 378, 9: 396, 10: 414,
@@ -14,6 +15,7 @@ VIGOR_TABLE = {
     81: 2020, 82: 2026, 83: 2031, 84: 2036, 85: 2041, 86: 2046, 87: 2051, 88: 2056, 89: 2060, 90: 2065,
     91: 2070, 92: 2074, 93: 2078, 94: 2082, 95: 2086, 96: 2090, 97: 2094, 98: 2097, 99: 2100
 }
+
 
 class User:
     def __init__(self, userId=None):
@@ -48,6 +50,8 @@ class User:
             self.dodge_next = False
             self.last_move_text = str()
             self.maxHordeWave = result[24]
+            self.inv_kills = result[25]
+            self.inv_deaths = result[26]
         else:
             # empty constructor
             pass
@@ -83,6 +87,8 @@ class User:
         self.dodge_next = False
         self.last_move_text = str()
         self.maxHordeWave = result[24]
+        self.inv_kills = result[25]
+        self.inv_deaths = result[26]
 
         return self
 
@@ -239,12 +245,13 @@ class User:
         return self.remaining_flasks
 
     def get_max_health(self):
-        return VIGOR_TABLE[self.vigor] if self.vigor in VIGOR_TABLE else None
+        return VIGOR_TABLE[self.vigor] + 200 if self.vigor in VIGOR_TABLE else None
 
     def reduce_health(self, amount):
         absorb = int((self.get_total_armor() / 8))
-        self.health = max(self.health - (amount - absorb), 0)
-        self.last_move_text = f"`-{amount - absorb}`"
+        calc_dmg = max((amount - absorb), 0)
+        self.health = max(self.health - calc_dmg, 0)
+        self.last_move_text = f"`-{calc_dmg}`"
 
     def increase_health(self, amount):
         if self.remaining_flasks > 0:
@@ -256,7 +263,7 @@ class User:
         if self.weapon is not None:
             return BASE_DAMAGE + self.weapon.get_total_value(self)
         else:
-            return BASE_DAMAGE
+            return BASE_DAMAGE + (self.strength + self.dexterity)
 
     def get_total_weight(self):
         weight = 0
@@ -335,6 +342,25 @@ class User:
                 return True
         if self.gauntlet:
             if self.gauntlet.get_idRel() == item.get_idRel():
+                return True
+
+        return False
+
+    def has_item_favorite(self, item):
+        if self.weapon:
+            if item.get_favorite() == 1:
+                return True
+        if self.head:
+            if item.get_favorite() == 1:
+                return True
+        if self.chest:
+            if item.get_favorite() == 1:
+                return True
+        if self.legs:
+            if item.get_favorite() == 1:
+                return True
+        if self.gauntlet:
+            if item.get_favorite() == 1:
                 return True
 
         return False

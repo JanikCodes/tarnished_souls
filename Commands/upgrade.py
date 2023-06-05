@@ -39,7 +39,7 @@ class UpgradeStatsButton(discord.ui.Button):
                 message = interaction.message
                 edited_embed = message.embeds[0]
                 edited_embed.set_field_at(0, name=f"**{self.selected_choice}**",
-                                          value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(
+                                          value=utils.create_bars(current_level, 100, interaction=interaction) + utils.create_invisible_spaces(
                                               3) + str(current_level) + "/100", inline=False)
 
                 await interaction.message.edit(embed=edited_embed,
@@ -54,8 +54,11 @@ class UpgradeStatsView(discord.ui.View):
         super().__init__()
         self.user = user.update_user()
         self.current_level = current_level
-        disabled = True if utils.calculate_upgrade_cost(user=self.user,
-                                                        next_upgrade_cost=next_upgrade_cost) > user.get_runes() else False
+        disabled = True if utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=next_upgrade_cost) > user.get_runes() else False
+
+        if current_level == 99:
+            disabled = True
+
         self.add_item(UpgradeStatsButton(
             f"Upgrade for {utils.calculate_upgrade_cost(user=self.user, next_upgrade_cost=next_upgrade_cost)} runes",
             discord.ButtonStyle.success, "upgrade", selected_choice, user, disabled=disabled))
@@ -79,6 +82,9 @@ class UpgradeStats(commands.Cog):
         app_commands.Choice(name="Arcane", value="arcane"),
     ])
     async def upgrade_stats(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
@@ -94,7 +100,7 @@ class UpgradeStats(commands.Cog):
                                       description=f"Click the button below to upgrade your skill!")
                 embed.set_author(name=user.get_userName())
                 embed.add_field(name=f"**{selected_choice}**",
-                                value=utils.create_bars(current_level, 100) + utils.create_invisible_spaces(3) + str(
+                                value=utils.create_bars(current_level, 100, interaction=interaction) + utils.create_invisible_spaces(3) + str(
                                     current_level) + "/100", inline=False)
                 await interaction.followup.send(embed=embed,
                                                         view=UpgradeStatsView(user=user, current_level=current_level,

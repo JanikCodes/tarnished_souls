@@ -4,6 +4,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+DEVELOPER_CMDS = ['dev.py', 'developer.py', 'framework.py', 'balance.py']
+
 class Help(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -16,6 +18,9 @@ class Help(commands.Cog):
         app_commands.Choice(name="Items", value="items"),
     ])
     async def help(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
@@ -37,10 +42,17 @@ class Help(commands.Cog):
                     embed.colour = discord.Color.light_embed()
                     await interaction.followup.send(embed=embed)
                 case 'cmds':
+                    count = 0
                     all_cmds = str()
                     for fileName in os.listdir('./Commands'):
                         if fileName.endswith('.py'):
-                            all_cmds += f"`{fileName[:-3]}` \n"
+                            if not fileName in DEVELOPER_CMDS:
+                                count += 1
+                                if count == 3:
+                                    count = 0
+                                    all_cmds += f"`{fileName[:-3]}`\n"
+                                else:
+                                    all_cmds += f"`{fileName[:-3]}` "
 
                     embed = discord.Embed(title=f"Information about `Commands`",
                                           description=all_cmds)

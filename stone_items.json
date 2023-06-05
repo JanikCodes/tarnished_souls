@@ -1,0 +1,154 @@
+[
+    {
+        "id": "17f69575078l0i1z3hvssftszqfcdc",
+        "name": "Ancient Dragon Smithing Stone",
+        "image": "https://eldenring.fanapis.com/images/items/17f69575078l0i1z3hvssftszqfcdc.png",
+        "description": "Smithing stone made polishing a golden Gravel Stone. A scale of the Ancient Dragonlord, and hidden treasure of Farum Azula",
+        "type": "Misc",
+        "effect": "Reinforce armamanets to +25"
+    },
+    {
+        "id": "17f69c09b3fl0i1z5i8s4czdm29hd",
+        "name": "Smithing Stone [1]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69c09b3fl0i1z5i8s4czdm29hd.png",
+        "description": "Stone used to smith a variety of armaments. A shard found in plenty.",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +3."
+    },
+    {
+        "id": "17f695e1877l0i1z2esul0ltnftrn",
+        "name": "Smithing Stone [2]",
+        "image": "https://eldenring.fanapis.com/images/items/17f695e1877l0i1z2esul0ltnftrn.png",
+        "description": "Stone used to smith a variety of armaments. A large shard found in plenty. Strengthens armaments up to +6. Smithing stone is found throughout the Lands Between, and mining galleries built to excavate it can be found everywhere",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +6."
+    },
+    {
+        "id": "17f69ac860fl0i1z2dnysa6pbi4pu",
+        "name": "Smithing Stone [3]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69ac860fl0i1z2dnysa6pbi4pu.png",
+        "description": "Stone used to smith a variety of armaments. A particularly hard specimen.",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +9."
+    },
+    {
+        "id": "17f69bee3a7l0i1z2fc6lkodwqn7x3",
+        "name": "Smithing Stone [4]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69bee3a7l0i1z2fc6lkodwqn7x3.png",
+        "description": "Stone used to smith a variety of armaments. A large and particularly hard specimen.",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +12."
+    },
+    {
+        "id": "17f695d4f2el0i1z2y303232bvbqcsm",
+        "name": "Smithing Stone [5]",
+        "image": "https://eldenring.fanapis.com/images/items/17f695d4f2el0i1z2y303232bvbqcsm.png",
+        "description": "Stone used to smith a variety of armamemnts. A rare specimen, it is tinged with gold.",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +15."
+    },
+    {
+        "id": "17f697b82e2l0i1z2zbvgg37zujx7h",
+        "name": "Smithing Stone [6]",
+        "image": "https://eldenring.fanapis.com/images/items/17f697b82e2l0i1z2zbvgg37zujx7h.png",
+        "description": "Stone used to smith a variety of armaments. A larger rare specimen, it is tinged with gold.",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +18."
+    },
+    {
+        "id": "17f6973188al0i1z2yq2dinoi6bw1s",
+        "name": "Smithing Stone [7]",
+        "image": "https://eldenring.fanapis.com/images/items/17f6973188al0i1z2yq2dinoi6bw1s.png",
+        "description": "Stone used to smith a variey of armaments. Found in a polar region, it is semi-vitrified.",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +21."
+    },
+    {
+        "id": "17f69ce5a34l0i1z3ghagihivxr1l8",
+        "name": "Smithing Stone [8]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69ce5a34l0i1z3ghagihivxr1l8.png",
+        "description": "Stone used to smith a variety of armaments. Found in a polar region, it is semi-vitrified",
+        "type": "Misc",
+        "effect": "Reinforce armaments up to +24."
+    },
+    {
+        "id": "17f69e30537l0i1z5d38vjwm2mnuun",
+        "name": "Somber Ancient Dragon Smithing Stone",
+        "image": "https://eldenring.fanapis.com/images/items/17f69e30537l0i1z5d38vjwm2mnuun.png",
+        "description": "Ancient dragonrock smithing stone drained of color. A scale of the Ancient Dragonlord, and hidden treasure of Farum Azula.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +10"
+    },
+    {
+        "id": "17f699e3818l0i1z3py7vre05m7hde",
+        "name": "Somber Smithing Stone [1]",
+        "image": "https://eldenring.fanapis.com/images/items/17f699e3818l0i1z3py7vre05m7hde.png",
+        "description": "Shard of smithing stone drained of color. Strengthens special armaments to +1. Special armements with unique characteristics cannot be strengthened with colored smithing stones. Number of steps and amount strengthened differ from standard equipment.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +1."
+    },
+    {
+        "id": "17f69557171l0i1z41hmz7jh3lkd3r",
+        "name": "Somber Smithing Stone [2]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69557171l0i1z41hmz7jh3lkd3r.png",
+        "description": "Large shard of smithing stone drained of color. Strengthens special armaments to +2. Special armements with unique characteristics cannot be strengthened with colored smithing stones. Number of steps and amount strengthened differ from standard equipment.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +2."
+    },
+    {
+        "id": "17f69955de5l0i1z49nehfqmj45gnf",
+        "name": "Somber Smithing Stone [3]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69955de5l0i1z49nehfqmj45gnf.png",
+        "description": "Hard smithing stone drained of color.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +3."
+    },
+    {
+        "id": "17f698e70cfl0i1z46kcgxebtfpmk9",
+        "name": "Somber Smithing Stone [4]",
+        "image": "https://eldenring.fanapis.com/images/items/17f698e70cfl0i1z46kcgxebtfpmk9.png",
+        "description": "Large hard smithing stone drained of color.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +4."
+    },
+    {
+        "id": "17f69d2531dl0i1z4jsm5titqsarvk",
+        "name": "Somber Smithing Stone [5]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69d2531dl0i1z4jsm5titqsarvk.png",
+        "description": "Gold smithing stone drained of color.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +5."
+    },
+    {
+        "id": "17f69a51074l0i1z4pallnm7f1pi2",
+        "name": "Somber Smithing Stone [6]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69a51074l0i1z4pallnm7f1pi2.png",
+        "description": "Large gold smithing stone drained of color.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +6."
+    },
+    {
+        "id": "17f69ae2e0el0i1z4s9cuuv3okbw3",
+        "name": "Somber Smithing Stone [7]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69ae2e0el0i1z4s9cuuv3okbw3.png",
+        "description": "Polar smithing stone drained of color.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +7."
+    },
+    {
+        "id": "17f69b599fbl0i1zbpzd0gjsxcjbp9",
+        "name": "Somber Smithing Stone [8]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69b599fbl0i1zbpzd0gjsxcjbp9.png",
+        "description": "Large polar smithing stone drained of color.",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +8."
+    },
+    {
+        "id": "17f69c9d615l0i1z5a6lrzcg89z4st",
+        "name": "Somber Smithing Stone [9]",
+        "image": "https://eldenring.fanapis.com/images/items/17f69c9d615l0i1z5a6lrzcg89z4st.png",
+        "description": "Ancient smithing stone drained of color",
+        "type": "Misc",
+        "effect": "Reinforce special armaments to +9."
+    }
+]
