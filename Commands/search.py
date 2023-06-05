@@ -161,7 +161,7 @@ async def view_search_results_page(interaction, user, page, label, filter=None):
             case "item":
                 for item in searches:
                     new_embed.set_thumbnail(url=item.get_icon_url())
-                    user_item = db.does_item_exist_for_user(idUser=user.get_userId(), item=item)
+                    user_item = db.does_base_item_exist_for_user(idUser=user.get_userId(), item=item)
 
                     item_name = f"{item.get_name()}"
 
@@ -229,6 +229,7 @@ async def view_search_results_page(interaction, user, page, label, filter=None):
         await interaction.followup.send(embed=new_embed, view=SearchResultsView(user=user, current_page=page,
                                                                                total_page_count=total_page_count,
                                                                                last_filter=filter, func=label))
+    return searches
 
 
 class Search(commands.Cog):

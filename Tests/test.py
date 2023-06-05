@@ -3,6 +3,7 @@ import os
 import unittest
 
 import db
+from Classes.enemy import Enemy
 from Classes.item import Item
 from Classes.user import User
 
@@ -148,3 +149,24 @@ class TestCases(unittest.TestCase):
         current_quest = db.get_current_user_quest(idUser=self.FAKE_USER_ID)
 
         self.assertEqual(current_quest.get_remaining_kills(), 0)
+
+    def test_14_search_inventory_item(self):
+        fake_item = Item(idItem=1)
+        db.add_item_to_user(self.FAKE_USER_ID, fake_item)
+
+        searches = db.search_with_name(idUser=self.FAKE_USER_ID, name=fake_item.get_name(), filter="inventory", page=1, max_page=1)
+        self.assertIsNotNone(searches)
+
+    def test_15_search_item(self):
+        fake_item = Item(idItem=1)
+
+        searches = db.search_with_name(idUser=self.FAKE_USER_ID, name=fake_item.get_name(), filter="inventory", page=1,
+                                       max_page=1)
+        self.assertIsNotNone(searches)
+
+    def test_16_search_enemy(self):
+        fake_enemy = Enemy(idEnemy=1)
+
+        searches = db.search_with_name(idUser=self.FAKE_USER_ID, name=fake_enemy.get_name().replace("'", ""), filter="enemy", page=1, max_page=1)
+
+        self.assertIsNotNone(searches)

@@ -280,7 +280,6 @@ def does_user_exist(idUser):
     else:
         return False
 
-
 def validate_user(userId):
     if not does_user_exist(userId):
         return False
@@ -799,16 +798,6 @@ def unequip(idUser, item):
     mydb.commit()
 
 
-def check_if_add_all_items():
-    sql = f"SELECT count(*) from item;"
-    cursor.execute(sql)
-    res = str(cursor.fetchone()).strip("(,)")
-    if res:
-        return res
-    else:
-        return None
-
-
 def get_location_from_id(idLocation):
     if idLocation:
         try:
@@ -1142,17 +1131,6 @@ def get_leaderboard_runes():
     return leaderboard
 
 
-def get_user_position_in_lb_runes(idUser):
-    sql = f"SELECT username, souls, FIND_IN_SET(souls, (SELECT GROUP_CONCAT(souls ORDER BY souls DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
-    cursor.execute(sql)
-    res = cursor.fetchone()
-    if res:
-        return res[2]
-    else:
-        # User not found in the database
-        return "error"
-
-
 def get_leaderboard_levels():
     leaderboard = []
 
@@ -1164,23 +1142,6 @@ def get_leaderboard_levels():
             leaderboard.append((row[0], row[1], row[2]))
 
     return leaderboard
-
-
-def get_user_position_in_lb_level(idUser):
-    sql = f"SELECT username, total_level, FIND_IN_SET(total_level, " \
-          f"(SELECT GROUP_CONCAT(total_level ORDER BY total_level DESC) FROM " \
-          f"(SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79) AS total_level " \
-          f"FROM user GROUP BY username, idUser) AS t)) AS position " \
-          f"FROM (SELECT idUser, username, SUM(vigor + mind + endurance + strength + dexterity + intelligence + faith + arcane - 79) AS total_level " \
-          f"FROM user GROUP BY username, idUser) AS u " \
-          f"WHERE idUser = {idUser};"
-    cursor.execute(sql)
-    res = cursor.fetchone()
-    if res:
-        return res[2]
-    else:
-        # User not found in the database
-        return "error"
 
 
 def update_dev_user_maxLocation(idUser):
@@ -1230,17 +1191,6 @@ def get_leaderboard_horde():
     return leaderboard
 
 
-def get_user_position_in_lb_horde(idUser):
-    sql = f"SELECT username, maxHordeWave, FIND_IN_SET(maxHordeWave, (SELECT GROUP_CONCAT(maxHordeWave ORDER BY maxHordeWave DESC) FROM user)) AS position FROM user WHERE idUser = {idUser};"
-    cursor.execute(sql)
-    res = cursor.fetchone()
-    if res:
-        return res[2]
-    else:
-        # User not found in the database
-        return "error"
-
-
 def update_max_horde_wave_from_user(idUser, wave):
     sql = f"select maxHordeWave FROM user WHERE idUser = {idUser};"
     cursor.execute(sql)
@@ -1263,19 +1213,6 @@ def get_highest_max_horde_wave():
 def get_all_user_ids_from_location(location, himself):
     idUsers = []
     sql = f"SELECT idUser from user WHERE currentLocation = {location.get_id()} AND idUser != {himself};"
-
-    cursor.execute(sql)
-    res = cursor.fetchall()
-    if res:
-        for row in res:
-            idUsers.append(row[0])
-
-    return idUsers
-
-
-def get_all_user_ids(himself):
-    idUsers = []
-    sql = f"SELECT idUser from user WHERE idUser != {himself};"
 
     cursor.execute(sql)
     res = cursor.fetchall()
@@ -1325,6 +1262,16 @@ def get_item_count_from_user(idUser, idItem):
 
 def does_item_exist_for_user(idUser, item):
     sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()} AND r.value = {item.get_extra_value()};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return get_item_from_user_with_id_rel(idUser=idUser, idRel=res[0])
+
+    return None
+
+
+def does_base_item_exist_for_user(idUser, item):
+    sql = f"SELECT r.idRel FROM user_has_item r WHERE r.idUser = {idUser} AND r.idItem = {item.get_idItem()} AND r.level = {item.get_level()};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
