@@ -60,6 +60,28 @@ def create_stamina_bar(stamina, max_stamina, interaction):
             first_digit = int(perc // 10)
 
     for i in range(first_digit):
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='stamina')
+        str += f"{emoji}"
+    for y in range(10 - first_digit):
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='h_e_n_s')
+        emp += f"{emoji}"
+    str += emp
+    return str
+
+
+def create_mana_bar(mana, max_mana, interaction):
+    perc = (float(mana) / float(max_mana)) * 100
+    str = ""
+    emp = ""
+    first_digit = 0
+
+    if perc >= 10:
+        if perc == 100:
+            first_digit = 10
+        else:
+            first_digit = int(perc // 10)
+
+    for i in range(first_digit):
         emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='s_f_n_s')
         str += f"{emoji}"
     for y in range(10 - first_digit):

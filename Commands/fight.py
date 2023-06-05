@@ -17,7 +17,7 @@ RUNE_REWARD_FOR_WAVE = 450
 
 
 class Fight:
-    def __init__(self, users, interaction, turn_index, enemy_index, enemy_list, horde_mode = False):
+    def __init__(self, users, interaction, turn_index, enemy_index, enemy_list, horde_mode=False):
         self.users = users
         self.interaction = interaction
         self.turn_index = turn_index
@@ -80,7 +80,8 @@ class Fight:
             embed.colour = discord.Color.green()
             embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has been *defeated!*",
                                inline=False)
-            embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!\n {item_drop_text}", inline=False)
+            embed.set_field_at(1, name="Reward:", value=f"Received **{enemy.get_runes()}** runes!\n {item_drop_text}",
+                               inline=False)
 
             # grant rune rewards to all players
             for user in users:
@@ -140,7 +141,6 @@ class Fight:
             # it's horde mode
             wave_text = f"You've reached wave `{self.enemy_index + 1}`"
 
-
         if self.get_current_enemy().is_player:
             # it's an invasion
             db.add_inv_death_to_user(idUser=self.users[0].get_userId())
@@ -149,14 +149,15 @@ class Fight:
         embed.colour = discord.Color.red()
         embed.set_field_at(0, name="Enemy action:", value=f"**{enemy.get_name()}** has *defeated all players!*",
                            inline=False)
-        embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n {wave_text}", inline=False)
+        embed.set_field_at(1, name="Reward:", value=f"Received **{total_rune_reward}** runes!\n {wave_text}",
+                           inline=False)
 
         if self.interaction.message:
             await self.interaction.message.edit(embed=embed, view=None)
         else:
             await self.interaction.edit_original_response(embed=embed, view=None)
 
-    async def update_fight_battle_view(self, force_idle_move = False):
+    async def update_fight_battle_view(self, force_idle_move=False):
 
         # Check for phase change
         self.check_phase_change(self.get_current_enemy())
@@ -182,7 +183,8 @@ class Fight:
                 if self.get_current_enemy().flask_amount == 0:
                     enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 4, 5])
                 else:
-                    enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
+                    enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase,
+                                                                             move_type=[1, 2, 3, 4, 5])
             else:
                 enemy_move = self.get_current_enemy().get_move_from_type(phase=enemy_phase, move_type=[1, 2, 3, 4, 5])
 
@@ -213,12 +215,12 @@ class Fight:
         embed.add_field(name="Turn order:", value=f"**<@{users[turn_index].get_userId()}>** please choose an action..",
                         inline=False)
 
-
         # create UI for every user
         for user in users:
             embed.add_field(name=f"**`{user.get_userName()}`** {flask_emoji} {user.get_remaining_flasks()}",
                             value=f"{utils.create_health_bar(user.get_health(), user.get_max_health(), self.interaction)} `{user.get_health()}/{user.get_max_health()}` {user.get_last_move_text()}\n"
-                                  f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina(), self.interaction)} `{user.get_stamina()}/{user.get_max_stamina()}`",
+                                  f"{utils.create_stamina_bar(user.get_stamina(), user.get_max_stamina(), self.interaction)} `{user.get_stamina()}/{user.get_max_stamina()}`\n"
+                                  f"{utils.create_mana_bar(100, 100, self.interaction)} `100/100`",
                             inline=False)
             user.clear_last_move_text()
 
@@ -256,6 +258,7 @@ class Fight:
 
         return next_index
 
+
 class LeaveButton(discord.ui.Button):
     def __init__(self, users):
         super().__init__(label='Leave Lobby', style=discord.ButtonStyle.danger)
@@ -278,7 +281,8 @@ class LeaveButton(discord.ui.Button):
 
                 message = interaction.message
                 edited_embed = message.embeds[0]
-                edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value=all_user_text, inline=False)
+                edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**",
+                                          value=all_user_text, inline=False)
 
                 await interaction.message.edit(embed=edited_embed)
             else:
@@ -291,6 +295,7 @@ class LeaveButton(discord.ui.Button):
                                   description=f"You can do that by tying any command for example `/explore` or `/character`",
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=8)
+
 
 class JoinButton(discord.ui.Button):
     def __init__(self, users, disabled=False):
@@ -318,7 +323,8 @@ class JoinButton(discord.ui.Button):
 
             message = interaction.message
             edited_embed = message.embeds[0]
-            edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value=all_user_text, inline=False)
+            edited_embed.set_field_at(index=1, name=f"Players: **{len(self.users)}/{MAX_USERS}**", value=all_user_text,
+                                      inline=False)
 
             await interaction.message.edit(embed=edited_embed)
         else:
@@ -403,6 +409,7 @@ class BattleButton(discord.ui.Button):
                 await self.fight.update_fight_battle_view()
         except discord.errors.NotFound:
             pass
+
     def execute_action(self):
         pass
 
@@ -424,18 +431,19 @@ class AttackButton(BattleButton):
         if not self.fight.get_current_enemy().get_is_dodging():
             self.fight.get_current_enemy().reduce_health(self.fight.get_current_user().get_damage())
 
+
 class HeavyAttackButton(BattleButton):
     def __init__(self, fight):
-        super().__init__(fight, label=f"Heavy Attack (-{ int(fight.get_current_user().get_damage() * 1.25) })",
+        super().__init__(fight, label=f"Heavy Attack (-{int(fight.get_current_user().get_damage() * 1.25)})",
                          style=discord.ButtonStyle.danger, row=0)
 
         # Disable button if not enough stamina
         self.disabled = fight.get_current_user().get_stamina() < HEAVY_STAMINA_COST
+
     def execute_action(self):
         if not self.fight.get_current_enemy().get_is_dodging():
             self.fight.get_current_enemy().reduce_health(int(self.fight.get_current_user().get_damage() * 1.25))
         self.fight.get_current_user().reduce_stamina(HEAVY_STAMINA_COST)
-
 
 
 class HealButton(BattleButton):
@@ -467,7 +475,7 @@ class FightBattleView(discord.ui.View):
         self.add_item(HeavyAttackButton(fight=fight))
         self.add_item(HealButton(fight=fight))
         self.add_item(DodgeButton(fight=fight))
-        #self.add_item(InstaKillButton(fight=fight))
+        # self.add_item(InstaKillButton(fight=fight))
 
 
 class FightLobbyView(discord.ui.View):
@@ -515,7 +523,8 @@ class FightEnemySelect(discord.ui.Select):
         if not self.visibility:
             selected_enemy.overwrite_alL_move_descriptions(selected_enemy.get_name())
 
-            fight = Fight(enemy_list=[selected_enemy], users=self.users, interaction=interaction, turn_index=0, enemy_index=0)
+            fight = Fight(enemy_list=[selected_enemy], users=self.users, interaction=interaction, turn_index=0,
+                          enemy_index=0)
             await fight.update_fight_battle_view(force_idle_move=True)
             return
 
@@ -533,7 +542,8 @@ class FightEnemySelect(discord.ui.Select):
         embed.add_field(name=f"Players: **1/{MAX_USERS}**", value=all_user_text, inline=False)
         embed.set_footer(text="Enemy health is increased based on player count")
 
-        await interaction.message.edit(embed=embed, view=FightLobbyView(users=self.users, enemy=selected_enemy, visibility=self.visibility, enemy_list=None))
+        await interaction.message.edit(embed=embed, view=FightLobbyView(users=self.users, enemy=selected_enemy,
+                                                                        visibility=self.visibility, enemy_list=None))
 
 
 class FightCommand(commands.Cog):
@@ -567,11 +577,13 @@ class FightCommand(commands.Cog):
                                                   f"*You can fight different enemies if you change your location with* `/travel`",
                                       colour=discord.Color.orange())
 
-                await interaction.followup.send(embed=embed, view=FightSelectView(users=[user], visibility=selected_visibility))
+                await interaction.followup.send(embed=embed,
+                                                view=FightSelectView(users=[user], visibility=selected_visibility))
             else:
                 await class_selection(interaction=interaction)
         except Exception as e:
             await self.client.send_error_message(e)
+
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(FightCommand(client))
