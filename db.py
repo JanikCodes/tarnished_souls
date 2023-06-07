@@ -547,7 +547,7 @@ def add_item_to_user_with_item_name(idUser, item_name):
     item = get_item_from_item_name(item_name=item_name)
 
     # add new item to table
-    sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, 1, {item.get_extra_value()});"
+    sql = f"INSERT INTO user_has_item VALUE(NULL, {idUser}, {item.get_idItem()}, {item.get_level()}, 1, {item.get_extra_value()}, 0);"
     cursor.execute(sql)
     mydb.commit()
 
