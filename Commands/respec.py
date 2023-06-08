@@ -13,6 +13,9 @@ class RespecCommand(commands.Cog):
 
     @app_commands.command(name="respec", description="Change again how you distribute your levels")
     async def respec(self, interaction: discord.Interaction, vigor: int, mind: int, endurance: int, strength: int, dexterity: int, intelligence: int, faith: int, arcane: int):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
@@ -31,6 +34,13 @@ class RespecCommand(commands.Cog):
                 if(vigor < 10 or mind < 10 or endurance < 10 or strength < 10 or dexterity < 10 or intelligence < 10 or faith < 10 or arcane < 10):
                     embed = discord.Embed(title=f"Failed",
                                           description="One of your attribute was below **10**. Every attribute needs to be atleast level 10!")
+                    embed.colour = discord.Color.red()
+                    await interaction.followup.send(embed=embed)
+                    return
+
+                if(vigor > 99 or mind > 99 or endurance > 99 or strength > 99 or dexterity > 99 or intelligence > 99 or faith > 99 or arcane > 99):
+                    embed = discord.Embed(title=f"Failed",
+                                          description="One of your attribute was above **99**. Every attribute needs to be below level 100!")
                     embed.colour = discord.Color.red()
                     await interaction.followup.send(embed=embed)
                     return

@@ -7,11 +7,11 @@ import db
 from Classes.encounter import Encounter
 from Classes.enemy import Enemy
 from Classes.enemy_move import EnemyMove
+from Classes.item import Item
 from Classes.quest import Quest
 from Classes.user import User
 from Utils.classes import class_selection
 import os
-
 
 class DeveloperOptionsCategoryButton(discord.ui.Button):
     def __init__(self, text, custom_view, user):
@@ -581,8 +581,6 @@ class AddEnemyModal(discord.ui.Modal):
 
         self.enemy_name = None
         self.enemy_description = None
-        self.enemy_health = None
-        self.enemy_runes = None
 
         self.item_drop_item_id = None
         self.item_drop_count = None
@@ -605,20 +603,14 @@ class AddEnemyModal(discord.ui.Modal):
             self.enemy_description = discord.ui.TextInput(label="Description", style=discord.TextStyle.long,
                                                           placeholder="Enter a valid enemy description..",
                                                           required=False)
-            self.enemy_health = discord.ui.TextInput(label="Health", style=discord.TextStyle.short,
-                                                     placeholder="Enter a valid health amount..", required=True)
-            self.enemy_runes = discord.ui.TextInput(label="Runes", style=discord.TextStyle.short,
-                                                    placeholder="Enter a valid rune amount..", required=True)
-
             self.add_item(self.enemy_name)
             self.add_item(self.enemy_description)
-            self.add_item(self.enemy_health)
-            self.add_item(self.enemy_runes)
+
 
     async def on_submit(self, interaction: discord.Interaction):
         if self.item_drop:
 
-            item = db.get_item_from_item_id(idItem=self.item_drop_item_id)
+            item = Item(idItem=self.item_drop_item_id)
             item.set_count(self.item_drop_count.value)
             item.set_drop_rate(self.item_drop_chance.value)
 
@@ -638,8 +630,8 @@ class AddEnemyModal(discord.ui.Modal):
 
         else:
             self.enemy.set_name(self.enemy_name.value)
-            self.enemy.set_health(self.enemy_health.value)
-            self.enemy.set_runes(self.enemy_runes.value)
+            self.enemy.set_health(0)
+            self.enemy.set_runes(0)
 
             if self.enemy_description.value == "":
                 self.enemy.set_description("null")
@@ -667,26 +659,16 @@ class AddEnemyMoveModal(discord.ui.Modal):
         self.enemy = enemy
         self.move_type = move_type
         self.embed = embed
-        self.move_damage = None
-        self.move_healing = None
         self.move_max_targets = None
 
         match self.move_type.get_type():
             case 'attack':
-                self.move_damage = discord.ui.TextInput(label="Damage", style=discord.TextStyle.short,
-                                                        placeholder="Enter a damage amount, leave empty if None..",
-                                                        required=False)
                 self.move_max_targets = discord.ui.TextInput(label="Max_targets", style=discord.TextStyle.short,
                                                              placeholder="Enter a valid Max_targets amount",
                                                              required=True)
-                self.add_item(self.move_damage)
                 self.add_item(self.move_max_targets)
-
             case 'heal':
-                self.move_healing = discord.ui.TextInput(label="Healing", style=discord.TextStyle.short,
-                                                         placeholder="Enter a healing amount, leave empty if None..",
-                                                         required=False)
-                self.add_item(self.move_healing)
+                pass
 
     async def on_submit(self, interaction: discord.Interaction):
 
@@ -705,18 +687,8 @@ class AddEnemyMoveModal(discord.ui.Modal):
             self.embed.add_field(name="Move_phase:", value=self.move_phase)
             self.move_type.set_phase(self.move_phase)
 
-        if self.move_damage is not None:
-            self.embed.add_field(name="Move_damage:", value=self.move_damage)
-            self.move_type.set_damage(self.move_damage)
-        else:
-            self.move_type.set_damage(0)
-
-        if self.move_healing is not None:
-            self.embed.add_field(name="Move_healing:", value=self.move_healing)
-            self.move_type.set_healing(self.move_healing)
-        else:
-            self.move_type.set_healing(0)
-
+        self.move_type.set_damage(0)
+        self.move_type.set_healing(0)
         self.move_type.set_duration(0)
 
         await interaction.message.edit(embed=self.embed,
@@ -924,7 +896,7 @@ class AddQuestModal(discord.ui.Modal):
                                      value=db.get_item_name_from_id(self.quest_item_reward_id))
                 self.embed.add_field(name="Reward amount/count:", value=self.quest_item_count.value)
 
-                self.quest.set_item_reward(db.get_item_from_item_id(self.quest_item_reward_id))
+                self.quest.set_item_reward(Item(idItem=self.quest_item_reward_id))
                 item = self.quest.get_item_reward()[0]
                 item.set_count(self.quest_item_count.value)
 
@@ -945,7 +917,7 @@ class AddLocationModal(discord.ui.Modal):
                                    placeholder="Enter a valid item id..", required=True)
 
     async def on_submit(self, interaction: discord.Interaction):
-        item = db.get_item_from_item_id(self.item_id.value)
+        item = Item(idItem=self.item_id.value)
 
         self.location.add_item_reward(item)
 
@@ -1105,6 +1077,8 @@ class DeveloperDefaultView(discord.ui.View):
 
 class Developer(commands.Cog):
     def __init__(self, client: commands.Bot):
+        self.LAST_USER_COUNT = 0
+        self.LAST_SERVER_COUNT = 0
         self.client = client
 
 
@@ -1119,11 +1093,16 @@ class Developer(commands.Cog):
 
                 if interaction.user.id in config.botConfig["developer-ids"]:
 
-                    embed = discord.Embed(title=f"Developer options",
-                                          description="")
-                    embed.add_field(name="Servers", value=f"{len(self.client.guilds)}")
-                    embed.add_field(name="Users", value=f"{db.get_all_user_count()}")
+                    new_server_count = f" **+{ len(self.client.guilds) - self.LAST_SERVER_COUNT }**" if self.LAST_SERVER_COUNT != len(self.client.guilds) else ""
+                    new_user_count = f" **+{int(db.get_all_user_count()) - self.LAST_SERVER_COUNT }**" if self.LAST_USER_COUNT != int(db.get_all_user_count()) else ""
+
+                    embed = discord.Embed(title=f"Developer options", description="")
+                    embed.add_field(name="Servers", value=f"{len(self.client.guilds)} {new_server_count}")
+                    embed.add_field(name="Users", value=f"{db.get_all_user_count()} {new_user_count}")
                     embed.add_field(name="AVG Quest", value=f"{db.get_avg_user_quest()}")
+
+                    self.LAST_SERVER_COUNT = len(self.client.guilds)
+                    self.LAST_USER_COUNT = int(db.get_all_user_count())
 
                     await interaction.followup.send(embed=embed, view=DeveloperDefaultView(user=user))
                 else:

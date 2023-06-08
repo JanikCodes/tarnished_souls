@@ -16,6 +16,9 @@ class Character(commands.Cog):
     @app_commands.rename(optional_user='user')
     @app_commands.command(name="character", description="Display your character stats & equipment")
     async def character(self, interaction: discord.Interaction, optional_user: discord.Member = None):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
@@ -51,7 +54,7 @@ class Character(commands.Cog):
 
                 embed.add_field(name="Statistics:", value=stats_text, inline=False)
 
-                embed.add_field(name="", value=f"**Total Damage:** `{str(0) if not user.get_weapon() else user.get_weapon().get_total_value(user)}`", inline=True)
+                embed.add_field(name="", value=f"**Total Damage:** `{user.get_damage() if not user.get_weapon() else user.get_weapon().get_total_value(user)}`", inline=True)
                 embed.add_field(name="",value=f"**Total Armor:** `{user.get_total_armor()}`", inline=True)
                 embed.add_field(name="",value=f"**Total Weight:** `{user.get_total_weight()}`", inline=True)
                 embed.add_field(name="", value=f"**Max Health:** `{user.get_max_health()}`", inline=True)

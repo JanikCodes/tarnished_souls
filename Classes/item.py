@@ -1,55 +1,47 @@
 import db
 
-SCALING_VALUES = {
-    '-': 0,
-    'E': 0.25,
-    'D': 0.45,
-    'C': 0.75,
-    'B': 1.15,
-    'A': 1.55,
-    'S': 1.75,
-}
-
 WEAPON_DMG_INCREASE_PER_UPGRADE = 6
 
+
 class Item:
-    def __init__(self, idItem, name, iconCategory, item_type, reqVigor, reqMind, reqEndurance, reqStrength,
-                 reqDexterity, reqIntelligence, reqFaith, reqArcane, price, obtainable, weight, value, iconUrl, sclVigor, sclMind, sclEndurance, sclStrength, sclDexterity, sclIntelligence, sclFaith, sclArcane):
-        self.idItem = idItem
-        self.name = name
-        self.iconCategory = iconCategory
-        self.item_type = item_type
+    def __init__(self, idItem):
+        filled_item = db.get_item_from_item_id(idItem=idItem)
+        self.idItem = filled_item[0]
+        self.name = filled_item[1]
+        self.iconCategory = filled_item[2]
+        self.item_type = filled_item[3]
 
         # Requirements
-        self.reqVigor = reqVigor
-        self.reqMind = reqMind
-        self.reqEndurance = reqEndurance
-        self.reqStrength = reqStrength
-        self.reqDexterity = reqDexterity
-        self.reqIntelligence = reqIntelligence
-        self.reqFaith = reqFaith
-        self.reqArcane = reqArcane
+        self.reqVigor = filled_item[4]
+        self.reqMind = filled_item[5]
+        self.reqEndurance = filled_item[6]
+        self.reqStrength = filled_item[7]
+        self.reqDexterity = filled_item[8]
+        self.reqIntelligence = filled_item[9]
+        self.reqFaith = filled_item[10]
+        self.reqArcane = filled_item[11]
 
-        #Scaling
-        self.sclVigor = sclVigor
-        self.sclMind = sclMind
-        self.sclEndurance = sclEndurance
-        self.sclStrength = sclStrength
-        self.sclDexterity = sclDexterity
-        self.sclIntelligence = sclIntelligence
-        self.sclFaith = sclFaith
-        self.sclArcane = sclArcane
+        # Scaling
+        self.sclVigor = filled_item[17]
+        self.sclMind = filled_item[18]
+        self.sclEndurance = filled_item[19]
+        self.sclStrength = filled_item[20]
+        self.sclDexterity = filled_item[21]
+        self.sclIntelligence = filled_item[22]
+        self.sclFaith = filled_item[23]
+        self.sclArcane = filled_item[24]
 
-        self.price = price
-        self.value = value
-        self.obtainable = obtainable
-        self.weight = weight
-        self.iconUrl = iconUrl
+        self.price = filled_item[13]
+        self.value = filled_item[12]
+        self.obtainable = filled_item[14]
+        self.weight = filled_item[15]
+        self.iconUrl = filled_item[16]
 
         self.level = 0
         self.extra_value = 0
         self.count = 1
         self.idRel = 0
+        self.favorite = 0
         self.drop_rate = 100
         self.dropped_from_enemy_names = db.get_enemy_names_from_item_id(idItem=self.idItem)
 
@@ -59,6 +51,9 @@ class Item:
 
     def get_idRel(self):
         return self.idRel
+
+    def get_favorite(self):
+        return self.favorite
 
     def get_idItem(self):
         return self.idItem
@@ -72,14 +67,12 @@ class Item:
     def get_scaling_value(self, scaling, attribute):
         val = 0
         if scaling != "-":
-            val = SCALING_VALUES[scaling] * (self.value + self.extra_value) * (attribute / 100)
+            val = self.get_total_scaling_value_(scaling) * (self.value + self.extra_value) * (attribute / 100) + (
+                        self.level * 1.05)
         return val
 
     def get_total_value(self, user):
-        return self.get_value_with_scaling(user) + self.extra_value + self.get_level_value()
-
-    def get_level_value(self):
-        return self.level * WEAPON_DMG_INCREASE_PER_UPGRADE
+        return self.get_value_with_scaling(user) + self.extra_value
 
     def get_value_with_scaling(self, user):
         return self.value + self.get_total_scaling_value(user)
@@ -156,7 +149,10 @@ class Item:
             return f"with **__{self.extra_value}__ bonus** armor! :star2:"
 
     def set_level(self, level):
-        self.dexterity = level
+        self.level = level
+
+    def set_favorite(self, favorite):
+        self.favorite = favorite
 
     def set_drop_rate(self, val):
         self.drop_rate = val
@@ -194,24 +190,41 @@ class Item:
 
         return text
 
+    def get_scaling_character_from_value(self, value):
+        if value > 1.75:
+            return "S"
+        elif value >= 1.4:
+            return "A"
+        elif value >= 0.9:
+            return "B"
+        elif value >= 0.6:
+            return "C"
+        elif value >= 0.25:
+            return "D"
+        else:
+            return "E"
+
+    def get_total_scaling_value_(self, value):
+        return (value / 100) + (self.level * (value / 100) * 0.02)
+
     def get_scaling_text(self):
         text = str()
-        if self.sclVigor != "-":
-            text += f"`Vig:` `{self.sclVigor}` "
-        if self.sclMind != "-":
-            text += f"`Min:` `{self.sclMind}` "
-        if self.sclEndurance != "-":
-            text += f"`End:` `{self.sclEndurance}` "
-        if self.sclStrength != "-":
-            text += f"`Str:` `{self.sclStrength}` "
-        if self.sclDexterity != "-":
-            text += f"`Dex:` `{self.sclDexterity}` "
-        if self.sclIntelligence != "-":
-            text += f"`Int:` `{self.sclIntelligence}` "
-        if self.sclFaith != "-":
-            text += f"`Fai:` `{self.sclFaith}` "
-        if self.sclArcane != "-":
-            text += f"`Arc:` `{self.sclArcane}` "
+        if self.sclVigor != 0:
+            text += f"`Vig:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclVigor))}` "
+        if self.sclMind != 0:
+            text += f"`Min:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclMind))}` "
+        if self.sclEndurance != 0:
+            text += f"`End:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclEndurance))}` "
+        if self.sclStrength != 0:
+            text += f"`Str:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclStrength))}` "
+        if self.sclDexterity != 0:
+            text += f"`Dex:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclDexterity))}` "
+        if self.sclIntelligence != 0:
+            text += f"`Int:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclIntelligence))}` "
+        if self.sclFaith != 0:
+            text += f"`Fai:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclFaith))}` "
+        if self.sclArcane != 0:
+            text += f"`Arc:` `{self.get_scaling_character_from_value(self.get_total_scaling_value_(self.sclArcane))}` "
 
         if text == str():
             text = "`None`"

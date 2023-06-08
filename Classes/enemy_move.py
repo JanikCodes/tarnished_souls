@@ -91,6 +91,7 @@ class EnemyMove:
             case 3:
                 # heal
                 enemy.increase_health(self.healing)
+                enemy.flask_amount -= 1
                 pass
             case 4:
                 # block

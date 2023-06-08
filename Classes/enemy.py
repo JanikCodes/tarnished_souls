@@ -24,6 +24,7 @@ class Enemy:
             self.dodge_next = False
             self.last_move_text = str()
             self.is_player = None
+            self.flask_amount = 0
         else:
             # empty constructor
             self.location = None
@@ -59,8 +60,14 @@ class Enemy:
         return self.phase
 
     def reduce_health(self, amount):
-        self.health = max(self.health - amount, 0)
-        self.last_move_text = f"`-{amount}`"
+        if self.is_player:
+            absorb = int((self.is_player.get_total_armor() / 8))
+            calc_dmg = max((amount - absorb), 0)
+            self.health = max(self.health - calc_dmg, 0)
+            self.last_move_text = f"`-{calc_dmg}`"
+        else:
+            self.health = max(self.health - amount, 0)
+            self.last_move_text = f"`-{amount}`"
 
     def increase_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
@@ -86,6 +93,16 @@ class Enemy:
         for move in self.moves:
             move.overwrite_name_in_description(name)
 
+    def get_move_from_type(self, phase, move_type):
+        available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0) and move.get_type() in move_type]
+        if available_moves:
+            selected_move = random.choice(available_moves)
+            self.last_move = selected_move
+            return selected_move
+        else:
+            print(f"Didn't found a valid move anymore for enemy: {self.name} ID: {self.id} with move_type: {move_type}")
+            return None
+
     def get_move(self, phase):
         available_moves = [move for move in self.moves if move != self.last_move and (move.get_phase() == phase or move.get_phase() == 0)]
         if available_moves:
@@ -93,7 +110,7 @@ class Enemy:
             self.last_move = selected_move
             return selected_move
         else:
-            print("Didn't found a valid move anymore!")
+            print(f"Didn't found a valid move anymore for enemy: {self.name} ID: {self.id} in phase: {phase}")
             return None
 
     def dodge(self):
@@ -163,3 +180,9 @@ class Enemy:
 
     def get_moves(self):
         return self.moves
+
+    def overwrite_moves_with_healing(self, healing):
+        if self.is_player:
+
+            for move in self.moves:
+                move.set_healing(healing)

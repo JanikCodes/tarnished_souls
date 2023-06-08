@@ -1,7 +1,7 @@
 import discord
 
 
-def create_bars(value, max):
+def create_bars(value, max, interaction):
     perc = (float(value) / float(max)) * 100
     str = ""
     emp = ""
@@ -14,9 +14,11 @@ def create_bars(value, max):
             first_digit = int(perc // 10)
 
     for i in range(first_digit):
-        str += ":blue_square:"
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='s_f_n_s')
+        str += f"{emoji}"
     for y in range(10 - first_digit):
-        emp += ":black_large_square:"
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='h_e_n_s')
+        emp += f"{emoji}"
 
     str += emp
     return str
@@ -35,12 +37,10 @@ def create_health_bar(health, max_health, interaction):
             first_digit = int(perc // 10)
 
     for i in range(first_digit):
-        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
-                                           name='h_f_n_s')
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='h_f_n_s')
         str += f"{emoji}"
     for y in range(10 - first_digit):
-        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
-                                           name='h_e_n_s')
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='h_e_n_s')
         emp += f"{emoji}"
 
     str += emp
@@ -60,12 +60,10 @@ def create_stamina_bar(stamina, max_stamina, interaction):
             first_digit = int(perc // 10)
 
     for i in range(first_digit):
-        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
-                                           name='s_f_n_s')
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='s_f_n_s')
         str += f"{emoji}"
     for y in range(10 - first_digit):
-        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis,
-                                           name='h_e_n_s')
+        emoji = discord.utils.get(interaction.client.get_guild(763425801391308901).emojis, name='h_e_n_s')
         emp += f"{emoji}"
     str += emp
     return str

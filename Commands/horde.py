@@ -14,6 +14,9 @@ class HordeCommand(commands.Cog):
 
     @app_commands.command(name="horde", description="Fight as long as you can!")
     async def horde(self, interaction: discord.Interaction):
+        if not interaction or interaction.is_expired():
+            return
+
         try:
             await interaction.response.defer()
 
