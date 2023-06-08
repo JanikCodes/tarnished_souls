@@ -12,6 +12,7 @@ Data/init-data.txt
 fill_db.py
 test.txt
 .idea/*
+Tests/test.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
