@@ -1,9 +1,9 @@
 {
-  "token": "MTA4OTg5MjE5NDk2MzQzNTY0Mg.GjauXC.WlRYfIyVOsGeDA8Jxh5SOpI4ZqZeQ_12q_bqO8",
-  "host": "localhost",
+  "token": "MTA5OTAwNjczMjEyODIzOTc4OA.G9UNlG.c4r0Nw3gW_OlPUc7nR-pBuNz3jVoGuI_o0XsUE",
+  "host": "192.168.0.24",
   "user": "root",
-  "password": "1111",
-  "port": 3306,
+  "password": "root",
+  "port": 5000,
   "database": "tarnished",
   "hub-server-guild-id": 763425801391308901,
   "error-channel-id": 1097570542728523836,

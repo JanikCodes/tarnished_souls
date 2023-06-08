@@ -36,8 +36,8 @@ def init_database(json_file):
         print("Database connection failed")
 
 
-def add_user(userId, userName):
-    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1, 0, 0);'
+def add_user(userId, userName, character_class_id):
+    sql = f'INSERT INTO user VALUE({userId}, "{userName}", 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, {character_class_id}, 0, null, null, null, null, null, 1, 1, 0, 0, 2, 1, 0, 0);'
     sql.replace('"', '\"')
     cursor.execute(sql)
     mydb.commit()
@@ -1361,3 +1361,6 @@ def update_enemy_runes(idEnemy, new_runes):
     sql = f"UPDATE enemy SET runes={new_runes} WHERE idEnemy = {idEnemy};"
     cursor.execute(sql)
     mydb.commit()
+
+def get_character_class_with_name(class_name):
+    sql = f""

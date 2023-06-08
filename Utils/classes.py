@@ -36,6 +36,8 @@ class ClassSelectButton(discord.ui.Button):
                     item = db.add_item_to_user_with_item_name(idUser=self.user.id, item_name=eq_value)
                     db.equip_item(idUser=self.user.id, item=item)
 
+
+
             # update embed to inform player of the success.
             class_name = self.data[self.last_page]['name'].replace("'", "''")
             message = interaction.message
