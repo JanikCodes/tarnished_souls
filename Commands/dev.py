@@ -18,37 +18,39 @@ class DevCommand(commands.Cog):
         try:
             await interaction.response.defer()
 
-            self.client.add_to_activity()
+            if interaction.user.id in config.botConfig["developer-ids"]:
 
-            database = Database(host=config.botConfig["host"],
-                                user=config.botConfig["user"],
-                                password=config.botConfig["password"],
-                                port=config.botConfig["port"],
-                                database_name=config.botConfig["database"],
-                                charset='utf8mb4')
+                database = Database(host=config.botConfig["host"],
+                                    user=config.botConfig["user"],
+                                    password=config.botConfig["password"],
+                                    port=config.botConfig["port"],
+                                    database_name=config.botConfig["database"],
+                                    charset='utf8mb4')
 
-            database.set_table_hidden('user_has_item')
-            database.set_table_hidden('user_has_quest')
-            database.set_table_hidden('quest_has_item')
-            database.set_table_hidden('quest_has_user')
-            database.set_table_hidden('move_type')
-            database.set_table_hidden('enemy_logic')
-            database.set_table_hidden('quest_type')
-            database.set_table_hidden('user')
-            database.set_column_default_value('enemy_moves', 'phase', 0)
-            database.set_column_default_value('enemy_moves', 'idType', 1)
-            database.set_column_default_value('enemy_moves', 'damage', 0)
-            database.set_column_default_value('enemy_moves', 'healing', 0)
-            database.set_column_default_value('enemy_moves', 'duration', 0)
-            database.set_column_default_value('enemy_moves', 'maxTargets', 4)
-            database.set_column_hidden('enemy_moves', 'maxTargets')
-            database.set_column_hidden('enemy_moves', 'damage')
-            database.set_column_hidden('enemy_moves', 'healing')
-            database.set_column_hidden('enemy_moves', 'phase')
+                database.set_table_hidden('user_has_item')
+                database.set_table_hidden('user_has_quest')
+                database.set_table_hidden('quest_has_item')
+                database.set_table_hidden('quest_has_user')
+                database.set_table_hidden('move_type')
+                database.set_table_hidden('enemy_logic')
+                database.set_table_hidden('quest_type')
+                database.set_table_hidden('user')
+                database.set_column_default_value('enemy_moves', 'phase', 0)
+                database.set_column_default_value('enemy_moves', 'idType', 1)
+                database.set_column_default_value('enemy_moves', 'damage', 0)
+                database.set_column_default_value('enemy_moves', 'healing', 0)
+                database.set_column_default_value('enemy_moves', 'duration', 0)
+                database.set_column_default_value('enemy_moves', 'maxTargets', 4)
+                database.set_column_hidden('enemy_moves', 'maxTargets')
+                database.set_column_hidden('enemy_moves', 'damage')
+                database.set_column_hidden('enemy_moves', 'healing')
+                database.set_column_hidden('enemy_moves', 'phase')
 
-            embed, view = dbpyman.create_db_management(database)
+                embed, view = dbpyman.create_db_management(database)
 
-            await interaction.followup.send(embed=embed, view=view)
+                await interaction.followup.send(embed=embed, view=view)
+            else:
+                await interaction.followup.send("You're not a developer!", ephemeral=True)
         except Exception as e:
             await self.client.send_error_message(e)
 
