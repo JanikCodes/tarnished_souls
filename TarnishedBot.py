@@ -15,7 +15,7 @@ import unittest
 from Tests.test import TestCases
 
 MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
-UPDATE_ITEMS = True
+UPDATE_ITEMS = False
 FILL_FIRST_TIME_DATA = False
 
 

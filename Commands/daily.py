@@ -12,10 +12,11 @@ class DailyCommand(commands.Cog):
 
     @app_commands.command(name="daily", description="Get some daily rewards, tarnished!")
     async def daily(self, interaction: discord.Interaction):
-        daily_embed = discord.Embed(title="daily reward(s):")
-        daily_embed.colour = discord.Color.orange()
+        daily_embed = discord.Embed(title="Daily rewards:")
+        daily_embed.colour = discord.Color.light_embed()
 
         await interaction.response.send_message(embed=daily_embed)
+
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(DailyCommand(client))
