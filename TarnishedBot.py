@@ -57,16 +57,11 @@ class Client(commands.Bot):
             print("Added init data..")
 
         print("Finished updating/adding data")
-        self.clear_activity_list.start()
         self.username_upd_task.start()
 
     @tasks.loop(hours=24)
     async def username_upd_task(self):
         await db.update_usernames(self)
-
-    @tasks.loop(hours=168)
-    async def clear_activity_list(self):
-        self.activity_list.clear()
 
     async def send_error_message(self, error):
         channel = client.get_channel(config.botConfig["error-channel-id"])
