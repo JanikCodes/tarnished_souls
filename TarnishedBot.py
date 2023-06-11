@@ -64,7 +64,7 @@ class Client(commands.Bot):
     async def username_upd_task(self):
         await db.update_usernames(self)
 
-    @tasks.loop(hours=24)
+    @tasks.loop(hours=168)
     async def clear_activity_list(self):
         self.activity_list.clear()
 
