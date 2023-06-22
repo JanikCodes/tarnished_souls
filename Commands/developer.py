@@ -1094,7 +1094,7 @@ class Developer(commands.Cog):
                 if interaction.user.id in config.botConfig["developer-ids"]:
 
                     new_server_count = f" **+{ len(self.client.guilds) - self.LAST_SERVER_COUNT }**" if self.LAST_SERVER_COUNT != len(self.client.guilds) else ""
-                    new_user_count = f" **+{int(db.get_all_user_count()) - self.LAST_SERVER_COUNT }**" if self.LAST_USER_COUNT != int(db.get_all_user_count()) else ""
+                    new_user_count = f" **+{int(db.get_all_user_count()) - self.LAST_USER_COUNT }**" if self.LAST_USER_COUNT != int(db.get_all_user_count()) else ""
 
                     embed = discord.Embed(title=f"Developer options", description="")
                     embed.add_field(name="Servers", value=f"{len(self.client.guilds)} {new_server_count}")
