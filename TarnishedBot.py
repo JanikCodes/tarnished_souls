@@ -64,9 +64,8 @@ class Client(commands.Bot):
         await db.update_usernames(self)
 
     async def send_error_message(self, error):
-        channel = client.get_channel(config.botConfig["error-channel-id"])
-        error_message = f"An error occurred:\n```{traceback.format_exc()}```"
-        await channel.send(error_message)
+        print(f"An error occurred:\n```{traceback.format_exc()}```")
+        return
 
     async def on_error(self, event, *args, **kwargs):
         await self.send_error_message(traceback.format_exc())
