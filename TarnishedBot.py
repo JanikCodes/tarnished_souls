@@ -20,7 +20,7 @@ FILL_FIRST_TIME_DATA = False
 
 class Client(commands.Bot):
     def __init__(self):
-        intents = discord.Intents.default()
+        intents = discord.Intents.all()
         intents.members = True
 
 
