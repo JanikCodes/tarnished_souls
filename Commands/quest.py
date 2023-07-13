@@ -47,20 +47,16 @@ class FinishQuest(discord.ui.Button):
             db.update_flask_amount_from_user(idUser=self.user.get_userId(), amount=self.current_quest.get_quest().get_flask_reward())
 
         # Edit quest message
-        print("Before message")
         message = interaction.message
         edited_embed = message.embeds[0]
         edited_embed.colour = discord.Color.green()
-        print("After message")
         db.remove_quest_from_user_with_quest_id(idUser=self.user.get_userId(), idQuest=self.current_quest.get_quest().get_id())
         db.add_quest_to_user(idUser=self.user.get_userId(), idQuest=self.current_quest.get_quest().get_id() + 1)
 
         # update timer in case cooldown exist
         current_time = (round(time.time() * 1000)) // 1000
         db.update_last_quest_timer_from_user_with_id(idUser=self.user.get_userId(), current_time=current_time)
-        print("before message send")
         await interaction.message.edit(embed=edited_embed, view=None)
-        print("After message send")
 
 class QuestView(discord.ui.View):
     def __init__(self, user, current_quest):
