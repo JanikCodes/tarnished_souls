@@ -22,7 +22,6 @@ class Client(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
         intents.members = True
-        intents.message_content = True
 
         super().__init__(command_prefix='!-&%', intents=intents)
         self.activity_list = {i: 0 for i in range(24)}
