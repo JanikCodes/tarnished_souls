@@ -20,11 +20,11 @@ FILL_FIRST_TIME_DATA = False
 
 class Client(commands.Bot):
     def __init__(self):
-        intents = discord.Intents.all()
-        intents.members = True
+        # intents = discord.Intents.default()
+        # intents.members = True
 
 
-        super().__init__(command_prefix='!-&%', intents=intents)
+        super().__init__(command_prefix='!-&%')
         self.activity_list = {i: 0 for i in range(24)}
 
     async def setup_hook(self):
