@@ -375,6 +375,7 @@ class Inventory(commands.Cog):
 
     @app_commands.command(name="inventory", description="Display your inventory")
     async def inventory(self, interaction: discord.Interaction):
+        print("Inventory")
         if not interaction or interaction.is_expired():
             return
 

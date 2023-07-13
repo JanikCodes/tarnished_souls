@@ -14,6 +14,7 @@ class Runes(commands.Cog):
     @app_commands.rename(optional_user='user')
     @app_commands.command(name="runes", description="Display your runes amount")
     async def runes(self, interaction: discord.Interaction, optional_user: discord.Member = None):
+        print("Runes")
         if not interaction or interaction.is_expired():
             return
 

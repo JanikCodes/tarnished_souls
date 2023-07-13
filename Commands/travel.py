@@ -51,6 +51,7 @@ class Travel(commands.Cog):
 
     @app_commands.command(name="travel", description="Travel to to various places in order to earn different loot or encounter new enemies.")
     async def travel(self, interaction: discord.Interaction):
+        print("Travel")
         if not interaction or interaction.is_expired():
             return
 

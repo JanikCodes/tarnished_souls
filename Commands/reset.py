@@ -57,6 +57,7 @@ class Reset(commands.Cog):
 
     @app_commands.command(name="reset", description="You can decide if you want to reset your whole character!")
     async def reset(self, interaction: discord.Interaction):
+        print("Reset")
         if not interaction or interaction.is_expired():
             return
 

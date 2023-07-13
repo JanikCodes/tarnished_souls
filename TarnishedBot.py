@@ -14,15 +14,15 @@ import db
 import unittest
 from Tests.test import TestCases
 
-MY_GUILD = discord.Object(id=config.botConfig["hub-server-guild-id"])
 UPDATE_ITEMS = True
 FILL_FIRST_TIME_DATA = False
 
 
 class Client(commands.Bot):
     def __init__(self):
-        intents = discord.Intents.default()
+        intents = discord.Intents.all()
         intents.members = True
+
 
         super().__init__(command_prefix='!-&%', intents=intents)
         self.activity_list = {i: 0 for i in range(24)}
@@ -63,13 +63,6 @@ class Client(commands.Bot):
     async def username_upd_task(self):
         await db.update_usernames(self)
 
-    async def send_error_message(self, error):
-        print(f"An error occurred:\n```{traceback.format_exc()}```")
-        return
-
-    async def on_error(self, event, *args, **kwargs):
-        await self.send_error_message(traceback.format_exc())
-
     def add_to_activity(self):
         hour = datetime.now().hour
         self.activity_list[hour] += 1
@@ -92,7 +85,6 @@ def __run_tests():
     else:
         print("Some tests failed.")
         return False
-
 
 if __run_tests():
     client = Client()

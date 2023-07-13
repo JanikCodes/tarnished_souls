@@ -72,6 +72,7 @@ class Quest(commands.Cog):
 
     @app_commands.command(name="quest", description="Try completing the quest-line")
     async def quest(self, interaction: discord.Interaction):
+        print("Quest")
         if not interaction or interaction.is_expired():
             return
 

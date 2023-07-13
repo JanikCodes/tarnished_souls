@@ -13,6 +13,7 @@ class Favorite(commands.Cog):
 
     @app_commands.command(name="favorite", description="Mark one of your items are favorite!")
     async def favorite(self, interaction: discord.Interaction, id: int ):
+        print("Favorite")
         if not interaction or interaction.is_expired():
             return
 

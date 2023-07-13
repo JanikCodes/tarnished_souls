@@ -109,6 +109,7 @@ class LeaderboardCommand(commands.Cog):
         app_commands.Choice(name="Server", value="server")
     ])
     async def leaderboard(self, interaction: discord.Interaction, type: app_commands.Choice[str], range: app_commands.Choice[str]):
+        print("Leaderboard")
         if not interaction or interaction.is_expired():
             return
 

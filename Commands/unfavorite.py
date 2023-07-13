@@ -13,6 +13,7 @@ class Unfavorite(commands.Cog):
 
     @app_commands.command(name="unfavorite", description="Remove favorite mark from one of your items!")
     async def unfavorite(self, interaction: discord.Interaction, id: int ):
+        print("unfavorite")
         if not interaction or interaction.is_expired():
             return
 

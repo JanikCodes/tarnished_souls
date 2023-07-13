@@ -4,7 +4,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-DEVELOPER_CMDS = ['dev.py', 'developer.py', 'framework.py', 'balance.py']
+DEVELOPER_CMDS = ['developer.py', 'framework.py', 'balance.py']
 
 class Help(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -18,6 +18,7 @@ class Help(commands.Cog):
         app_commands.Choice(name="Items", value="items"),
     ])
     async def help(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        print("Help")
         if not interaction or interaction.is_expired():
             return
 

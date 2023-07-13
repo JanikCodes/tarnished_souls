@@ -58,6 +58,7 @@ class Equip(commands.Cog):
     )
     @app_commands.rename(item_id='id')
     async def equip(self, interaction: discord.Interaction, item_id: int):
+        print("Equip")
         if not interaction or interaction.is_expired():
             return
 

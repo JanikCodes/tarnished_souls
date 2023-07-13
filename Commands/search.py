@@ -244,6 +244,7 @@ class Search(commands.Cog):
         app_commands.Choice(name="Item", value="item")
     ])
     async def runes(self, interaction: discord.Interaction, choices: app_commands.Choice[str], prompt: str):
+        print("Search")
         if not interaction or interaction.is_expired():
             return
 

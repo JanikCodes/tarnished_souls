@@ -17,6 +17,7 @@ class InvadeCommand(commands.Cog):
 
     @app_commands.command(name="invade", description="Invade your current location to fight another player!")
     async def invade(self, interaction: discord.Interaction):
+        print("Invade")
         if not interaction or interaction.is_expired():
             return
 
