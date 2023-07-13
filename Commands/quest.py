@@ -25,10 +25,12 @@ class FinishQuest(discord.ui.Button):
 
         # Check if user even has the quest anymore
         if not db.get_user_quest_with_quest_id(idUser=self.user.get_userId(), idQuest=self.current_quest.get_quest().get_id()):
+            print("Before message")
             message = interaction.message
             edited_embed = message.embeds[0]
             edited_embed.colour = discord.Color.red()
             await interaction.message.edit(embed=edited_embed, view=None)
+            print("After message")
             return
 
         # Give out quest rewards to user
